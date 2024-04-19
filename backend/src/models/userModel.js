@@ -9,15 +9,17 @@ const userSchema = mongoose.Schema({
     email: {
         type: String,
         unique: true,
-        // You may want to add email validation here
+        required: true,
+        // Adding email validation
+        match: /^\S+@\S+\.\S+$/,
     },
     datebirth: {
         type: Date,
-        required: true
+        required: true,
     },
     phoneNumber:{
         type:String,
-        required:true
+        required:true,
     },
     password: {
         type: String,
@@ -27,14 +29,20 @@ const userSchema = mongoose.Schema({
     confirmpassword: {
         type: String,
         required: true,
-        // You may want to add validation to ensure it matches the password field
+        // Validation to ensure it matches the password field
+        validate: {
+            validator: function(value) {
+                return this.password === value;
+            },
+            message: 'Password confirmation does not match.',
+        },
     },
     verified: {
         type: Boolean,
-        default: false
+        default: false,
     }
 }, {
-    timestamps: true
+    timestamps: true,
 });
 
 module.exports = mongoose.model('User', userSchema);

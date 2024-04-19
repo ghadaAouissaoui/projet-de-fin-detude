@@ -154,3 +154,4 @@ module.exports = {
     loginUser,
     verifyEmail,
 };
+

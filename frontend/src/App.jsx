@@ -9,6 +9,8 @@ import ComponentQ from './pages/FourthscreenHome';
 import Signup from './pages/signup';
 import Login from './pages/login';
 import EmailVerify from './Verification/emailVerification'
+import Dashboard from './pages/Dashbord';
+import DoctorProfile from './pages/DoctorProfile';
 
 const App = () => {
   return (
@@ -18,8 +20,10 @@ const App = () => {
           <Routes>
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
             <Route path="/signup" element={<Signup />}/>
-            <Route path="/signup/login" element={<Login />}/>
+            <Route path="/login" element={<Login />}/>
             <Route path="/users/:id/verify/:token" element={<EmailVerify />} />
+            <Route path="/pro" element={<Dashboard />} />
+            <Route path="/doctorprofile" element={<DoctorProfile />} />
           </Routes>
         <Footer />
       </>

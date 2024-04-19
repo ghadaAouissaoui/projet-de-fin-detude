@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate instead of useHistory
+import axios from 'axios';
 
 export default function Login() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle form submission logic here
+  const navigate=useNavigate();
+
+  const [email,setEmail]=useState('')
+  const [password,setPassword]=useState('')
+
+  async function submit(e){
+      e.preventDefault();
+
+      try{
+
+          await axios.post("http://localhost:5000/api/users/login",{
+              email,password
+          })
+          .then(res=>{
+              if(res.data=="exist"){
+                  navigate("/espaceClient",{state:{id:email}})
+              }
+              else if(res.data=="notexist"){
+                  alert("User have not sign up")
+              }
+          })
+          .catch(e=>{
+            
+              alert("wrong details")
+              console.log(e);
+          })
+
+      }
+      catch(e){
+          console.log(e);
+
+      }
+    };
     
-  }
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
@@ -24,12 +55,12 @@ export default function Login() {
             Continue with Google
           </button>
         </div>
-        <div className="space-y-4">
-          <input className="w-full px-4 py-2 border rounded" placeholder="enter email..." type="email" />
-          <input className="w-full px-4 py-2 border rounded" placeholder="enter password..." type="password" />
+        <div className="space-y-4" >
+          <input className="w-full px-4 py-2 border rounded" placeholder="enter email..."  onChange={(e) => { setEmail(e.target.value) }} type="email" />
+          <input className="w-full px-4 py-2 border rounded" placeholder="enter password..." onChange={(e) => { setPassword(e.target.value) }} type="password" />
         </div>
         <div className="my-6">
-          <button className="bg-indigo-500 hover:bg-indigo-600 text-white w-full py-2 px-4 rounded" onClick={handleSubmit}>Login</button>
+          <button className="bg-indigo-500 hover:bg-indigo-600 text-white w-full py-2 px-4 rounded" onClick={submit}>Login</button>
         </div>
         <div className="text-center text-sm">
           <span>Don't have an account? </span>
@@ -86,3 +117,4 @@ function UserCircleIcon(props) {
     </svg>
   )
 }
+

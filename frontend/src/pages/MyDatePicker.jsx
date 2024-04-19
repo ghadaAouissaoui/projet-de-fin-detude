@@ -12,7 +12,7 @@ export default function MyDatePicker() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker 
         value={selectedDate} 
-        onChange={(date) => setSelectedDate(date)} 
+        onChange={(datebirth) => setSelectedDate(datebirth)} 
         className="w-full h-1/2" 
       />
     </LocalizationProvider>

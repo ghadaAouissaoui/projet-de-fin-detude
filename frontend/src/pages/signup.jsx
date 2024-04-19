@@ -1,6 +1,37 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import MyDatePicker from './MyDatePicker' ; // Import your DatePicker component
+import DatePicker from 'react-datepicker'; // Import DatePicker
+import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
+
+function Avatar({ children, className }) {
+  return <div className={className}>{children}</div>;
+}
+
+function Label({ htmlFor, children }) {
+  return (
+    <div className='pb-2'>
+      <label htmlFor={htmlFor}>{children}</label>
+    </div>
+  );
+}
+
+function Input({ id, placeholder, type, value, onChange }) {
+  return (
+    <input
+      id={id}
+      placeholder={placeholder}
+      type={type}
+      value={value}
+      onChange={onChange}
+      className="border-2 border-gray-300 rounded-md p-2 h-[58px]"
+    />
+  );
+}
+
+function Button({ className, children, type }) {
+  return <button className={className} type={type}>{children}</button>;
+}
 
 export default function Signup() {
   const [fullname, setFullName] = useState('');
@@ -12,12 +43,6 @@ export default function Signup() {
   const [msg, setMsg] = useState('');
   const [emailSent, setEmailSent] = useState(false);
 
-  const handleDateChange = (date) => {
-    if (date instanceof Date) {
-      setDateBirth(date);
-    }
-  };
-
   const handleChange = ({ target }) => {
     const { id, value } = target;
     switch (id) {
@@ -28,8 +53,7 @@ export default function Signup() {
         setEmail(value);
         break;
       case 'datebirth':
-        // Handle date changes here
-        handleDateChange(value);
+        setDateBirth(value);
         break;
       case 'phoneNumber':
         setPhoneNumber(value);
@@ -64,12 +88,23 @@ export default function Signup() {
         setMsg("Registration successful. Check your email for verification instructions.");
       }
     } catch (error) {
-      console.error('Error registering user:', error);
-      setMsg("Registration failed. Please try again later.");
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Server Error:', error.response.data);
+        setMsg("Server Error. Please try again later.");
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Request Error:', error.request);
+        setMsg("Request Error. Please check your internet connection.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('General Error:', error.message);
+        setMsg("An error occurred. Please try again later.");
+      }
     }
   };
-
-
+  
   return (
     <div className="flex flex-col p-10 rounded-lg shadow-lg lg:max-w-[50rem] max-w-md mx-auto my-8">
       <Avatar className="mb-4">
@@ -93,7 +128,12 @@ export default function Signup() {
         <div className="flex flex-row w-full mb-5">
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="datebirth">Date of Birth</Label>
-            <MyDatePicker/>
+            <DatePicker 
+              selected={datebirth} 
+              onChange={(date) => setDateBirth(date)} 
+              className="border-2 border-gray-300 rounded-md p-2 h-[58px] md:w-full px-3" 
+              placeholder='MM-DD-YYYY'
+            />
           </div>
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="phoneNumber">Phone Number</Label>

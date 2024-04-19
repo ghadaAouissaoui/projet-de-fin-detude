@@ -37,7 +37,7 @@ const ComponentD = () => {
           <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
            <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
             <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="#">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+              <a href="/doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
             </div>
           </div>
         </div>
@@ -88,7 +88,7 @@ const ComponentD = () => {
           <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
            <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
             <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="#">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
             </div>
           </div>
         </div><div className="w-full bg-white shadow-md p-6 rounded-md">
@@ -113,7 +113,7 @@ const ComponentD = () => {
           <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
            <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
             <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="#">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
             </div>
           </div>
         </div><div className="w-full bg-white shadow-md p-6 rounded-md">
@@ -138,7 +138,7 @@ const ComponentD = () => {
           <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
            <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
             <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="#">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
             </div>
           </div>
         </div><div className="w-full bg-white shadow-md p-6 rounded-md">
@@ -163,7 +163,7 @@ const ComponentD = () => {
           <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
            <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
             <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="#">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
             </div>
           </div>
         </div>
