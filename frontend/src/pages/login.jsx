@@ -64,7 +64,7 @@ export default function Login() {
         </div>
         <div className="text-center text-sm">
           <span>Don't have an account? </span>
-          <a className="text-indigo-500 hover:text-indigo-600" href="#">
+          <a className="text-indigo-500 hover:text-indigo-600" href="/signup">
             Sign up for Free
           </a>
         </div>

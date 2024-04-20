@@ -95,7 +95,7 @@ export default function DoctorProfile() {
               <div className="w-[100px] rounded-full relative -top-[80px] left-[40px]"> <AvatarImage alt="Doctor Profile" src={image} className=" rounded-full w-full"/></div>
             </Avatar>
         
-      <div className="grid grid-cols-3 gap-4 px-6">
+      <div className="flex flex-row gap-8 max-md:gap-4 max-md:flex-wrap px-6">
         <div className="col-span-2 space-y-4">
           <div className="flex items-center space-x-4">           
               <h1 className="text-xl font-semibold">Rayna Westervelt M.Psi</h1>
@@ -109,45 +109,62 @@ export default function DoctorProfile() {
           </div>
           <div>
       <h2 className="text-lg font-bold">Doctor Profile</h2>
-      <div className="text-sm text-gray-600 mb-4">
+      <div className="text-sm text-black mb-4">
         {showFullDescription ? (
           <>
             <p>
-              
-With over four years of dedicated service in the realm of ear, nose, and throat (ENT) health, our esteemed specialist has cultivated a profound wealth of experience and expertise. Throughout their illustrious career, they have passionately devoted themselves to the diagnosis and treatment of a diverse spectrum of ENT conditions, ranging from common ailments to complex disorders.
-
-Their journey in ENT care has been marked by continuous refinement of skills and relentless pursuit of excellence. Through extensive training and hands-on experience, they have developed a keen ability to accurately diagnose various ENT issues, enabling them to devise tailored treatment plans that prioritize patient well-being and recovery.
-
-What truly sets our specialist apart is their unwavering commitment to staying at the forefront of medical advancements. They remain deeply engaged in ongoing research, attend conferences, and participate in continuing education programs to ensure they are well-versed in the latest techniques, technologies, and treatments shaping the field of ENT medicine.
+                With over four years of dedicated service in the realm of ear, 
+                nose, and throat (ENT) health, our esteemed specialist has cultivated 
+                a profound wealth of experience and expertise. 
+                Throughout their illustrious career, they have passionately devoted 
+                themselves to the diagnosis and treatment of a diverse spectrum of ENT conditions, 
+                ranging from common ailments to complex disorders.
+                Their journey in ENT care has been marked by continuous refinement of skills 
+                and relentless pursuit of excellence. 
+                Through extensive training and hands-on experience, 
+                they have developed a keen ability to accurately diagnose various ENT issues, 
+                enabling them to devise tailored treatment plans that prioritize patient well-being and recovery.
+                What truly sets our specialist apart is their unwavering commitment to staying 
+                at the forefront of medical advancements. 
+                They remain deeply engaged in ongoing research, 
+                attend conferences, and participate in continuing education programs 
+                to ensure they are well-versed in the latest techniques, technologies, 
+                and treatments shaping the field of ENT medicine.
             </p>
             <p>
-            enabling them to devise tailored treatment plans that prioritize patient well-being and recovery.
-
-What truly sets our specialist apart is their unwavering commitment to staying at the forefront of medical advancements. They remain deeply engaged in ongoing research, attend conferences, and participate in continuing education programs to ensure they are well-versed in the latest techniques, technologies, and treatments shaping the field of ENT medicine.
-            </p>
+                enabling them to devise tailored treatment plans that prioritize patient well-being and recovery.
+                What truly sets our specialist apart is their unwavering commitment 
+                to staying at the forefront of medical advancements. 
+                They remain deeply engaged in ongoing research, attend conferences, 
+                and participate in continuing education programs 
+                to ensure they are well-versed in the latest techniques, technologies, 
+                and treatments shaping the field of ENT medicine.
+                            </p>
             <div className="flex flex-row">
-            <Button onClick={toggleDescription} className="text-blue-500 cursor-pointer rounded-l-md">
+            <Button onClick={toggleDescription} className="text-blue-500 cursor-pointer rounded-l-md mt-[10px]">
               Show Less
-            </Button> <div className='bg-blue-500 rounded-r-md pt-2  hover:bg-blue-600 cursor-pointer'onClick={toggleDescription}><ChevronUp/></div> </div>
+            </Button> <div className='bg-blue-500 rounded-r-md pt-2 mt-[10px] hover:bg-blue-600 cursor-pointer'onClick={toggleDescription}><ChevronUp/></div> </div>
           </>
         ) : (
           <p>
             With over four years of dedicated service in the realm of ear, nose, and throat (ENT) health, our esteemed specialist has cultivated a profound wealth of experience and expertise. Throughout their illustrious career, they have passionately devoted themselves to the diagnosis and treatment of a diverse spectrum of ENT conditions, ranging from common ailments to complex disorders.
 
 Their journey in ENT care has been marked by continuous refinement of skills and relentless pursuit of excellence. Through extensive training and hands-on experience, they have developed a keen ability to accurately diagnose various ENT issues,...
-            <div className="flex flex-row"><Button onClick={toggleDescription} className="text-blue-500 cursor-pointer rounded-l-md">
+            <div className="flex flex-row"><Button onClick={toggleDescription} className="text-blue-500 cursor-pointer mt-[10px] rounded-l-md">
               See More
-            </Button><div className='bg-blue-500 rounded-r-md pt-2  hover:bg-blue-600 cursor-pointer'onClick={toggleDescription} ><ChevronDown/></div> 
+            </Button><div className='bg-blue-500 rounded-r-md pt-2 mt-[10px] hover:bg-blue-600 cursor-pointer'onClick={toggleDescription} ><ChevronDown/></div> 
             </div>
           </p>
         )}
       </div>
     </div>
-
         </div>
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold">Medical Actions</h2>
-          <ul className="space-y-2 text-sm">
+
+        
+        <div className=" border-2  p-4 max-md:w-full w-[300px] mr-[40px] ">
+          <div className="max-md:flex max-md:items-center max-md:flex-col space-y-4">
+          <h2 className="text-lg font-bold pl-4">Medical Actions</h2>
+          <ul className="space-y-2 max-md:pl-48 text-sm ">
             <li>BERA (Brainstem Evoked Response Audiometry)</li>
             <li>ENT Surgery</li>
             <li>ENT Corpus Alieum Extraction</li>
@@ -156,16 +173,16 @@ Their journey in ENT care has been marked by continuous refinement of skills and
             <li>Trigoplasty</li>
             <li>Hearing Test</li>
           </ul>
-          <Button className="rounded-md w-[200px]">Make Appointments</Button>
+          <Button className="rounded-md w-[200px] ">Make Appointments</Button></div>
         </div>
       </div>
 
       
 
 
-      {/* 
-      <div className="grid grid-cols-3 gap-4 p-6">
-        <div className="col-span-2 space-y-4">
+      
+      <div className="flex flex-row max-md:flex-wrap gap-12 p-6 w-full">
+        <div className="col-span-2 space-y-4 w-1/2 max-md:w-full">
           <h2 className="text-lg font-bold">Practice Experience</h2>
           <div className="space-y-2">
             <Card className="p-4">
@@ -199,6 +216,14 @@ Their journey in ENT care has been marked by continuous refinement of skills and
               </CardContent>
             </Card>
           </div>
+          <div className="flex items-center justify-between">
+            <Button variant="outline" className="rounded-md">Previous</Button>
+            <Button variant="outline" className="rounded-md">Next</Button>
+          </div>
+          </div>
+          
+
+          <div className="col-span-2 space-y-4 w-1/2 max-md:w-full">
           <h2 className="text-lg font-bold">Doctor's Review</h2>
           <div className="space-y-2">
             <Card className="p-4">
@@ -241,35 +266,13 @@ Their journey in ENT care has been marked by continuous refinement of skills and
             </Card>
           </div>
           <div className="flex items-center justify-between">
-            <Button variant="outline">Previous</Button>
-            <div className="flex space-x-1">
-              <Button variant="outline">1</Button>
-              <Button variant="outline">2</Button>
-              <Button variant="outline">3</Button>
-              <span>...</span>
-              <Button variant="outline">9</Button>
-            </div>
-            <Button variant="outline">Next</Button>
+            <Button variant="outline " className="rounded-md">Previous</Button>
+            <Button variant="outline " className="rounded-md">Next</Button>
           </div>
         </div>
-        <div className="space-y-4">
-          <Card className="p-4">
-            <CardContent>
-              <p className="text-sm">Download now and start your search</p>
-              <div className="flex space-x-2 mt-2">
-                <Button variant="outline">
-                  <AppleIcon className="h-6 w-6 mr-1" />
-                  App Store{"\n                          "}
-                </Button>
-                <Button variant="outline">
-                  <PlayIcon className="h-6 w-6 mr-1" />
-                  Google Play{"\n                          "}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>*/}
+        
+        </div> 
+      
 
     </div>
   )

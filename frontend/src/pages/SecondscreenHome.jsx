@@ -6,14 +6,14 @@ const ComponentD = () => {
   return (
     <div className="flex items-center justify-between flex-col bg-white mx-auto">
       <h2 className='text-3xl font-semibold text-gray-800'>Find top specialist doctors here</h2>
-      <div className="overflow-hidden whitespace-nowrap w-full px-4 py-2 rounded-md flex items-center slide-container">
-        <button className="inline-block mr-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 mr-5 w-64 h-24 cursor-pointer">Cardiovascular</button>
-        <button className="inline-block mr-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 mr-5 w-64 h-24 cursor-pointer">Orthopedist</button>
-        <button className="inline-block mr-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 mr-5 w-64 h-24 cursor-pointer">Internist</button>
-        <button className="inline-block mr-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 mr-5 w-64 h-24 cursor-pointer">Pulmonologist</button>
-        <button className="inline-block mr-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 mr-5 w-64 h-24 cursor-pointer">Dentist</button>
+      <div className="overflow-hidden ml-16 whitespace-nowrap w-full px-4 py-2 rounded-md flex items-center slide-container">
+        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Cardiovascular</button>
+        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Orthopedist</button>
+        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Internist</button>
+        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Pulmonologist</button>
+        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Dentist</button>
       </div>
-      <div className="grid lg:grid-cols-3 gap-6 m-5 md:grid-cols-2 gap-6 mx-5 md:mx-0 my-5">
+      <div className="grid lg:grid-cols-3 gap-6 m-5 md:grid-cols-2 mx-5 md:mx-0 my-5">
         {/* doctor components  */}
         <div className="w-full bg-white shadow-md p-6 rounded-md">
           <div className="flex items-center">

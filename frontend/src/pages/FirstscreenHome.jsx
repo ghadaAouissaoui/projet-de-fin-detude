@@ -7,34 +7,34 @@ const Home = () => {
       <div className='w-full bg-white flex flex-col'>
         <div className="flex flex-row pt-10 w-full h-4/5 bg-blue-900 rounded-tl-lg rounded-tr-lg "> 
           <div className='flex pl-8 text-white'>
-            <h1 className="text-3xl font-bold pt-5  pr-2">
+            <h1 className="text-3xl font-bold pt-10  pr-2">
               <span>Book </span><a className='text-sm'>your</a><br />
               <span>appointment</span><br />
               <span >online</span><a className="text-sm "> with</a><span className=""> Visitio</span>
             </h1>
           </div>
-          <div className='flex ml-auto'>
-            <div className="flex justify-center items-center flex-col bg-white bg-opacity-50 h-20 w-1/2 p-4  rounded-lg relative top-[115px] left-[40px]">
-              <span className="text-black-700 text-md w-24">New Users</span>
+          <div className=' m-auto mr-10 max-md:mr-0 max-md:mt-8'>
+            <div className="flex justify-center items-center flex-col bg-white bg-opacity-50 h-20 w-1/6 p-4  rounded-lg absolute top-[230px] right-[380px]  max-md:absolute max-md:top-[200px] ">
+              <a className="text-black-700 text-md w-24 hover:underline"href="#">New Users</a>
               <span className="text-blue-700 text-3xl font-bold w-24">+500</span>
             </div>
-            <div className="hidden sm:block">
+            <div className="hidden sm:block w-[400px]">
               <img
                 alt="Doctor"
                 className="h-72 rounded-lg shadow-lg mr-5"
-                height="400"
+                height="200"
                 src={doctor}
                 style={{
                   aspectRatio: "300/300",
                   objectFit: "cover",
                 }}
-                width="200"
+                width="300"
               />
             </div>
           </div>
         </div>
         <div className='flex flex-row bg-blue-900 rounded-bl-3xl'>
-          <div className="bg-white p-5  rounded-tr-3xl w-1/2 h-36 flex flex-col">
+          <div className="bg-white p-5  rounded-t-3xl rounded-br-2xl w-1/2 h-36 flex flex-col">
             <div>
               <h1 className='font-medium text-black'>Find Your Doctor</h1>
             </div>

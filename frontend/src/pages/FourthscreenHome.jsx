@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { GoArrowUpRight, GoArrowLeft, GoArrowRight } from 'react-icons/go';
-import image from '../images/femaleDoctor.jpg';
+import image from '../images/doc.jpg';
 
 const ComponentQ = () => {
   return (
-    <div className='p-6 flex w-full'>
+    <div className='p-4 flex w-full'>
     <div className="bg-gray-100 flex flex-col  w-full sm:w-auto ">
       
       <section className="bg-[#bebec0] flex flex-col w-full">
-        <div className=" bg-white w-1/3 h-20 rounded-tr-3xl">
+        <div className=" bg-white w-1/3 h-20  rounded-br-3xl">
           <div className="pt-4">
             <span className="text-black font-bold text-2xl pl-9">What Users Say About </span>
             <span className="text-indigo-600 font-bold text-2xl mb-4">Visito</span>
@@ -17,7 +17,7 @@ const ComponentQ = () => {
         <div className="flex items-center justify-between w-full p-6">
           <UserReview
             review="Using Visito was a wonderful experience for me. It has a simple and efficient user interface and I was able to easily book an appointment at the office I wanted at the time I wanted. Also, getting a booking confirmation and reminder before my appointment helped me to always be on time at the office."
-            avatarSrc="/placeholder.svg?height=40&width=40"
+            avatarSrc={image}
             username="Sara Tylor"
             rating={4.5}
           />
@@ -55,42 +55,44 @@ const ComponentQ = () => {
   );
 };
 
-const UserReview = ({ review, avatarSrc, username, rating }) => {
+const UserReview = ({ review, avatarSrc, username, rating, className }) => {
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className={`flex items-center justify-between ${className}`}>
       <div>
-        <div className="flex flex-row mb-4 ">
+        <div className="flex flex-row mb-4">
           <div>
-            <p className="ml-4  text-gray-600">{username}</p>
+            <p className="ml-4 text-gray-600">{username}</p>
           </div>
           <div className="flex items-center ml-3">
             <StarIcon className="text-yellow-400" />
             <span className="ml-1 text-yellow-400">{rating}</span>
           </div>
         </div>
-        <blockquote className="flex ml-4 w-1/2 text-gray-500">"{review}"</blockquote>
-        <div className=' ml-100'>
-          <GoArrowRight className="text-gray-500" />
-          <GoArrowLeft className="text-gray-500" />
+        <blockquote className="flex ml-4 w-1/2 text-gray-700">"{review}"</blockquote>
+        <div className="ml-[30%] flex flex-row gap-8 ">
+          <GoArrowLeft className="text-gray-700" />
+          <GoArrowRight className="text-gray-700" />
         </div>
       </div>
 
-      <div className="flex items-center mx-10 h-80 mr-10">
-        <div className="bg-gray-200 w-48">
-          <a href="#" className="text-gray-700 ml-4 text-sm">
+      <div className="relative flex-row max-md:gap-8 w-full flex max-md:flex-col ">
+        <div className="bg-white bg-opacity-50 w-[300px] pt-2 pl-4 max-md:pl-20 h-[60px] top-[200px] md:relative left-[100px]">
+          <a href="#" className="text-gray-700 ml-1 text-sm hover:underline">
             +500 Users reviews
           </a>
           <br />
-          <a href="#" className="text-gray-700 ml-4 text-sm">
+          <div className='flex flex-row mb-4'>
+          <a href="#" className="text-gray-700 ml-1 text-sm hover:underline">
             see all reviews
           </a>
-          <GoArrowUpRight className="text-gray-700 ml-1 mt-1" />
+          <GoArrowUpRight className="text-gray-700 ml-1 mt-1" /></div>
         </div>
-        <Avatar src={avatarSrc} alt={username} fallbackText={username.substring(0, 2).toUpperCase()} />
+        <Avatar src={avatarSrc} alt={username} fallbackText={username.substring(0, 2).toUpperCase()}  />
       </div>
     </div>
   );
 };
+
 
 const Accordion = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -135,7 +137,7 @@ function Avatar({ src, alt, fallbackText }) {
         <img
           src={src}
           alt={alt}
-          className="flex items-center mx-10 h-80 mr-10"
+          className="flex items-center m-auto w-[500px]"
           onError={(e) => {
             const target = e.target;
             target.src = `https://via.placeholder.com/40?text=${fallbackText}`;
