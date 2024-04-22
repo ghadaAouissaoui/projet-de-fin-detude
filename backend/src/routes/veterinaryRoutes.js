@@ -1,14 +1,17 @@
-const express=require('express')
-const router=express.Router()
+const express = require('express');
+const router = express.Router();
 
-const { protect} = require('../middleware/authmiddleware');
+const { protect } = require('../middleware/authmiddleware');
+const { registerVeterinary, loginVeterinary, getVeto, verifyEmail } = require('../controllers/veterinaryController');
 
-const { registerVeterinary,loginVeterinary,getVeto, verifyEmail}=require('../controllers/veterinaryController')
+// Routes for registering and logging in a veterinarian
+router.post('/signup', registerVeterinary);
+router.post('/login', loginVeterinary);
 
-router.post('/signup', registerVeterinary)
-router.post('/login',loginVeterinary)
-router.get('/verify/:token',verifyEmail)
-router.get('/me',protect,getVeto)
+// Route for verifying email with dynamic user type
+router.get('/:id/verify/:token', verifyEmail);
 
+// Route for getting veterinarian profile
+router.get('/me', protect, getVeto);
 
-module.exports = router
+module.exports = router;

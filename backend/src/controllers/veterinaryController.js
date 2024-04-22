@@ -2,76 +2,70 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const Veterinary = require('../models/veterinaryModel');
-const Token = require('../models/tokenModel')
-const {envoyerVerification }= require('../utils/sendEmail')
+const Token = require('../models/tokenModel');
+const { envoyerVerification } = require('../utils/sendEmail');
 const crypto = require('crypto');
 
-// Fonction pour l'inscription d'un nouveau vétérinaire
+// Function to register a new veterinarian
 const registerVeterinary = asyncHandler(async (req, res) => {
-    const { firstname, lastname, specialite, address, email, password, confirmpassword, role } = req.body;
+    const { fullname, email, specialite, address, datebirth, phoneNumber, password, confirmpassword, role } = req.body;
 
-    // Vérification des champs requis
-    if (!firstname || !lastname || !specialite || !address || !email || !password || !confirmpassword || !role) {
-        res.status(400);
-        throw new Error('Veuillez remplir tous les champs.');
+    // Check if all required fields are provided
+    if (!fullname || !email || !specialite || !address || !datebirth || !phoneNumber || !password || !confirmpassword || !role) {
+        res.status(400).json({ message: 'Veuillez remplir tous les champs.' });
+        return;
     }
 
-    // Vérification si l'email est déjà utilisé
+    // Check if the email is already in use
     const existingVeterinary = await Veterinary.findOne({ email });
-    
     if (existingVeterinary) {
-        res.status(400);
-        throw new Error('Un compte avec cet email existe déjà.');
+        res.status(400).json({ message: 'Un compte avec cet email existe déjà.' });
+        return;
     }
 
-    // Vérification de la correspondance des mots de passe
+    // Check if passwords match
     if (password !== confirmpassword) {
-        res.status(400);
-        throw new Error('Les mots de passe ne correspondent pas.');
+        res.status(400).json({ message: 'Les mots de passe ne correspondent pas.' });
+        return;
     }
 
-    // Hashage du mot de passe
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Génération du token de vérification
-    const verificationToken = crypto.randomBytes(32).toString("hex");
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
 
-    // Création du nouveau vétérinaire avec le rôle
+    // Create the new veterinarian
     const veterinaire = await Veterinary.create({
-        firstname,
-        lastname,
+        fullname,
+        email,
         specialite,
         address,
-        email,
+        datebirth,
+        phoneNumber,
         password: hashedPassword,
         confirmpassword: hashedPassword,
-        role, // Ajoutez le champ role ici
-        verificationToken // Enregistrez le token de vérification dans la base de données
+        role
     });
 
-
-    // Enregistrement du token de vérification dans la base de données
-    const tokenInstance = await Token.create({
+    // Save the verification token
+    await Token.create({
         userId: veterinaire._id,
+        ref:"veterinaire",
         token: verificationToken,
     });
 
-    // Envoi de l'email de vérification
-    const verificationUrl = `${process.env.BASE_URL}/veterinarians/verify/${verificationToken}`;
+    // Send verification email
+    const verificationUrl = `${process.env.BASE_URL}veterinaries/${veterinaire._id}/verify/${verificationToken}`;
     await envoyerVerification(email, verificationUrl);
 
-    // Génération du token JWT pour la réponse
-    const token = generateToken(veterinaire._id);
-
+    // Return success response
     res.status(201).json({
-        _id: veterinaire.id,
-        firstname: veterinaire.firstname,
-        lastname: veterinaire.lastname,
-        specialite: veterinaire.specialite,
-        address: veterinaire.address,
+        fullname: veterinaire.fullname,
         email: veterinaire.email,
         role: veterinaire.role,
-        token,
+        message: "Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre email pour activer votre compte."
+       
     });
 });
 
@@ -115,36 +109,45 @@ const verifyEmail = async (req, res) => {
 // Fonction pour la connexion d'un vétérinaire
 const loginVeterinary = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-
+    
     // Recherche du vétérinaire par email
     const veterinaire = await Veterinary.findOne({ email });
 
     // Vérification si le vétérinaire existe et si le mot de passe est correct
-    if (veterinaire && (await bcrypt.compare(password, veterinaire.password))) {
-      
+    if (user && (await bcrypt.compare(password, veterinaire.password))) {
+        // Vérification de l'email
+        if (!veterinaire.verified) {
+           return res.status(400).json({ message: "Votre compte n'est pas encore vérifié. Veuillez vérifier votre email pour activer votre compte." });
+        }
 
+        // Si l'utilisateur est vérifié, génération du token d'authentification JWT
+        const token = generateToken(veterinaireId);
+        
+        
+        // Envoi des détails de l'utilisateur et du token
         res.json({
             _id: veterinaire.id,
-            firstname: veterinaire.firstname,
-            lastname: veterinaire.lastname,
+            fullname: veterinaire.fullname,
+            email: veterinaire.email,
             specialite: veterinaire.specialite,
             address: veterinaire.address,
-            email: veterinaire.email,
-            token:generateToken(veterinaire._id),
+            datebirth: veterinaire.datebirth,
+            phoneNumber: veterinaire.phoneNumber,
+            token:token
         });
     } else {
-        res.status(401);
-        throw new Error('Email ou mot de passe incorrect.');
+        res.status(400);
+        throw new Error('Informations d\'identification invalides');
     }
 });
 
 
 const getVeto = asyncHandler (async (req,res) =>{
-    const { _id, firstname, email} = await Veterinary.findById(req.veterinaire.id)
+    const { _id, fullname, email} = await Veterinary.findById(req.veterinaire.id)
   
     res.status(200).json({
       id:_id,
-      firstname,
+      fullname,
       email,
     })
       

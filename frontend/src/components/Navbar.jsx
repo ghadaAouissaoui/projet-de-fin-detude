@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useState  } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
-
+  const navigate = useNavigate(); // Initialize useNavigate
+  
+  
   const toggleNavbar = () => {
     setIsNavOpen(!isNavOpen);
   };
+  const handleButtonClick = () => {
+    navigate('/signup'); // Navigate to the specified route when the button is clicked
+    };
+
 
   return (
     <header className="flex items-center max-md:absolute w-full md:h-[80px] justify-between max-md:bg-white px-20 py-5 shadow-lg ">
@@ -55,10 +62,10 @@ const Navbar = () => {
           </a>
 
         <div className="md:absolute flex items-center  right-5 top-4 max-md:p-5">
-          <button className=" bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" href="/signup">
+          <button className=" bg-blue-600 text-white font-bold py-2 px-4 rounded-lg" onClick={handleButtonClick} >
             Register
           </button>
-          <GoArrowUpRight className=" text-blue-600 ml-2 text-2xl cursor-pointer" href="/signup" />
+          <GoArrowUpRight className=" text-blue-600 ml-2 text-2xl cursor-pointer" onClick={handleButtonClick} />
         </div>
         <button
           className="md:hidden p-1 top-[10px]  cursor-pointer bg-transparent border-none outline-none text-gray-800 opacity-1 text-3xl"
@@ -68,6 +75,7 @@ const Navbar = () => {
       </nav>
     </header>
   );
+
 };
 
 export default Navbar;

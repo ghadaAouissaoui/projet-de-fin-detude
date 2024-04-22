@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
+import { useNavigate } from 'react-router-dom';
+
 
 function Avatar({ children, className }) {
   return <div className={className}>{children}</div>;
@@ -42,6 +44,11 @@ export default function Signup() {
   const [confirmpassword, setConfirmPassword] = useState('');
   const [msg, setMsg] = useState('');
   const [emailSent, setEmailSent] = useState(false);
+
+  const navigate = useNavigate(); // Initialize useNavigate
+  const handleButtonClick = () => {
+    navigate('/signupPro'); // Navigate to the specified route when the button is clicked
+    };
 
   const handleChange = ({ target }) => {
     const { id, value } = target;
@@ -115,6 +122,14 @@ export default function Signup() {
       <form className="w-full lg:max-w-[700px] max-w-md" onSubmit={handleSubmit}>
         
         <div className="flex flex-row w-full mb-5">
+        <div className="flex flex-col w-full md:w-1/2 px-3">
+        <Button className="bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md" type="button">User</Button>
+          </div>
+          <div className="flex flex-col w-full md:w-1/2 px-3">
+          <button className="hover:bg-purple-600 bg-gray-400 text-white w-90 ml-1 h-[58px] rounded-md"  onClick={handleButtonClick} >Veterinary</button>
+          </div>
+          </div>
+          <div className="flex flex-row w-full mb-5">
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="fullname">Full Name</Label>
             <Input id="fullname" placeholder="Enter your full name" type="text" value={fullname} onChange={handleChange} />
@@ -154,10 +169,10 @@ export default function Signup() {
           <div  className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="bg-gray-200 text-gray-800 w-full mr-2 h-[58px] rounded-md border-2 border-gray-300 " type="button">Cancel</Button></div>
           <div className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md" type="submit">Confirm</Button></div>
         </div>
-        {emailSent && <p className="w-96 p-4 my-1 text-sm bg-red-600 text-white rounded-lg text-center">{msg}</p>}
+        {emailSent && <p className="w-full p-4 my-1 text-md bg-blue-200 text-white font-bold rounded-lg text-center">{msg}</p>}
         <div className="text-center mt-4">
           <span className="text-sm text-gray-600">Already have an account? </span>
-          <Link className="text-sm text-purple-600 hover:underline" to="login">Login</Link>
+          <Link className="text-sm text-purple-600 hover:underline" to="/login">Login</Link>
         </div>
       </form>
     </div>

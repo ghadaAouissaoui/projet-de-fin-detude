@@ -6,11 +6,11 @@ import success from "../images/success.png";
 const EmailVerify = () => {
   const [validUrl, setValidUrl] = useState(true);
   const param = useParams();
-
+  const userType = "veterinaries"; 
   useEffect(() => {
     const verifyEmailUrl = async () => {
       try {
-        const url = `http://localhost:5000/api/users/${param.id}/verify/${param.token}`; // Fixed the URL format
+        const url = `http://localhost:5000/api/veterinaries/${param.id}/verify/${param.token}`; // Fixed the URL format
         const { data } = await axios.get(url);
         console.log(data);
         setValidUrl(true);

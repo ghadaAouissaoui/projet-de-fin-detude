@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false }))
 
 app.use('/api/users', require('./src/routes/userRoutes'))
-app.use('/api/veterinary', require('./src/routes/veterinaryRoutes'))
+app.use('/api/veterinaries', require('./src/routes/veterinaryRoutes'))
 app.use('/api/veto/secretaire', require('./src/routes/secretaireRoutes'))
 
 

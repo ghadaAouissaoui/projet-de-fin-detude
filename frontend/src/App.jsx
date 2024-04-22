@@ -11,6 +11,7 @@ import Login from './pages/login';
 import EmailVerify from './Verification/emailVerification'
 import Dashboard from './pages/Dashbord';
 import DoctorProfile from './pages/DoctorProfile';
+import SignupPro from './pages/signupPro';
 
 const App = () => {
   return (
@@ -19,9 +20,11 @@ const App = () => {
         <Navbar />
           <Routes>
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
-            <Route path="/signup" element={<Signup />}/>
+            <Route path="/sig" element={<Signup />}/>
+            <Route path="/signupPro" element={<SignupPro />}/>
             <Route path="/login" element={<Login />}/>
             <Route path="/users/:id/verify/:token" element={<EmailVerify />} />
+            <Route path="/veterinaries/:id/verify/:token" element={<EmailVerify />} />
             <Route path="/pro" element={<Dashboard />} />
             <Route path="/doctorprofile" element={<DoctorProfile />} />
           </Routes>

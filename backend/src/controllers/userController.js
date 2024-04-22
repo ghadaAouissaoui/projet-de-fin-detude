@@ -49,6 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // Enregistrement du token de vérification dans la base de données
     const tokenInstance = await Token.create({
         userId: user._id,
+        ref:"user",
         token: verificationToken,
     });
 
