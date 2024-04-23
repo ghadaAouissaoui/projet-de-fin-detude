@@ -73,7 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     const token = req.params.token;
-
+    
     try {
         // Trouver le jeton dans la base de données
         const verificationToken = await Token.findOne({ token });
@@ -103,6 +103,7 @@ const verifyEmail = async (req, res) => {
         return res.status(500).json({ message: "Une erreur s'est produite lors de la vérification de l'email." });
     }
 };
+
 
 
 

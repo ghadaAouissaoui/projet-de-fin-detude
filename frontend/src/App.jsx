@@ -8,7 +8,8 @@ import ComponentF from './pages/ThirdscreenHome';
 import ComponentQ from './pages/FourthscreenHome';
 import Signup from './pages/signup';
 import Login from './pages/login';
-import EmailVerify from './Verification/emailVerification'
+import EmailVerifyVeto from './Verification/emailVerification'
+import EmailVerifyUser from './Verification/verificationEmail'
 import Dashboard from './pages/Dashbord';
 import DoctorProfile from './pages/DoctorProfile';
 import SignupPro from './pages/signupPro';
@@ -20,11 +21,11 @@ const App = () => {
         <Navbar />
           <Routes>
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
-            <Route path="/sig" element={<Signup />}/>
+            <Route path="/signup" element={<Signup />}/>
             <Route path="/signupPro" element={<SignupPro />}/>
             <Route path="/login" element={<Login />}/>
-            <Route path="/users/:id/verify/:token" element={<EmailVerify />} />
-            <Route path="/veterinaries/:id/verify/:token" element={<EmailVerify />} />
+            <Route path="/users/:id/verify/:token" element={<EmailVerifyUser />} />
+            <Route path="/veterinaries/:id/verify/:token" element={<EmailVerifyVeto/> } />
             <Route path="/pro" element={<Dashboard />} />
             <Route path="/doctorprofile" element={<DoctorProfile />} />
           </Routes>

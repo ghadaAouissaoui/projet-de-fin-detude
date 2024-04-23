@@ -6,7 +6,6 @@ const tokenSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref:"",
-        unique: true,
     },
     ref:{
         type:String,

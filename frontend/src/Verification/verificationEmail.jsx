@@ -3,13 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import success from "../images/success.png";
 
-const EmailVerifyVeto = () => {
+const EmailVerifyUser = () => {
   const [validUrl, setValidUrl] = useState(true);
   const param = useParams(); 
   useEffect(() => {
     const verifyEmailUrl = async () => {
       try {
-        const url = `http://localhost:5000/api/veterinaries/${param.id}/verify/${param.token}`; // Fixed the URL format
+        const url = `http://localhost:5000/api/users/${param.id}/verify/${param.token}`; // Fixed the URL format
         const { data } = await axios.get(url);
         console.log(data);
         setValidUrl(true);
@@ -40,4 +40,4 @@ const EmailVerifyVeto = () => {
   );
 };
 
-export default EmailVerifyVeto;
+export default EmailVerifyUser;

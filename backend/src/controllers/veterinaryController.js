@@ -72,7 +72,6 @@ const registerVeterinary = asyncHandler(async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     const token = req.params.token;
-
     try {
         // Trouver le jeton dans la base de données
         const verificationToken = await Token.findOne({ token });
@@ -81,16 +80,16 @@ const verifyEmail = async (req, res) => {
             return res.status(400).json({ message: "Le jeton de vérification n'est pas valide." });
         }
 
-        // Trouver le vétérinaire associé au jeton
-        const veterinaire = await Veterinary.findById(verificationToken.userId);
+        // Trouver l'utilisateur associé au jeton
+        const veterinaire = await Veterinary.findById(verificationToken.veterinaire._id);
 
         if (!veterinaire) {
             return res.status(400).json({ message: "Vétérinaire non trouvé." });
         }
 
-        // Mettre à jour le statut de vérification du vétérinaire
+        // Mettre à jour le statut de vérification de l'utilisateur
         veterinaire.verified = true;
-        await veterinaire.save(); // Enregistrez le vétérinaire dans la base de données après vérification
+        await veterinaire.save();
 
         // Supprimer le jeton de vérification de la base de données en utilisant la méthode removeToken()
         await verificationToken.removeToken();
@@ -108,36 +107,41 @@ const verifyEmail = async (req, res) => {
 
 // Fonction pour la connexion d'un vétérinaire
 const loginVeterinary = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-    
-    // Recherche du vétérinaire par email
-    const veterinaire = await Veterinary.findOne({ email });
+    const { email, password } = req.body; 
 
-    // Vérification si le vétérinaire existe et si le mot de passe est correct
-    if (user && (await bcrypt.compare(password, veterinaire.password))) {
+    try {
+        // Recherche de l'utilisateur dans la base de données
+        const veterinaire = await Veterinary.findOne({ email });
+
+        if (!veterinaire) {
+            throw new Error('Informations d\'identification invalides');
+        }
+
+        // Vérification de l'existence de l'utilisateur et comparaison du mot de passe haché
+        const isPasswordValid = await bcrypt.compare(password, veterinaire.password);
+        
+        if (!isPasswordValid) {
+            throw new Error('Informations d\'identification invalides');
+        }
+
         // Vérification de l'email
         if (!veterinaire.verified) {
-           return res.status(400).json({ message: "Votre compte n'est pas encore vérifié. Veuillez vérifier votre email pour activer votre compte." });
+            return res.status(400).json({ message: "Votre compte n'est pas encore vérifié. Veuillez vérifier votre email pour activer votre compte." });
         }
 
         // Si l'utilisateur est vérifié, génération du token d'authentification JWT
-        const token = generateToken(veterinaireId);
-        
+        const token = generateToken(veterinaire._id);
         
         // Envoi des détails de l'utilisateur et du token
         res.json({
             _id: veterinaire.id,
             fullname: veterinaire.fullname,
             email: veterinaire.email,
-            specialite: veterinaire.specialite,
-            address: veterinaire.address,
-            datebirth: veterinaire.datebirth,
-            phoneNumber: veterinaire.phoneNumber,
-            token:token
+            token: token,
         });
-    } else {
-        res.status(400);
-        throw new Error('Informations d\'identification invalides');
+    } catch (error) {
+        console.error('Erreur lors de la connexion du vétérinaire:', error.message);
+        res.status(400).json({ message: 'Informations d\'identification invalides' });
     }
 });
 

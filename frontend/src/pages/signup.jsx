@@ -87,7 +87,7 @@ export default function Signup() {
       confirmpassword
     };
     try {
-      const url = "http://localhost:5000/api/users";
+      const url = "http://localhost:5000/api/users/signup";
       const response = await axios.post(url, data);
       console.log("Response from backend:", response);
       if (response.status === 201) {

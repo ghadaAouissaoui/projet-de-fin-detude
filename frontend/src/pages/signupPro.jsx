@@ -101,15 +101,23 @@ function Button({ className, children, type, onClick }) {
         confirmpassword,
         role: role // Assign selected role
       };
+    
       try {
-        const url = "http://localhost:5000/api/veterinaries/signup";
-        const response = await axios.post(url, data);
+        const url = "http://localhost:5000/api/veterinaries/signuppro";
+        const response = await axios.post(url, JSON.stringify(data), {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+    
+        // Gérer la réponse de la requête
         console.log("Response from backend:", response);
         if (response.status === 201) {
           setEmailSent(true);
           setMsg("Registration successful. Check your email for verification instructions.");
         }
       } catch (error) {
+        // Gérer les erreurs
         if (error.response) {
           console.error('Server Error:', error.response.data);
           setMsg("Server Error. Please try again later.");
@@ -137,7 +145,7 @@ function Button({ className, children, type, onClick }) {
               <Button className={`hover:bg-purple-600 bg-gray-400 text-white w-90 ml-1 h-[58px] rounded-md`} onClick={handleButtonClick}>User</Button>
             </div>
             <div className="flex flex-col w-full md:w-1/2 px-3">
-              <Button className={`bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md`} >Veterinary</Button>
+              <Button className={`bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md`}  onClick={handleClick}>Veterinary</Button>
             </div>
           </div>
           <div className="flex flex-row w-full mb-5">
