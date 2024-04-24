@@ -1,8 +1,28 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
+import axios from 'axios'; // Import axios library
 import doctor from '../images/doctor.png';
 import { GoArrowUpRight } from 'react-icons/go';
+import { Link } from 'react-router-dom';
 
 const ComponentD = () => {
+
+  const [veterinarians, setVeterinarians] = useState([]);
+
+  useEffect(() => {
+    const fetchVeterinarians = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/veterinaries/me');
+        setVeterinarians(response.data);
+      } catch (error) {
+        console.error('Error fetching veterinarians data:', error);
+      }
+    };
+
+    fetchVeterinarians();
+  }, []);
+  console.log(veterinarians);
+
+
   return (
     <div className="flex items-center justify-between flex-col bg-white mx-auto">
       <h2 className='text-3xl font-semibold text-gray-800'>Find top specialist doctors here</h2>
@@ -14,168 +34,51 @@ const ComponentD = () => {
         <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Dentist</button>
       </div>
       <div className="grid lg:grid-cols-3 gap-6 m-5 md:grid-cols-2 mx-5 md:mx-0 my-5">
-        {/* doctor components  */}
-        <div className="w-full bg-white shadow-md p-6 rounded-md">
-          <div className="flex items-center">
-            <img
-              className="w-28 h-28 rounded-full"
-              src={doctor}
-              alt="Dr. Luke Willson"
-            />
-            <div className="flex flex-row">
-              <div>
-                <h3>Dr. Luke Willson</h3>
-                <p>Cardiac Surgeon</p>
-                <p>466 Oak Street Road, Your City, 16001</p>
-              </div>
-              <div className="flex items-center mb-20">
-                <StarIcon className="w-4 h-4 text-yellow-400" />
-                <span className="ml-1 text-blue-700">4.9</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
-           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
-            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="/doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
-            </div>
-          </div>
-        </div>
-        <div className="w-full bg-white shadow-md p-6 rounded-md">
-          <div className="flex items-center">
-            <img
-              className="w-28 h-28 rounded-full"
-              src={doctor}
-              alt="Dr. Luke Willson"
-            />
-            <div className="flex flex-row">
-              <div>
-                <h3>Dr. Luke Willson</h3>
-                <p>Cardiac Surgeon</p>
-                <p>466 Oak Street Road, Your City, 16001</p>
-              </div>
-              <div className="flex items-center mb-20">
-                <StarIcon className="w-4 h-4 text-yellow-400" />
-                <span className="ml-1 text-blue-700">4.9</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
-           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
-            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="#">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
-            </div>
-          </div>
-        </div><div className="w-full bg-white shadow-md p-6 rounded-md">
-          <div className="flex items-center">
-            <img
-              className="w-28 h-28 rounded-full"
-              src={doctor}
-              alt="Dr. Luke Willson"
-            />
-            <div className="flex flex-row">
-              <div>
-                <h3>Dr. Luke Willson</h3>
-                <p>Cardiac Surgeon</p>
-                <p>466 Oak Street Road, Your City, 16001</p>
-              </div>
-              <div className="flex items-center mb-20">
-                <StarIcon className="w-4 h-4 text-yellow-400" />
-                <span className="ml-1 text-blue-700">4.9</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
-           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
-            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
-            </div>
-          </div>
-        </div><div className="w-full bg-white shadow-md p-6 rounded-md">
-          <div className="flex items-center">
-            <img
-              className="w-28 h-28 rounded-full"
-              src={doctor}
-              alt="Dr. Luke Willson"
-            />
-            <div className="flex flex-row">
-              <div>
-                <h3>Dr. Luke Willson</h3>
-                <p>Cardiac Surgeon</p>
-                <p>466 Oak Street Road, Your City, 16001</p>
-              </div>
-              <div className="flex items-center mb-20">
-                <StarIcon className="w-4 h-4 text-yellow-400" />
-                <span className="ml-1 text-blue-700">4.9</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
-           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
-            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
-            </div>
-          </div>
-        </div><div className="w-full bg-white shadow-md p-6 rounded-md">
-          <div className="flex items-center">
-            <img
-              className="w-28 h-28 rounded-full"
-              src={doctor}
-              alt="Dr. Luke Willson"
-            />
-            <div className="flex flex-row">
-              <div>
-                <h3>Dr. Luke Willson</h3>
-                <p>Cardiac Surgeon</p>
-                <p>466 Oak Street Road, Your City, 16001</p>
-              </div>
-              <div className="flex items-center mb-20">
-                <StarIcon className="w-4 h-4 text-yellow-400" />
-                <span className="ml-1 text-blue-700">4.9</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
-           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
-            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
-            </div>
-          </div>
-        </div><div className="w-full bg-white shadow-md p-6 rounded-md">
-          <div className="flex items-center">
-            <img
-              className="w-28 h-28 rounded-full"
-              src={doctor}
-              alt="Dr. Luke Willson"
-            />
-            <div className="flex flex-row">
-              <div>
-                <h3>Dr. Luke Willson</h3>
-                <p>Cardiac Surgeon</p>
-                <p>466 Oak Street Road, Your City, 16001</p>
-              </div>
-              <div className="flex items-center mb-20">
-                <StarIcon className="w-4 h-4 text-yellow-400" />
-                <span className="ml-1 text-blue-700">4.9</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
-           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
-            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-              <a href="doctorprofile">Doctor Profile</a><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
-            </div>
-          </div>
-        </div>
 
+
+          {veterinarians.map((vet, index) => (
+          <div key={index} className="w-full bg-white shadow-md p-6 rounded-md">
+            <div className="flex items-center">
+              <img
+                className="w-28 h-28 rounded-full"
+                src={doctor}
+                alt={vet.fullname} // Utilize the veterinarian's name as an alternative to the image
+              />
+              <div className="flex flex-row ml-4">
+                <div>
+                  <h3>{vet.fullname}</h3>
+                  <p>{vet.specialite}</p>
+               < div>
+                  <p >{vet.rue}</p>
+                  <p>{vet.city}</p>
+                  <p >{vet.postalCode}</p>
+                  </div>
+                </div>
+                </div>
+                <div className="flex items-center mb-20">
+                  <StarIcon className="w-4 h-4 text-yellow-400" />
+                  <span className="ml-1 text-blue-700">4.9</span>
+                
+              </div>
+            </div>
+
+            
+            <div className="flex justify-between mt-4 w-full">
+            <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
+           <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
+            <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
+            <Link to={`/doctorprofile/${vet.veterinaireId}`}>Doctor Profile</Link><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+            </div>
+          </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default ComponentD;
-
-export const StarIcon = (props) => {
+const StarIcon = (props) => {
   return (
     <svg
       {...props}
@@ -193,3 +96,5 @@ export const StarIcon = (props) => {
     </svg>
   );
 };
+
+export default ComponentD;

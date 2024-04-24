@@ -19,6 +19,23 @@ const veterinarySchema = mongoose.Schema(
             required: true,
         },
         address: {
+            type: {
+                rue: {
+                    type: String,
+                    required: true,
+                },
+                city: {
+                    type: String,
+                    required: true,
+                },
+                postalCode: {
+                    type: String,
+                    required: true,
+                },
+            },
+            required: true,
+        },
+        nomCabinet: {
             type: String,
             required: true,
         },

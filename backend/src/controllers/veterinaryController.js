@@ -8,13 +8,16 @@ const crypto = require('crypto');
 
 // Function to register a new veterinarian
 const registerVeterinary = asyncHandler(async (req, res) => {
-    const { fullname, email, specialite, address, datebirth, phoneNumber, password, confirmpassword, role } = req.body;
+    const { fullname, email, specialite, address,  nomCabinet, datebirth, phoneNumber, password, confirmpassword, role } = req.body;
 
-    // Check if all required fields are provided
-    if (!fullname || !email || !specialite || !address || !datebirth || !phoneNumber || !password || !confirmpassword || !role) {
-        res.status(400).json({ message: 'Veuillez remplir tous les champs.' });
-        return;
-    }
+// Check if all required fields are provided
+if (!fullname || !email || !specialite || !address || !nomCabinet || !datebirth || !phoneNumber || !password || !confirmpassword ||  !role) {
+    res.status(400).json({ message: 'Veuillez remplir tous les champs.' });
+    return;
+}
+
+// Destructure l'objet address
+const { rue, city, postalCode } = address;
 
     // Check if the email is already in use
     const existingVeterinary = await Veterinary.findOne({ email });
@@ -40,7 +43,12 @@ const registerVeterinary = asyncHandler(async (req, res) => {
         fullname,
         email,
         specialite,
-        address,
+        address:{
+            rue,
+            city,
+            postalCode,
+        },
+        nomCabinet,
         datebirth,
         phoneNumber,
         password: hashedPassword,
@@ -81,7 +89,7 @@ const verifyEmail = async (req, res) => {
         }
 
         // Trouver l'utilisateur associé au jeton
-        const veterinaire = await Veterinary.findById(verificationToken.veterinaire._id);
+        const veterinaire = await Veterinary.findById(verificationToken.userId);
 
         if (!veterinaire) {
             return res.status(400).json({ message: "Vétérinaire non trouvé." });
@@ -146,16 +154,49 @@ const loginVeterinary = asyncHandler(async (req, res) => {
 });
 
 
-const getVeto = asyncHandler (async (req,res) =>{
-    const { _id, fullname, email} = await Veterinary.findById(req.veterinaire.id)
-  
-    res.status(200).json({
-      id:_id,
-      fullname,
-      email,
-    })
-      
-  })
+const getVeto = asyncHandler(async (req, res) => {
+    const veterinarians = await Veterinary.find();
+
+    // Map through the array of veterinarians to extract necessary data
+    const mappedVeterinarians = veterinarians.map(vet => ({
+        veterinaireId:vet._id,
+        fullname: vet.fullname,
+    specialite: vet.specialite,
+    // Add conditional check for the existence of the address object
+    rue: vet.address.rue, // If address exists, get rue, otherwise set it to an empty string
+    city: vet.address.city, // If address exists, get city, otherwise set it to an empty string
+    postalCode:vet.address.postalCode, // If address exists, get postalCode, otherwise set it to an empty string
+    }));
+
+    res.status(200).json(mappedVeterinarians);
+});
+
+
+
+
+const getVeterinarianById = async (req, res) => {
+    const veterinarianId = req.params.id;
+
+    try {
+        // Query your database to find the veterinarian profile by ID
+        const veterinarian = await Veterinary.findById(veterinarianId);
+
+        if (!veterinarian) {
+            // If veterinarian is not found, return 404 Not Found response
+            return res.status(404).json({ message: 'Veterinarian not found' });
+        }
+
+        // If veterinarian is found, return the profile data
+        res.json(veterinarian);
+    } catch (error) {
+        // If an error occurs, return 500 Internal Server Error response
+        console.error('Error fetching veterinarian profile:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+
 
 // Fonction pour générer le token JWT
 const generateToken = (id) => {
@@ -171,4 +212,5 @@ module.exports = {
     loginVeterinary,
     getVeto,
     verifyEmail,
+    getVeterinarianById,
 };

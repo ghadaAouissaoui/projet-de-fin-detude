@@ -18,15 +18,16 @@ function Label({ htmlFor, children }) {
   );
 }
 
-function Input({ id, placeholder, type, value, onChange }) {
+function Input({ id, placeholder, type, value, onChange, ...props }) {
   return (
     <input
+    {...props}
       id={id}
       placeholder={placeholder}
       type={type}
       value={value}
       onChange={onChange}
-      className="border-2 border-gray-300 rounded-md p-2 h-[58px]"
+      className={`border-2 border-gray-300 rounded-md p-2 h-[58px] ${props.className}`}
     />
   );
 }
@@ -39,7 +40,10 @@ function Button({ className, children, type, onClick }) {
     const [fullname, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [specialite, setSpecialite] = useState('');
-    const [address, setAddresse] = useState('');
+    const [rue, setRue] = useState('');
+    const [city, setCity] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [nomCabinet, setNomCabinet] = useState('');
     const [datebirth, setDateBirth] = useState(null);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
@@ -64,9 +68,18 @@ function Button({ className, children, type, onClick }) {
         case 'specialite':
           setSpecialite(value);
           break;
-        case 'address':
-          setAddresse(value);
-          break;
+          case 'rue':
+            setRue(value);
+            break;
+          case 'city':
+            setCity(value);
+            break;
+          case 'postalCode':
+            setPostalCode(value);
+            break;
+          case 'nomCabinet':
+            setNomCabinet(value);
+            break;
         case 'datebirth':
           setDateBirth(value);
           break;
@@ -94,7 +107,12 @@ function Button({ className, children, type, onClick }) {
         fullname,
         email,
         specialite,
-        address,
+        address: {
+          rue,
+          city,
+          postalCode,
+        },
+        nomCabinet,
         datebirth,
         phoneNumber,
         password,
@@ -162,25 +180,39 @@ function Button({ className, children, type, onClick }) {
         <div className="flex flex-row w-full mb-5">
               <div className="flex flex-col w-full md:w-1/2 px-3">
                 <Label htmlFor="specialite">Speciality</Label>
-                <Input
-                  id="specialite"
-                  placeholder="Enter your speciality"
-                  type="text"
-                  value={specialite}
-                  onChange={handleChange}
-                />
+                <Input id="specialite"  placeholder="Enter your speciality" type="text" value={specialite}  onChange={handleChange} />
               </div>
+
               <div className="flex flex-col w-full md:w-1/2 px-3">
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  placeholder="Enter your addrees "
-                  type="text"
-                  value={address}
-                  onChange={handleChange}
-                />
-              </div>
+            <Label htmlFor="rue">Street</Label>
+            <Input id="rue" placeholder="Enter your street" type="text" value={rue} onChange={handleChange} />
+              </div>   
+          </div>
+           
+          <div className="flex flex-row w-full mb-5 ">
+          
+           <div className='flex   md:w-1/2 w-1/2 '>
+          
+          
+                  <div className="flex flex-col md:w-1/2 w-[30%]">
+                    <Label htmlFor="city">City</Label>
+                    <Input id="city" placeholder="Enter your city" type="text" value={city} onChange={handleChange} className="border-2 rounded-none " />
+                  </div>
+                  <div className="flex flex-col md:w-1/2 w-[30%] ">
+                  <Label htmlFor="postalCode">Postal Code</Label>
+                    <Input id="postalCode" placeholder="Enter your postal code" type="text" value={postalCode} onChange={handleChange} className="border-2 rounded-none"/>
+                  </div>
+        
             </div>
+
+
+            <div className="flex flex-col md:w-full  w-1/2 px-3 ">
+            <Label htmlFor="nomCabinet">Cabinet Name</Label>
+            <Input id="nomCabinet" placeholder="Enter the name of your cabinet" type="text" value={nomCabinet} onChange={handleChange} />
+          </div>
+
+
+        </div>
 
         <div className="flex flex-row w-full mb-5">
           <div className="flex flex-col w-full md:w-1/2 px-3">

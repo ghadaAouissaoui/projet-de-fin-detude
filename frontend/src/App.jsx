@@ -27,7 +27,7 @@ const App = () => {
             <Route path="/users/:id/verify/:token" element={<EmailVerifyUser />} />
             <Route path="/veterinaries/:id/verify/:token" element={<EmailVerifyVeto/> } />
             <Route path="/pro" element={<Dashboard />} />
-            <Route path="/doctorprofile" element={<DoctorProfile />} />
+            <Route path="/doctorprofile/:id" element={<DoctorProfile />} />
           </Routes>
         <Footer />
       </>
