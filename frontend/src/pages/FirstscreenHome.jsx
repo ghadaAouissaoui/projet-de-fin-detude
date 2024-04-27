@@ -33,8 +33,8 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className='flex flex-row bg-blue-900 rounded-bl-3xl'>
-          <div className="bg-white p-5  rounded-t-3xl rounded-br-2xl w-1/2 h-36 flex flex-col">
+        <div className='flex flex-row bg-blue-900 '>
+          <div className="bg-white p-5  rounded-tr-3xl  w-1/2 h-36 flex flex-col">
             <div>
               <h1 className='font-medium text-black'>Find Your Doctor</h1>
             </div>

@@ -8,42 +8,39 @@ const crypto = require('crypto');
 
 // Function to register a new veterinarian
 const registerVeterinary = asyncHandler(async (req, res) => {
-    const { fullname, email, specialite, address,  nomCabinet, datebirth, phoneNumber, password, confirmpassword, role } = req.body;
+    const { fullname, email, specialite, address, nomCabinet, datebirth, phoneNumber, password, confirmpassword, role } = req.body;
 
-// Check if all required fields are provided
-if (!fullname || !email || !specialite || !address || !nomCabinet || !datebirth || !phoneNumber || !password || !confirmpassword ||  !role) {
-    res.status(400).json({ message: 'Veuillez remplir tous les champs.' });
-    return;
-}
+    // Vérification des champs requis
+    if (!fullname || !email || !specialite || !address || !nomCabinet || !datebirth || !phoneNumber || !password || !confirmpassword || !role) {
+        res.status(400).json({ message: 'Veuillez remplir tous les champs.' });
+        return;
+    }
 
-// Destructure l'objet address
-const { rue, city, postalCode } = address;
+    // Destructuration de l'objet address
+    const { rue, city, postalCode } = address;
 
-    // Check if the email is already in use
+    // Vérification si l'email est déjà utilisé
     const existingVeterinary = await Veterinary.findOne({ email });
     if (existingVeterinary) {
         res.status(400).json({ message: 'Un compte avec cet email existe déjà.' });
         return;
     }
 
-    // Check if passwords match
+    // Vérification de la correspondance des mots de passe
     if (password !== confirmpassword) {
         res.status(400).json({ message: 'Les mots de passe ne correspondent pas.' });
         return;
     }
 
-    // Hash the password
+    // Hashage du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-
-    // Create the new veterinarian
+    // Création du nouveau vétérinaire
     const veterinaire = await Veterinary.create({
         fullname,
         email,
         specialite,
-        address:{
+        address: {
             rue,
             city,
             postalCode,
@@ -56,26 +53,28 @@ const { rue, city, postalCode } = address;
         role
     });
 
-    // Save the verification token
+    const token=generateToken(veterinaire._id);
+
+    // Sauvegarde du token de vérification
     await Token.create({
         userId: veterinaire._id,
-        ref:"veterinaire",
-        token: verificationToken,
+        ref: "veterinaire",
+        token: token,
     });
 
-    // Send verification email
-    const verificationUrl = `${process.env.BASE_URL}veterinaries/${veterinaire._id}/verify/${verificationToken}`;
+    // Envoi de l'email de vérification
+    const verificationUrl = `${process.env.BASE_URL}veterinaries/${veterinaire._id}/verify/${token}`;
     await envoyerVerification(email, verificationUrl);
 
-    // Return success response
+    // Réponse avec succès
     res.status(201).json({
         fullname: veterinaire.fullname,
         email: veterinaire.email,
         role: veterinaire.role,
         message: "Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre email pour activer votre compte."
-       
     });
 });
+
 
 
 const verifyEmail = async (req, res) => {
@@ -122,14 +121,14 @@ const loginVeterinary = asyncHandler(async (req, res) => {
         const veterinaire = await Veterinary.findOne({ email });
 
         if (!veterinaire) {
-            throw new Error('Informations d\'identification invalides');
+            throw new Error('veterinaire n\'existe pas');
         }
 
         // Vérification de l'existence de l'utilisateur et comparaison du mot de passe haché
         const isPasswordValid = await bcrypt.compare(password, veterinaire.password);
         
         if (!isPasswordValid) {
-            throw new Error('Informations d\'identification invalides');
+            throw new Error('mot de passe invalide');
         }
 
         // Vérification de l'email
@@ -145,7 +144,7 @@ const loginVeterinary = asyncHandler(async (req, res) => {
             _id: veterinaire.id,
             fullname: veterinaire.fullname,
             email: veterinaire.email,
-            token: token,
+            token: token
         });
     } catch (error) {
         console.error('Erreur lors de la connexion du vétérinaire:', error.message);
@@ -154,48 +153,96 @@ const loginVeterinary = asyncHandler(async (req, res) => {
 });
 
 
-const getVeto = asyncHandler(async (req, res) => {
-    const veterinarians = await Veterinary.find();
 
-    // Map through the array of veterinarians to extract necessary data
-    const mappedVeterinarians = veterinarians.map(vet => ({
-        veterinaireId:vet._id,
-        fullname: vet.fullname,
-    specialite: vet.specialite,
-    // Add conditional check for the existence of the address object
-    rue: vet.address.rue, // If address exists, get rue, otherwise set it to an empty string
-    city: vet.address.city, // If address exists, get city, otherwise set it to an empty string
-    postalCode:vet.address.postalCode, // If address exists, get postalCode, otherwise set it to an empty string
-    }));
-
-    res.status(200).json(mappedVeterinarians);
-});
-
-
-
-
-const getVeterinarianById = async (req, res) => {
-    const veterinarianId = req.params.id;
-
+async function getAllVet(req, res) {
     try {
-        // Query your database to find the veterinarian profile by ID
-        const veterinarian = await Veterinary.findById(veterinarianId);
-
-        if (!veterinarian) {
-            // If veterinarian is not found, return 404 Not Found response
-            return res.status(404).json({ message: 'Veterinarian not found' });
+        const vets = await Veterinary.find();
+        if (vets.length > 0) {
+            return res.status(200).json(vets);
+        } else {
+            return res.status(404).send('No Vets found');
         }
-
-        // If veterinarian is found, return the profile data
-        res.json(veterinarian);
     } catch (error) {
-        // If an error occurs, return 500 Internal Server Error response
-        console.error('Error fetching veterinarian profile:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).send(error.message);
     }
-};
+}
 
 
+async function getOneVet(req, res) {
+    try {
+        const veterinaire = await Veterinary.findById(req.params.id);
+        if (veterinaire) {
+            return res.status(200).json(veterinaire);
+        } else {
+            return res.status(404).send('Veterinary not found');
+        }
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+/*async function createVet(req, res) {
+    try {
+        const vet = await Veterinary.create(req.body);
+        return res.status(200).json({ message: 'Vet created', vet });
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}*/
+
+async function updateVet(req, res) {
+    try {
+        const vet = await Veterinary.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (vet) {
+            return res.status(200).json({ message: 'Vet updated', vet });
+        } else {
+            return res.status(404).send('Vet not found');
+        }
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+async function deleteVet(req, res) {
+    try {
+        const vet = await Veterinary.findByIdAndDelete(req.params.id);
+        if (vet) {
+            return res.status(200).json('Vet deleted');
+        } else {
+            return res.status(404).send('Vet not found');
+        }
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+
+async function getVetProfile(req, res) {
+    try {
+       
+
+        const veterinaire = await Veterinary.findById(req.params.id, {
+            _id: 1,
+            fullname: 1,
+            email: 1,
+            specialite: 1,
+            address: 1,
+            nomCabinet: 1,
+            datebirth: 1,
+            phoneNumber: 1,
+            profile_picture: 1,
+            verified: 1,
+            role: 1
+        });
+        if (veterinaire) {
+            return res.status(200).json({ veterinaire });
+        } else {
+            return res.status(404).json({ message: "Vet not found" });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 
 
 // Fonction pour générer le token JWT
@@ -210,7 +257,11 @@ const generateToken = (id) => {
 module.exports = {
     registerVeterinary,
     loginVeterinary,
-    getVeto,
+    getOneVet,
+    getAllVet,
     verifyEmail,
-    getVeterinarianById,
+    deleteVet,
+    updateVet,
+    
+    getVetProfile,
 };

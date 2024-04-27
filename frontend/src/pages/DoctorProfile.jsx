@@ -1,7 +1,9 @@
 import React from "react";
-import { useState } from "react";
 import image from "../images/doc.jpg";
 import fond from "../images/2.jpeg";
+import { useState, useEffect} from "react";
+import { useParams } from "react-router-dom";
+import Axios from "axios";
 // Avatar component
 export const Avatar = ({ children }) => {
     return <div className="flex items-center space-x-4">{children}</div>;
@@ -82,11 +84,81 @@ export const Card = ({ children, className }) => {
 
 
 export default function DoctorProfile() {
+  const { vetId } = useParams();
     const [showFullDescription, setShowFullDescription] = useState(false);
 
     const toggleDescription = () => {
       setShowFullDescription(!showFullDescription);
+
     };
+
+    const [vetProfile, setVetProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+  
+    useEffect(() => {
+      const fetchVetProfile = async () => {
+        try {
+          const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
+          setVetProfile(response.data.veterinaire);
+          setLoading(false);
+        } catch (error) {
+          console.error("Une erreur s'est produite lors de la récupération du profil du vétérinaire :", error);
+          setLoading(false);
+        }
+      };
+  
+      fetchVetProfile();
+    }, [vetId]);
+
+
+
+     // Render description paragraph based on editing mode and full description state
+  const renderDescription = () => {
+    if (isEditing) {
+      return (
+        <textarea
+          value={vetProfile.description}
+          onChange={handleDescriptionChange}
+          rows={5}
+          className="w-full p-2 border rounded-md"
+        />
+      );
+    } else if (showFullDescription) {
+      return (
+        <p>{vetProfile?.description}</p>
+      );
+    } else {
+      return (
+        <p>{vetProfile?.description.substring(0, 3)}...</p>
+      );
+    }
+  };
+
+  const [medicalActions, setMedicalActions] = useState(null);
+
+  const handleMedicalActionsChange = (event) => {
+    setMedicalActions(event.target.value);
+  };
+  const renderEditingControls = () => {
+    if (vetProfile && vetProfile.role === "veterinaire") {
+      return (
+        <div>
+          {/* Implement avatar upload functionality */}
+          <div>
+  <textarea
+    value={medicalActions}
+    onChange={handleMedicalActionsChange}
+    rows={4}
+    cols={30}
+  />
+</div>
+          <Button onClick={toggleEditing}>Edit Description</Button>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="bg-white mb-10 ">
@@ -98,8 +170,8 @@ export default function DoctorProfile() {
       <div className="flex flex-row gap-8 max-md:gap-4 max-md:flex-wrap px-6">
         <div className="col-span-2 space-y-4">
           <div className="flex items-center space-x-4">           
-              <h1 className="text-xl font-semibold">Rayna Westervelt M.Psi</h1>
-              <p className="text-sm font-semibold text-gray-500">ENT Doctor</p>
+              <h1 className="text-xl font-semibold">{vetProfile?.fullname}</h1>
+              <p className="text-sm font-semibold text-gray-500">{vetProfile?.specialite}</p>
               <p className="mt-1 text-sm text-gray-500">Full-time</p>
               <div className="flex items-center mt-1 space-x-2">
                 <Badge variant="secondary">250k - 350k</Badge>

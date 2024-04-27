@@ -40,7 +40,18 @@ const userSchema = mongoose.Schema({
     verified: {
         type: Boolean,
         default: false,
-    }
+    },
+    role: {
+        type: String,
+        enum: ['admin', 'veterinaire', 'user'],
+        required: true,
+        validate: {
+            validator: function(value) {
+                return ['admin', 'veterinaire', 'user'].includes(value);
+            },
+            message: 'Valid role only admin, personnel, or user',
+        },
+    },
 }, {
     timestamps: true,
 });

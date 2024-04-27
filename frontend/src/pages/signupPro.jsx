@@ -1,6 +1,7 @@
 import React, { useState} from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import TextField from '@mui/material/TextField';
 import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
 import { useNavigate } from 'react-router-dom';
@@ -217,12 +218,13 @@ function Button({ className, children, type, onClick }) {
         <div className="flex flex-row w-full mb-5">
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="datebirth">Date of Birth</Label>
-            <DatePicker 
+            <TextField type='date'></TextField>
+           {/* <DatePicker 
               selected={datebirth} 
               onChange={(date) => setDateBirth(date)} 
               className="border-2 border-gray-300 rounded-md p-2 h-[58px] md:w-full px-3" 
               
-            />
+            />*/}
           </div>
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="phoneNumber">Phone Number</Label>

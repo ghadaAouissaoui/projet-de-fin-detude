@@ -13,6 +13,9 @@ import EmailVerifyUser from './Verification/verificationEmail'
 import Dashboard from './pages/Dashbord';
 import DoctorProfile from './pages/DoctorProfile';
 import SignupPro from './pages/signupPro';
+import AboutUs from './components/Aboutus';
+import ContactUs from './components/Contactus';
+import Services from './components/Getservices';
 
 const App = () => {
   return (
@@ -21,13 +24,16 @@ const App = () => {
         <Navbar />
           <Routes>
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
+            <Route path="/aboutus" element={<AboutUs />}/>
+            <Route path="/contactus" element={<ContactUs />}/>
+            <Route path="/services" element={<Services />}/>
             <Route path="/signup" element={<Signup />}/>
             <Route path="/signupPro" element={<SignupPro />}/>
             <Route path="/login" element={<Login />}/>
             <Route path="/users/:id/verify/:token" element={<EmailVerifyUser />} />
             <Route path="/veterinaries/:id/verify/:token" element={<EmailVerifyVeto/> } />
-            <Route path="/pro" element={<Dashboard />} />
-            <Route path="/doctorprofile/:id" element={<DoctorProfile />} />
+            <Route path="/pro/:vetId" element={<Dashboard />} />
+            <Route path="/doctorprofile/:vetId" element={<DoctorProfile />} />
           </Routes>
         <Footer />
       </>

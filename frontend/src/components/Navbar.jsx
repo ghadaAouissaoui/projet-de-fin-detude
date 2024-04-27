@@ -43,20 +43,20 @@ const Navbar = () => {
           </a>
 
           <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group
-          max-md:p-5" href="/#">
+          max-md:p-5" href="/">
             Find Doctor
             <span className="absolute  -left-[0px]  block w-0 h-[2px] bg-[#6799fc] transition-all duration-300 ease-in-out group-hover:w-[60px] max-md:group-hover:left-5"></span>
           </a>
           <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group
-          max-md:p-5" href="/#">
+          max-md:p-5" href="/services">
             Services
             <span className="absolute  -left-[0px]  block w-0 h-[2px] bg-[#6799fc] transition-all duration-300 ease-in-out group-hover:w-[60px] max-md:group-hover:left-5"></span>
           </a>
-          <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group max-md:p-5" href="/#">
+          <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group max-md:p-5" href="/aboutus">
             About Us
             <span className="absolute  -left-[0px]  block w-0 h-[2px] bg-[#6799fc] transition-all duration-300 ease-in-out group-hover:w-[60px] max-md:group-hover:left-5"></span>
           </a>
-          <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group max-md:p-5" href="/#">
+          <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group max-md:p-5" href="/contactus">
             Contact Us
             <span className="absolute -left-[0px]  block w-0 h-[2px] bg-[#6799fc] transition-all duration-300 ease-in-out group-hover:w-[60px] max-md:group-hover:left-5"></span>
           </a>

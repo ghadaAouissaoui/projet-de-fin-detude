@@ -12,7 +12,7 @@ export default function Login() {
     e.preventDefault();
   
     try {
-      const responseUser = await axios.post("http://localhost:5000/api/users", {
+      const responseUser = await axios.post("http://localhost:5000/api/users/loginUser", {
         email,
         password
       });
@@ -23,12 +23,12 @@ export default function Login() {
         console.log('User data:', userData);
   
         // Redirection en fonction du type d'utilisateur
-        if (userData.role === "veterinarian") {
+        if (userData.role === "veterinaire") {
           console.log('Redirection vers /pro');
-          navigate("/pro", { state: { id: userData._id } });
+          navigate(`/pro/${userData._id}`);
         } else {
           console.log('Redirection vers /espaceclient');
-          navigate("/espaceclient", { state: { id: userData._id } });
+          navigate(`/espaceclient/${userData._id}`);
         }
       } else {
         // Code d'état autre que 200 (par exemple 400)
@@ -36,20 +36,21 @@ export default function Login() {
       }
     } catch (error) {
       console.error('Login error for user:', error.message);
+      
       try {
-        const responseVet = await axios.post("http://localhost:5000/api/veterinaries", {
+        const responseVet = await axios.post("http://localhost:5000/api/veterinaries/loginVeto", {
           email,
           password
         });
   
         if (responseVet.status === 200) {
           // Succès de la connexion pour un vétérinaire
-          const vetData = responseVet.data;
-          console.log('Veterinarian data:', vetData);
+          const vet = responseVet.data;
+          console.log('Veterinarian data:', vet);
   
           // Redirection vers /pro
           console.log('Redirection vers /pro');
-          navigate("/pro", { state: { id: vetData._id } });
+          navigate(`/pro/${vet._id}`);
         } else {
           // Code d'état autre que 200 (par exemple 400)
           throw new Error(responseVet.data.message);
@@ -76,9 +77,9 @@ export default function Login() {
               Login to your account below
             </p>
           </div>
-          <div className="my-6">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 px-4 rounded">
-              <ChromeIcon className="w-4 h-4 mr-2" />
+          <div className="my-6 ">
+            <button className=" bg-blue-500 hover:bg-blue-600 text-white w-full py-2 px-4 rounded">
+              <ChromeIcon className="w-4 h-4 mr-2 mt-2" />
               Continue with Google
             </button>
           </div>

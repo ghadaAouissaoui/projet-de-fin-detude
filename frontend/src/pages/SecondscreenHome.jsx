@@ -11,7 +11,7 @@ const ComponentD = () => {
   useEffect(() => {
     const fetchVeterinarians = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/veterinaries/me');
+        const response = await axios.get('http://localhost:5000/api/veterinaries');
         setVeterinarians(response.data);
       } catch (error) {
         console.error('Error fetching veterinarians data:', error);
@@ -21,8 +21,6 @@ const ComponentD = () => {
     fetchVeterinarians();
   }, []);
   console.log(veterinarians);
-
-
   return (
     <div className="flex items-center justify-between flex-col bg-white mx-auto">
       <h2 className='text-3xl font-semibold text-gray-800'>Find top specialist doctors here</h2>
@@ -38,20 +36,20 @@ const ComponentD = () => {
 
           {veterinarians.map((vet, index) => (
           <div key={index} className="w-full bg-white shadow-md p-6 rounded-md">
-            <div className="flex items-center">
+            <div className="flex">
               <img
                 className="w-28 h-28 rounded-full"
                 src={doctor}
                 alt={vet.fullname} // Utilize the veterinarian's name as an alternative to the image
               />
-              <div className="flex flex-row ml-4">
-                <div>
-                  <h3>{vet.fullname}</h3>
+              <div className="flex flex-row ml-4 ">
+                <div className='mt-4 '>
+                  <h3 className='pt-8'>{vet.fullname}</h3>
                   <p>{vet.specialite}</p>
                < div>
-                  <p >{vet.rue}</p>
-                  <p>{vet.city}</p>
-                  <p >{vet.postalCode}</p>
+                  <p >{vet.address.rue}</p>
+                  <p>{vet.address.city}</p>
+                  <p >{vet.address.postalCode}</p>
                   </div>
                 </div>
                 </div>
@@ -67,7 +65,7 @@ const ComponentD = () => {
             <div className="flex justify-between mt-4 w-full lg:flex-row md:flex-col sm:flex-col">
            <div className='lg:w-1/2  items-center md:w-full md:m-1 sm:w-full sm:m-1'> <button className="bg-blue-600 h-12 flex justify-center pt-2 text-white rounded-md w-full">Book Appointment</button></div>
             <div className=' lg:w-1/2 md:w-full md:m-1 sm:w-full border-2 border-blue-500 flex items-center justify-center h-12 rounded-md cursor-pointer mx-1'>
-            <Link to={`/doctorprofile/${vet.veterinaireId}`}>Doctor Profile</Link><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
+            <Link to={`/doctorprofile/${vet._id}`}>Doctor Profile</Link><GoArrowUpRight className="ml-1 text-blue-600 text-2xl" />
             </div>
           </div>
             </div>

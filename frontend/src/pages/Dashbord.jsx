@@ -1,6 +1,8 @@
 import React from "react";
-import { useState } from 'react'; 
+import { useState ,useEffect } from 'react'; 
 import { Link, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
+import Axios from "axios";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg'
 
@@ -95,7 +97,48 @@ export const Card = ({ children, className }) => {
   
 
 export default function Dashboard() {
+  const { vetId } = useParams();
+  const [vetProfile, setVetProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+
+  useEffect(() => {
+    const fetchVetProfile = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
+        setVetProfile(response.data.veterinaire);
+        setLoading(false);
+      } catch (error) {
+        console.error("Une erreur s'est produite lors de la récupération du profil du vétérinaire :", error);
+        setLoading(false);
+      }
+    };
+
+    fetchVetProfile();
+  }, [vetId]);
+
+
+  const handleClick = async (event) => {
+    event.preventDefault(); // Prevent default action of navigating to the URL
+
+    const fetchVetProfile = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
+        setVetProfile(response.data.veterinaire);
+        setLoading(false);
+      } catch (error) {
+        console.error("An error occurred while fetching veterinarian profile:", error);
+        setLoading(false);
+      }
+    };
+
+    try {
+      fetchVetProfile(); // Call the fetchVetProfile function defined within handleClick
+    } catch (error) {
+      console.error("An error occurred while fetching veterinarian profile:", error);
+    }
+  };
+  
   // Initialize state for the date with current date
   const [date, setDate] = useState(new Date());
 
@@ -106,7 +149,6 @@ export default function Dashboard() {
     setDate(newDate);
   };
 
-  
 
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -123,86 +165,123 @@ export default function Dashboard() {
     navigate(`/page-${newPage}`);
   };
 
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleLogout = () => {
+    // Show confirmation dialog
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmLogout = () => {
+    // Clear token from local storage
+    localStorage.removeItem('token');
+    
+    // Navigate to the home page
+    navigate('/');
+  };
+
+  const handleCancelLogout = () => {
+    // Hide confirmation dialog
+    setShowConfirmation(false);
+  };
 
   return (
     <div className="flex w-full bg-gray-100">
-      <aside className="md:w-1/4 lg:w-1/6 p-6  bg-white">
+      <aside className="md:w-1/4 lg:w-1/6 py-4  bg-white">
         <div className="flex flex-col items-center space-x-4">
         <Avatar>
             <AvatarImage alt="Profile picture" src={Doctor} className='h-12 w-12 rounded-full' />
           </Avatar>
           <div className="text-center">
-          <h3 className="text-lg font-bold">Dr. Elmira Elahi, DMD</h3>
-            <p className="text-sm text-gray-500">Primary care doctor</p>
+          {vetProfile && (
+              
+              <Link to={`/doctorprofile/${vetProfile._id}`}> <h3 className="text-lg font-bold hover:underline">{vetProfile.fullname}</h3> </Link>
+            )}
+            <p className="text-sm text-gray-500">{vetProfile?.specialite}</p>
           </div>
         </div>
 
                { /*sidebarr*/ }
-        <nav className="mt-8">
-          <ul className="space-y-4">
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="/dashbord">
+        <nav className="mt-8 ">
+          <ul className="space-y- w-full m-0">
+            <li className="bg-blue-100 hover:bg-blue-100  w-full h-full font-semibold">
+            {vetProfile && (
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 border-r-4 border-[#dc6a07] border-solid" to={`/pro/${vetProfile._id}`}>
                 <HomeIcon className="h-5 w-5" />
                 <span>Dashboard</span>
-              </Link>
+              </Link>)}
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="/inbox">
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700  pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="/inbox">
                 <InboxIcon className="h-5 w-5" />
                 <span>Inbox</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="/appointment">
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="/appointment">
                 <CalendarIcon className="h-5 w-5" />
                 <span>Appointment</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="/patients">
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="/patients">
                 <UserEtoileIcon className="h-5 w-5" />
                 <span>Patients</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="settings">
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="settings">
                 <ClipboardListIcon className="h-5 w-5" />
                 <span>Clinic Settings</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="ptomotions">
+           {/*  <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="ptomotions">
                 <SpeakerIcon className="h-5 w-5" />
                 <span>Promotions</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" to="featured">
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="featured">
                 <StarIcon className="h-5 w-5" />
                 <span>Get Featured</span>
               </Link>
-            </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" href="#">
+            </li>*/}
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" href="#">
                 <UserPlusIcon className="h-5 w-5" />
                 <span>Add User</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" href="#">
+            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
+              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" href="#">
                 <TextIcon className="h-5 w-5" />
                 <span>Reviews</span>
               </Link>
             </li>
-            <li>
-              <Link className="flex items-center space-x-3 text-gray-700" href="#">
-                <LogOutIcon className="h-5 w-5" />
-                <span>Logout</span>
-              </Link>
-            </li>
+            {/* Logout button */}
+      <li className="hover:bg-blue-100 w-full h-full font-semibold">
+        <div className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" onClick={handleLogout}>
+          <LogOutIcon className="h-5 w-5" />
+          <span>Logout</span>
+        </div>
+      </li>
+
+      {/* Confirmation dialog */}
+      {showConfirmation && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+            <p className="mb-4">Are you sure you want to log out?</p>
+            <div className="flex justify-center">
+              <button className="bg-red-500 text-white px-4 py-2 mr-2 rounded" onClick={handleConfirmLogout}>Yes</button>
+              <button className="bg-gray-500 text-white px-4 py-2 ml-2 rounded" onClick={handleCancelLogout}>No</button>
+            </div>
+          </div>
+        </div>
+      )}
           </ul>
         </nav>
-        <div className="mt-auto text-xs text-gray-400 pt-[250px]">© 2024 All Rights Reserved.</div>
+        <div className="mt-auto text-xs text-gray-400 pt-8">© 2024 All Rights Reserved.</div>
       </aside>
 
 
@@ -622,9 +701,9 @@ function SpeakerIcon(props) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+      <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
       <circle cx="12" cy="14" r="4" />
-      <line x1="12" x2="12.01" y1="6" y2="6" />
+      <line x1="12" y1="6" x2="12.01" y2="6" />
     </svg>
   )
 }
@@ -695,23 +774,23 @@ function UserPlusIcon(props) {
 }
 
 function UserEtoileIcon(props) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" 
-        width="24" height="24" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        stroke-width="2" 
-        stroke-linecap="round" 
-        stroke-linejoin="round" 
-        class="feather feather-activity">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-    )
-  }
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" 
+      width="24" height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className="feather feather-activity">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>
+  )
+}
 
 
 

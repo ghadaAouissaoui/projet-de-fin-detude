@@ -4,6 +4,7 @@ const { errorHandler } = require("../backend/src/middleware/errorMiddleware")
 const connectDB=require('./src/config/db')
 const dotenv=require("dotenv").config()
 const cors = require('cors');
+const { protect } = require("./src/middleware/authmiddleware")
 const port = process.env.PORT || 5000
 
 connectDB()
@@ -17,6 +18,9 @@ app.use(express.urlencoded({extended: false }))
 app.use('/api/users', require('./src/routes/userRoutes'))
 app.use('/api/veterinaries', require('./src/routes/veterinaryRoutes'))
 app.use('/api/veto/secretaire', require('./src/routes/secretaireRoutes'))
+app.use('api/treatment',protect, require('./src/routes/treatmentRoutes'))
+app.use('api/appointment', protect,require('./src/routes/appointmentRoutes'))
+app.use('api/pet',protect, require('./src/routes/petsRoutes'))
 
 
 app.use(errorHandler)

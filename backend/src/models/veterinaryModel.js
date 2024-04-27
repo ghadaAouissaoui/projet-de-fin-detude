@@ -51,7 +51,12 @@ const veterinarySchema = mongoose.Schema(
         },
         phoneNumber: {
             type: String,
-            required: true,
+            validate: {
+                validator: function(v) {
+                    return v.length <= 15;
+                },
+                message: props => `${props.value} exceeds the maximum length of 15 characters!`
+            }
         },
         password: {
             type: String,
@@ -72,6 +77,11 @@ const veterinarySchema = mongoose.Schema(
             enum: ['veterinaire', 'administrateur'],
             default: 'veterinaire'
         },
+        
+
+        profile_picture: String,
+        description:String,
+
         verified: {
             type: Boolean,
             default: false

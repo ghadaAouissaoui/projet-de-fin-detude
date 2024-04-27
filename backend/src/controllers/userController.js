@@ -44,7 +44,8 @@ const registerUser = asyncHandler(async (req, res) => {
         datebirth,
         phoneNumber,
         password: hashedPassword,
-        confirmpassword: hashedPassword
+        confirmpassword: hashedPassword,
+        role: 'user' //Default role for users
     });
     // Enregistrement du token de vérification dans la base de données
     const tokenInstance = await Token.create({
@@ -61,6 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json({
         fullname,
         email,
+        role,
         message: "Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre email pour activer votre compte."
     });
 
@@ -151,9 +153,253 @@ const generateToken = (id) => {
 };
 
 
+
+
+
+// Route handler function to get all users
+const getAllUsers = async (req, res) => {
+    try {
+        // Query the database for all users, excluding the password field
+        const users = await User.find({}, { password: 0 });
+
+        // Check if users were found
+        if (users.length > 0) {
+            // Return the users in the response
+            res.status(200).json(users);
+        } else {
+            // If no users were found, return a 404 status with an error message
+            res.status(404).json({ message: 'No users found' });
+        }
+    } catch (error) {
+        // If an error occurs during the database query, return a 500 status with the error message
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Route handler function to get all owners
+const getAllOwners = async (req, res) => {
+    try {
+        // Query the database for all users with the role 'user', including their associated pets
+        const owners = await User.find({ role: 'user' }).populate('pets', '-password');
+
+        // Check if owners were found
+        if (owners.length > 0) {
+            // Return the owners in the response
+            res.status(200).json(owners);
+        } else {
+            // If no owners were found, return a 404 status with an error message
+            res.status(404).json({ message: 'No owners found' });
+        }
+    } catch (error) {
+        // If an error occurs during the database query, return a 500 status with the error message
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+// Route handler function to get the user's own profile
+const getOwnProfile = async (req, res) => {
+    try {
+        // Query the database for the user based on the logged-in user's ID
+        const user = await User.findById(res.locals.user.id).populate('pets');
+
+        // Check if the user was found
+        if (user) {
+            // Create a message for the user
+            const message = `Hi ${user.first_name}!, this is your profile and the clinic history of your pets.`;
+
+            // Return the user's profile and pets in the response
+            res.status(200).json({ message, user });
+        } else {
+            // If the user was not found, return a 404 status with an error message
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        // If an error occurs during the database query, return a 500 status with the error message
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+// Route handler function to get a specific user by their ID
+const getOneUser = async (req, res) => {
+    try {
+        // Query the database for the user based on the provided user ID
+        const user = await User.findById(req.params.userId).select('-password');
+
+        // Check if the user was found
+        if (user) {
+            // If the user is found, return the user object in the response
+            res.status(200).json(user);
+        } else {
+            // If the user was not found, return a 404 status with an error message
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        // If an error occurs during the database query, return a 500 status with the error message
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+// Route handler function to update a user by their ID
+const updateUser = async (req, res) => {
+    try {
+        // Update the user based on the provided user ID and request body
+        const user = await User.findByIdAndUpdate(req.params.userId, req.body, { new: true });
+
+        // Check if the user was updated successfully
+        if (user) {
+            // If the user is updated successfully, return a success message along with the updated user object
+            res.status(200).json({ message: 'User updated', user: user });
+        } else {
+            // If the user was not found, return a 404 status with an error message
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        // If an error occurs during the database operation, return a 500 status with the error message
+        res.status(500).send(error.message);
+    }
+};
+
+
+
+// Route handler function to update an owner by their ID
+async function updateOwner(req, res) {
+    try {
+        const { userId } = req.params;
+        const { role } = req.body;
+
+        // Check if the provided role is 'user'
+        if (role !== 'user') {
+            return res.status(401).send('User not authorized to update this user');
+        }
+
+        // Update the owner based on the provided user ID
+        const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true });
+
+        // If the owner is not found
+        if (!updatedUser) {
+            return res.status(404).send('User not found');
+        }
+
+        // If the owner is updated successfully and the role remains 'user'
+        return res.status(200).json({ message: 'Owner updated', user: updatedUser });
+    } catch (error) {
+        // If an error occurs during the database operation
+        return res.status(500).send(error.message);
+    }
+}
+
+
+
+// Route handler function to update the authenticated user's profile
+async function updateOwnUser(req, res) {
+    try {
+        const { id } = res.locals.user; // Assuming the user ID is stored in res.locals.user
+
+        // Update the authenticated user's profile based on their ID
+        const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true });
+
+        // If the user is found and updated successfully
+        if (updatedUser) {
+            return res.status(200).json({ message: 'User updated', user: updatedUser });
+        } else {
+            // If the user is not found
+            return res.status(404).send('User not found');
+        }
+    } catch (error) {
+        // If an error occurs during the database operation
+        return res.status(500).send(error.message);
+    }
+}
+
+
+
+
+// Function to delete a user by ID
+async function deleteUser(req, res) {
+    try {
+        // Extract the user ID from the request parameters
+        const { userId } = req.params;
+
+        // Delete the user by ID
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        // If the user is found and deleted successfully
+        if (deletedUser) {
+            return res.status(200).send('User deleted');
+        } else {
+            // If the user is not found
+            return res.status(404).send('User not found');
+        }
+    } catch (error) {
+        // If an error occurs during the database operation
+        return res.status(500).send(error.message);
+    }
+}
+
+// Function to delete a user by ID if the user has the role 'user'
+async function deleteOwner(req, res) {
+    try {
+        // Extract the user ID from the request parameters
+        const { userId } = req.params;
+
+        // Find and delete the user by ID and role 'user'
+        const deletedUser = await User.findOneAndDelete({ _id: userId, role: 'user' });
+
+        // If the user is found and deleted successfully
+        if (deletedUser) {
+            return res.status(200).send('User deleted');
+        } else {
+            // If the user is not found or not authorized to delete this user
+            return res.status(404).send('User not found or not authorized to delete this user');
+        }
+    } catch (error) {
+        // If an error occurs during the database operation
+        return res.status(500).send(error.message);
+    }
+}
+
+// Function to delete the authenticated user's own profile
+async function deleteOwnUser(req, res) {
+    try {
+        const { id } = res.locals.user; // Assuming the user ID is stored in res.locals.user
+
+        // Delete the authenticated user's own profile based on their ID
+        const deletedUser = await User.findByIdAndDelete(id);
+
+        // If the user is found and deleted successfully
+        if (deletedUser) {
+            return res.status(200).send('User deleted');
+        } else {
+            // If the user is not found
+            return res.status(404).send('User not found');
+        }
+    } catch (error) {
+        // If an error occurs during the database operation
+        return res.status(500).send(error.message);
+    }
+}
+
+
+
+
+
 module.exports = {
     registerUser,
     loginUser,
     verifyEmail,
+    getAllUsers,
+	getOwnProfile,
+	getAllOwners,
+	getOneUser,
+	updateUser,
+	updateOwner,
+	updateOwnUser,
+	deleteUser,
+	deleteOwner,
+	deleteOwnUser
 };
 
