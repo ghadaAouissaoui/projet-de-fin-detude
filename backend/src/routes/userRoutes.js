@@ -25,7 +25,7 @@ router.get('/:id/verify/:token', verifyEmail)
 
 router.get('/',checkAdmin,getAllUsers)
 router.get('/owner',checkVet, getAllOwners)
-router.get('/profile', getOwnProfile)
+router.get('/profile/:id', getOwnProfile)
 router.get('/:userId', getOneUser)
 router.put('/:userId', checkAdmin, updateUser)
 router.put('/owner/:userId', checkVet, updateOwner)

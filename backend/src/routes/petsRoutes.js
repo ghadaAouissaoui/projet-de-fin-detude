@@ -1,5 +1,7 @@
-const router = require('express').Router()
-const { checkAdmin, checkVet } = require("../middleware/authmiddleware");
+const express = require('express');
+const router = express.Router();
+
+const { checkAdmin, checkVet,protect } = require("../middleware/authmiddleware");
 
 const {
     getAllPets,
@@ -8,20 +10,21 @@ const {
     createPetProfile,
     createPetPersonnel,
     updatePet,
+  
     addPetToUser,
     deletePet } = require('../controllers/petsController')
 
-router.get('/me', getOwnerPet)
-router.get('/', getAllPets)
+router.get('/owner', getOwnerPet)
+
 router.get('/:petId', checkVet, getOnePet)
 
 
-router.post('/profile', createPetProfile)
-router.post('/:userId',checkVet, createPetPersonnel)
+router.post('/:id', createPetProfile)
+router.post('/',protect,checkVet('veterinaire'), createPetPersonnel)
 
 router.put('/:petId', checkVet, updatePet)
 router.put('/:petId/:userId', checkVet, addPetToUser)
 
 router.delete('/:petId', checkVet, deletePet)
 
-module.exports = router
+module.exports = router;

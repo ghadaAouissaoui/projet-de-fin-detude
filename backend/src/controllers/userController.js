@@ -201,12 +201,12 @@ const getAllOwners = async (req, res) => {
 const getOwnProfile = async (req, res) => {
     try {
         // Query the database for the user based on the logged-in user's ID
-        const user = await User.findById(res.locals.user.id).populate('pets');
+        const user = await User.findById(req.params.id).populate('pets');
 
         // Check if the user was found
         if (user) {
             // Create a message for the user
-            const message = `Hi ${user.first_name}!, this is your profile and the clinic history of your pets.`;
+            const message = `Hi ${user.fullname}!, this is your profile and the clinic history of your pets.`;
 
             // Return the user's profile and pets in the response
             res.status(200).json({ message, user });

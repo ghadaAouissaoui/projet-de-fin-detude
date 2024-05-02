@@ -5,9 +5,8 @@ const petSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    datebirth: {
+    dateOfBirth: {
         type: Date,
-        required: true,
         validate: {
             validator: function(value) {
                 return value instanceof Date && !isNaN(value);
@@ -15,15 +14,25 @@ const petSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid date!`
         }
     },
-
-    chip_num: Number,
+    chipNumber: Number,
     species: String,
     breed: String,
     sex: String,
-    profile_picture: String,
-    comments: String
+    profilePicture: String,
+    comments: String,
+    medicalHistory: String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'// Assuming your user model is named 'User'
+    },
+    appointments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment'
+    }]
+},{
+    timestamps:true,
 });
 
-const Pets = mongoose.model('Pets', petSchema);
+const Pet = mongoose.model('Pet', petSchema);
 
-module.exports = Pets;
+module.exports = Pet;

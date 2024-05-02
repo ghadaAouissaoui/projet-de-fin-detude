@@ -2,27 +2,32 @@ const mongoose = require('mongoose');
 
 // Define appointment schema
 const appointmentSchema = new mongoose.Schema({
+    pet:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Pet",
+        required:true
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    treatments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Treatment'
+    }],
     appointment_date: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v) {
-                return /\d{4}-\d{2}-\d{2}/.test(v);
-            },
-            message: props => `${props.value} is not a valid date format (YYYY-MM-DD)!`
-        }
     },
     appointment_time: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v) {
-                return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
-            },
-            message: props => `${props.value} is not a valid time format (HH:MM)!`
-        }
     },
-    description: String,
+    reason: String,
+    veterinaire:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Veterinary'
+    },
     duration: {
         type: String,
         validate: {

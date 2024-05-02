@@ -77,6 +77,7 @@ const veterinarySchema = mongoose.Schema(
             enum: ['veterinaire', 'administrateur'],
             default: 'veterinaire'
         },
+       
         
 
         profile_picture: String,
@@ -86,6 +87,10 @@ const veterinarySchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
+        user: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }]
     },
     {
         timestamps: true,

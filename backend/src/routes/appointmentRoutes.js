@@ -1,6 +1,6 @@
 const router = require('express').Router()
 
-const { checkAdmin , checkVet} = require("../middleware/authmiddleware");
+const { checkAdmin , checkVet,protect} = require("../middleware/authmiddleware");
 
 const {
     getAllAppointments,
@@ -13,13 +13,13 @@ const {
     updateAppointment,
     deleteAppointment } = require('../controllers/appointmentController')
 
-    router.get('/', checkVet, getAllAppointments)
+    router.get('/', getAllAppointments)
     router.get('/:appointmentId', checkVet,getOneAppointment)
-    router.get('/vet/:vetId',checkVet, getVetAppointments)
+    router.get('/vet/:vetId', getVetAppointments)
     router.get ('/owner/appointments', getPetAppointments)
     router.get('/owner/available',getAvailableAppointments)
 
-    router.post('/:vetId', checkVet,createAppointment)
+    router.post('/:vetId',createAppointment)
 
     router.put('/:appointmentId',checkVet, updateAppointment)  
     router.put('/book/:appointmentId', bookAppointment)

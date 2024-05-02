@@ -12,6 +12,9 @@ const tokenSchema = new Schema({
         required:true,
     },
     token: { type: String, required: true },
+    role:{ type: String,
+        enum: ['veterinaire', 'user'] // Les valeurs autorisées pour le rôle
+    },
     createdAt: { type: Date, default: Date.now, expires: '24h' },
 });
 

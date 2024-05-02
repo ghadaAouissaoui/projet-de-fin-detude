@@ -16,9 +16,14 @@ import SignupPro from './pages/signupPro';
 import AboutUs from './components/Aboutus';
 import ContactUs from './components/Contactus';
 import Services from './components/Getservices';
+import Appointment from './pages/Appointments';
+import Inbox from './pages/Inbox';
+import Patient from './pages/Patients';
+import Adding from './pages/AddUser';
 
 const App = () => {
   return (
+    <>
     <Router>
       <>
         <Navbar />
@@ -33,11 +38,15 @@ const App = () => {
             <Route path="/users/:id/verify/:token" element={<EmailVerifyUser />} />
             <Route path="/veterinaries/:id/verify/:token" element={<EmailVerifyVeto/> } />
             <Route path="/pro/:vetId" element={<Dashboard />} />
+            <Route path="/pro/appointment/:vetId" element={<Appointment />} />
+            <Route path="/pro/inbox/:vetId" element={<Inbox />} />
+            <Route path="/pro/patients/:vetId" element={<Patient/>} />
+            <Route path="/pro/adding/:vetId" element={<Adding/>} />
             <Route path="/doctorprofile/:vetId" element={<DoctorProfile />} />
           </Routes>
         <Footer />
       </>
-    </Router>
+    </Router></>
   );
 };
 

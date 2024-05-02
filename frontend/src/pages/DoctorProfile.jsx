@@ -31,14 +31,7 @@ export const Input = (props) => {
     );
   };
 
-  // Card component
-export const Card = ({ children, className }) => {
-    return (
-      <div className={`bg-white p-4 shadow rounded-lg ${className}`}>
-        {children}
-      </div>
-    );
-  };
+
 
   function Badge({ children, variant }) {
     return (
@@ -65,6 +58,14 @@ export const Card = ({ children, className }) => {
     );
   }
   
+    // Card component
+export const Card = ({ children, className }) => {
+  return (
+    <div className={`bg-white p-4 shadow rounded-lg ${className}`}>
+      {children}
+    </div>
+  );
+};
   function CardTitle({ children }) {
     return <h3 className="text-lg font-bold mb-4">{children}</h3>;
   }

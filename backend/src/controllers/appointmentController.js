@@ -6,7 +6,7 @@ const Treatment = require('../models/treatmentModel');
 
 async function getAllAppointments(req, res) {
     try {
-        const appointments = await Appointment.find(req.query).populate('veterinaire').populate('pet');
+        const appointments = await Appointment.find(req.query).populate('pet');
         if (appointments.length > 0) {
             return res.status(200).json(appointments);
         } else {
@@ -118,24 +118,36 @@ async function bookAppointment(req, res) {
     }
 }
 
-async function createAppointment(req, res) {
+
+async function createAppointment (req, res) {
     try {
+        const vetId = req.params.vetId;
+        const { petName, appointmentDate, appointmentTime, reason } = req.body;
+
+        // Rechercher l'animal par son nom
+        const pet = await Pets.findOne({ name: petName });
+        if (!pet) {
+            return res.status(404).json({ message: 'Animal not found' });
+        }
+
+        // Créer le rendez-vous
         const appointment = new Appointment({
-            appointment_date: req.body.appointment_date,
-            appointment_time: req.body.appointment_time,
-            duration: req.body.duration
+            pet: pet._id,
+            appointment_date: appointmentDate,
+            appointment_time: appointmentTime,
+            reason: reason
         });
 
-        const user = await User.findById(req.params.vetId);
-        appointment.vet = user;
-
+        // Enregistrer le rendez-vous
         await appointment.save();
 
-        return res.status(200).json({ message: 'Appointment created', appointment });
+        return res.status(200).json({ message: 'Appointment created successfully', appointment });
     } catch (error) {
-        return res.status(500).send(error.message);
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
+
 
 async function updateAppointment(req, res) {
     try {

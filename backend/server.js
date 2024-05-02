@@ -18,9 +18,9 @@ app.use(express.urlencoded({extended: false }))
 app.use('/api/users', require('./src/routes/userRoutes'))
 app.use('/api/veterinaries', require('./src/routes/veterinaryRoutes'))
 app.use('/api/veto/secretaire', require('./src/routes/secretaireRoutes'))
-app.use('api/treatment',protect, require('./src/routes/treatmentRoutes'))
-app.use('api/appointment', protect,require('./src/routes/appointmentRoutes'))
-app.use('api/pet',protect, require('./src/routes/petsRoutes'))
+app.use('/api/treatment',protect, require('./src/routes/treatmentRoutes'))
+
+app.use('/api/pet', require('./src/routes/petsRoutes'))
 
 
 app.use(errorHandler)

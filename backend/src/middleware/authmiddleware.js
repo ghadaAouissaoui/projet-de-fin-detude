@@ -10,6 +10,7 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       // Obtenez le jeton à partir de l'en-tête
       token = req.headers.authorization.split(' ')[1];
+      
       // Vérifiez le jeton
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       

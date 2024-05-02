@@ -1,4 +1,4 @@
-import React, { useState  } from "react";
+import React, { useState, useEffect } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
@@ -6,18 +6,33 @@ import { useNavigate } from 'react-router-dom';
 const Navbar = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
-  
-  
+
   const toggleNavbar = () => {
     setIsNavOpen(!isNavOpen);
   };
+
   const handleButtonClick = () => {
     navigate('/signup'); // Navigate to the specified route when the button is clicked
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const navbar = document.getElementById("navbar");
+      if (navbar) {
+        if (window.scrollY > navbar.offsetHeight) {
+          navbar.classList.add("fixed");
+        } else {
+          navbar.classList.remove("fixed");
+        }
+      }
     };
 
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="flex items-center max-md:absolute w-full md:h-[80px] justify-between max-md:bg-white px-20 py-5 shadow-lg ">
+    <header id="navbar" className="flex items-center max-md:absolute w-full md:h-[80px] justify-between bg-white px-20 py-5  bg-fixed table-fixed top-0 z-50">
       <div>
         <h3 className="font-bold">LOGO</h3>
       </div>
@@ -35,9 +50,9 @@ const Navbar = () => {
       >
         {/* Your navigation links */}
         <div className="max-md:flex  max-md:flex-col w-full max-md:p-5  flex flex-row ">
-        <a className="relative mx-4 text-md font-semibold no-underline 
-          transition duration-300 ease-in-out hover:text-blue-500 group
-          max-md:p-5" href="/" >
+          <a className="relative mx-4 text-md font-semibold no-underline 
+            transition duration-300 ease-in-out hover:text-blue-500 group
+            max-md:p-5" href="/" >
             Home
             <span className="absolute  right-[20px] -left-[0px] md:group-hover:w-[100%] block w-[60%] h-[2px] bg-[#6799fc] max-md:left-[20px] max-md:w-[30%] max-md:h-[2px]"></span>
           </a>

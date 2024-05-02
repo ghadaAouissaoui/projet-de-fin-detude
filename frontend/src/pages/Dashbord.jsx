@@ -5,6 +5,7 @@ import { useParams} from "react-router-dom";
 import Axios from "axios";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg'
+import Sidebar from "./Sidebare";
 
    // Avatar component
    export const Avatar = ({ children }) => {
@@ -187,102 +188,9 @@ export default function Dashboard() {
 
   return (
     <div className="flex w-full bg-gray-100">
-      <aside className="md:w-1/4 lg:w-1/6 py-4  bg-white">
-        <div className="flex flex-col items-center space-x-4">
-        <Avatar>
-            <AvatarImage alt="Profile picture" src={Doctor} className='h-12 w-12 rounded-full' />
-          </Avatar>
-          <div className="text-center">
-          {vetProfile && (
-              
-              <Link to={`/doctorprofile/${vetProfile._id}`}> <h3 className="text-lg font-bold hover:underline">{vetProfile.fullname}</h3> </Link>
-            )}
-            <p className="text-sm text-gray-500">{vetProfile?.specialite}</p>
-          </div>
-        </div>
-
-               { /*sidebarr*/ }
-        <nav className="mt-8 ">
-          <ul className="space-y- w-full m-0">
-            <li className="bg-blue-100 hover:bg-blue-100  w-full h-full font-semibold">
-            {vetProfile && (
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 border-r-4 border-[#dc6a07] border-solid" to={`/pro/${vetProfile._id}`}>
-                <HomeIcon className="h-5 w-5" />
-                <span>Dashboard</span>
-              </Link>)}
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700  pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="/inbox">
-                <InboxIcon className="h-5 w-5" />
-                <span>Inbox</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="/appointment">
-                <CalendarIcon className="h-5 w-5" />
-                <span>Appointment</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="/patients">
-                <UserEtoileIcon className="h-5 w-5" />
-                <span>Patients</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="settings">
-                <ClipboardListIcon className="h-5 w-5" />
-                <span>Clinic Settings</span>
-              </Link>
-            </li>
-           {/*  <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="ptomotions">
-                <SpeakerIcon className="h-5 w-5" />
-                <span>Promotions</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="featured">
-                <StarIcon className="h-5 w-5" />
-                <span>Get Featured</span>
-              </Link>
-            </li>*/}
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" href="#">
-                <UserPlusIcon className="h-5 w-5" />
-                <span>Add User</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" href="#">
-                <TextIcon className="h-5 w-5" />
-                <span>Reviews</span>
-              </Link>
-            </li>
-            {/* Logout button */}
-      <li className="hover:bg-blue-100 w-full h-full font-semibold">
-        <div className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" onClick={handleLogout}>
-          <LogOutIcon className="h-5 w-5" />
-          <span>Logout</span>
-        </div>
-      </li>
-
-      {/* Confirmation dialog */}
-      {showConfirmation && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75 z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
-            <p className="mb-4">Are you sure you want to log out?</p>
-            <div className="flex justify-center">
-              <button className="bg-red-500 text-white px-4 py-2 mr-2 rounded" onClick={handleConfirmLogout}>Yes</button>
-              <button className="bg-gray-500 text-white px-4 py-2 ml-2 rounded" onClick={handleCancelLogout}>No</button>
-            </div>
-          </div>
-        </div>
-      )}
-          </ul>
-        </nav>
-        <div className="mt-auto text-xs text-gray-400 pt-8">© 2024 All Rights Reserved.</div>
-      </aside>
+      <div className="max-md:w-1/3 w-1/5 top-20 ">
+        <Sidebar />
+      </div>
 
 
       <main className="flex-1 p-6 w-2/3">
@@ -303,6 +211,9 @@ export default function Dashboard() {
         </div>
 
 
+        
+        
+        
         <div className="grid grid-cols-3 gap-6 mt-6">
           <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
             <CardTitle>Total Appointment</CardTitle>

@@ -52,6 +52,18 @@ const userSchema = mongoose.Schema({
             message: 'Valid role only admin, personnel, or user',
         },
     },
+    pets: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pet'
+    }],
+    appointments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment'
+    }],
+    vet: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Veterinary'
+    }
 }, {
     timestamps: true,
 });
