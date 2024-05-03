@@ -14,7 +14,6 @@ const petSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid date!`
         }
     },
-    chipNumber: Number,
     species: String,
     breed: String,
     sex: String,
@@ -32,6 +31,7 @@ const petSchema = new mongoose.Schema({
 },{
     timestamps:true,
 });
+
 
 const Pet = mongoose.model('Pet', petSchema);
 

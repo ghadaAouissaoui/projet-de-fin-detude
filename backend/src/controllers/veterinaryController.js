@@ -52,14 +52,20 @@ const registerVeterinary = asyncHandler(async (req, res) => {
         confirmpassword: hashedPassword,
         role
     });
+      // Assurez-vous que le rôle est correctement défini
+      if (role !== 'veterinaire') {
+        res.status(400).json({ message: 'Le rôle du vétérinaire doit être défini comme "veterinaire".' });
+        return;
+    }
 
-    const token=generateToken(veterinaire._id);
+    const token=generateToken(veterinaire._id,role);
 
     // Sauvegarde du token de vérification
     await Token.create({
         userId: veterinaire._id,
         ref: "veterinaire",
-        token: token,
+        role:'veterinaire',
+        token: token
     });
 
     // Envoi de l'email de vérification
@@ -137,7 +143,7 @@ const loginVeterinary = asyncHandler(async (req, res) => {
         }
 
         // Si l'utilisateur est vérifié, génération du token d'authentification JWT
-        const token = generateToken(veterinaire._id);
+        const token = generateToken(veterinaire._id,veterinaire.role);
         
         // Envoi des détails de l'utilisateur et du token
         res.json({
@@ -246,8 +252,8 @@ async function getVetProfile(req, res) {
 
 
 // Fonction pour générer le token JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generateToken = (id,role) => {
+    return jwt.sign({ id,role }, process.env.JWT_SECRET, {
         expiresIn: '30d',
     });
 };

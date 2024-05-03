@@ -20,6 +20,8 @@ import Appointment from './pages/Appointments';
 import Inbox from './pages/Inbox';
 import Patient from './pages/Patients';
 import Adding from './pages/AddUser';
+import UserDashboard from './pages/EspaceClient';
+import ComponentPets from './pages/Pets';
 
 const App = () => {
   return (
@@ -43,6 +45,8 @@ const App = () => {
             <Route path="/pro/patients/:vetId" element={<Patient/>} />
             <Route path="/pro/adding/:vetId" element={<Adding/>} />
             <Route path="/doctorprofile/:vetId" element={<DoctorProfile />} />
+            <Route path="/espaceclient/:userId" element={<UserDashboard />} />
+            <Route path="/espaceclient/pets" element={<ComponentPets />} />
           </Routes>
         <Footer />
       </>

@@ -10,10 +10,14 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       // Obtenez le jeton à partir de l'en-tête
       token = req.headers.authorization.split(' ')[1];
-      
+
       // Vérifiez le jeton
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
+
+      if (!decoded || !decoded.id || !decoded.role) {
+        throw new Error('Token invalide');
+      }
+
       // Vérifiez si c'est un vétérinaire ou un utilisateur
       if (decoded.role === 'veterinaire') {
         req.veterinaire = await Veterinary.findById(decoded.id).select('-password');
@@ -28,10 +32,9 @@ const protect = asyncHandler(async (req, res, next) => {
       } else {
         throw new Error('Rôle invalide dans le jeton');
       }
-      
+
       // Passer à la prochaine étape du middleware
       next();
-      
     } catch (error) {
       console.error(error);
       res.status(401).json({ message: 'Non autorisé' });
@@ -40,6 +43,7 @@ const protect = asyncHandler(async (req, res, next) => {
     res.status(401).json({ message: 'Pas de jeton' });
   }
 });
+
 
 
 

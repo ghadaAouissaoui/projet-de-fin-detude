@@ -119,26 +119,7 @@ export default function Dashboard() {
   }, [vetId]);
 
 
-  const handleClick = async (event) => {
-    event.preventDefault(); // Prevent default action of navigating to the URL
-
-    const fetchVetProfile = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
-        setVetProfile(response.data.veterinaire);
-        setLoading(false);
-      } catch (error) {
-        console.error("An error occurred while fetching veterinarian profile:", error);
-        setLoading(false);
-      }
-    };
-
-    try {
-      fetchVetProfile(); // Call the fetchVetProfile function defined within handleClick
-    } catch (error) {
-      console.error("An error occurred while fetching veterinarian profile:", error);
-    }
-  };
+ 
   
   // Initialize state for the date with current date
   const [date, setDate] = useState(new Date());

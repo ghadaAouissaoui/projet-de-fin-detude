@@ -5,14 +5,15 @@ const tokenSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref:"",
+        ref: "User", // Référence au modèle User
     },
     ref:{
-        type:String,
-        required:true,
+        type: String,
+        required: true,
     },
     token: { type: String, required: true },
-    role:{ type: String,
+    role: {
+        type: String,
         enum: ['veterinaire', 'user'] // Les valeurs autorisées pour le rôle
     },
     createdAt: { type: Date, default: Date.now, expires: '24h' },
@@ -28,7 +29,6 @@ tokenSchema.methods.removeToken = async function() {
         throw new Error('Failed to remove token.');
     }
 };
-
 
 const Token = mongoose.model('Token', tokenSchema);
 
