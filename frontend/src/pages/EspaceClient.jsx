@@ -113,15 +113,14 @@ function calculateAge(dateOfBirth) {
             <PawPrintIcon className="h-6 w-6" />
             <span className=''>{UserProfile?.fullname} Dashboard</span>
           </Link>
+          {UserProfile && (
           <nav className="flex flex-col items-start gap-4">
-
-            <Link className="hover:text-[#A5D7E8]" to="#">Pets</Link>
-            <Link className="hover:text-[#A5D7E8]" to="#">Appointments</Link>
-            <Link className="hover:text-[#A5D7E8]" to="#">Medications</Link>
-            <Link className="hover:text-[#A5D7E8]" to="#">Resources</Link>
+          
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Appointments</Link>
             <Link className="hover:text-[#A5D7E8]" to="#">Review</Link>
             <Link className="hover:text-[#A5D7E8]" to="#">Messages</Link>
-          </nav>
+          </nav>)}
           <div className="flex items-center gap-4">
             
             <Menu

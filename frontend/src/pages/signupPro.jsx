@@ -219,12 +219,12 @@ function Button({ className, children, type, onClick }) {
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="datebirth">Date of Birth</Label>
             <TextField type='date'></TextField>
-           {/* <DatePicker 
+            <DatePicker 
               selected={datebirth} 
               onChange={(date) => setDateBirth(date)} 
               className="border-2 border-gray-300 rounded-md p-2 h-[58px] md:w-full px-3" 
               
-            />*/}
+            />
           </div>
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="phoneNumber">Phone Number</Label>

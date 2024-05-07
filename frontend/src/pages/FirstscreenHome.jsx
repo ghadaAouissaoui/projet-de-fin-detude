@@ -1,6 +1,6 @@
 import React from 'react';
 import doctor from '../images/femaleDoctor.jpg';
-
+import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <div className="flex flex-col items-center justify-between bg-white text-gray-900 mb-10 lg:w-full sm:w-full md:w-full">
@@ -43,7 +43,7 @@ const Home = () => {
               <input className="border border-gray-300 rounded-md p-2 ml-1 w-1/4 h-10" type="text" placeholder="Clinic" />
               <input className="border border-gray-300 rounded-md p-2 ml-1 w-1/4 h-10" type="text" placeholder="Category" />
               <button className="bg-blue-900 border-2 border-blue-900 py-2 px-4 rounded-md cursor-pointer ml-1 hover:bg-[#2563eb]">
-                <SearchIcon/>
+                <Link to="/search"> <SearchIcon /></Link> 
               </button>
             </div>
           </div>

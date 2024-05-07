@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Appointment = require('../models/appointmentModel');
 const Veterinary = require('../models/veterinaryModel');
 const Pets = require('../models/petsModel');
@@ -19,9 +20,9 @@ async function getAllAppointments(req, res) {
 
 async function getOneAppointment(req, res) {
     try {
-        const appointment = await Appointment.findById(req.params.appointmentId).populate('pet', 'name').populate('user', 'fullname');
+        const appointment = await Appointment.findById(req.params.appointmentId).populate('pet', 'name').populate('veterinaire', 'fullname');
         if (appointment) {
-            return res.status(200).json({ message: `${appointment.pet.name} has an appointment with ${appointment.user.fullname}`, appointment });
+            return res.status(200).json({ message: `${appointment.pet.name} has an appointment with ${appointment.veterinaire.fullname}`, appointment });
         } else {
             return res.status(404).send('Appointment not found');
         }
@@ -55,7 +56,7 @@ async function getVetAppointments(req, res) {
 
 async function getPetAppointments(req, res) {
     try {
-        const user = await User.findById(res.locals.user.id).populate('pets');
+        const user = await User.findById(req.userId).populate('pet');
         if (!user) {
             return res.status(404).send('User not found');
         }
@@ -80,6 +81,24 @@ async function getAvailableAppointments(req, res) {
     }
 }
 
+async function getUnavailableAppointments(req, res) {
+    try {
+        const { vetId } = req.params;
+
+        // Recherchez les rendez-vous non disponibles pour le vétérinaire spécifié
+        const unavailableAppointments = await Appointment.find({ status: 'not_available', veterinaire: vetId }).populate('pet')
+            .select('id appointment_date appointment_time status pet ')
+
+        const message = `Unavailable appointments for veterinarian ${vetId}:`;
+        return res.status(200).json({ message, unavailableAppointments });
+
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+
+
 async function bookAppointment(req, res) {
     try {
         const { treatmentIds, petId } = req.body;
@@ -87,7 +106,16 @@ async function bookAppointment(req, res) {
 
         if (appointment) {
             if (appointment.status === 'available') {
-                // Add logic to book appointment
+                // Check if it's the first appointment for the pet
+                const isFirstAppointment = appointment.treatments.length === 0;
+
+                // If it's the first appointment and no treatments provided, assign a default treatment
+                if (isFirstAppointment && treatmentIds.length === 0) {
+                    // Générer un nouvel ObjectId pour le traitement par défaut
+                    const defaultTreatmentId = new mongoose.Types.ObjectId();
+                    treatmentIds.push(defaultTreatmentId);
+                }
+                
 
                 // Add treatment schedule to the appointment
                 await Appointment.findByIdAndUpdate(
@@ -119,35 +147,79 @@ async function bookAppointment(req, res) {
 }
 
 
-async function createAppointment (req, res) {
-    try {
-        const vetId = req.params.vetId;
-        const { petName, appointmentDate, appointmentTime, reason } = req.body;
 
-        // Rechercher l'animal par son nom
-        const pet = await Pets.findOne({ name: petName });
+async function createAppointment(req, res) {
+    try {
+        const { appointment_date, appointment_time, duration } = req.body;
+        const vetId = req.params.vetId;
+
+        // Recherche de l'animal par son identifiant
+        const pet = await Pets.findById(vetId);
         if (!pet) {
-            return res.status(404).json({ message: 'Animal not found' });
+            return res.status(404).json({ message: 'Pet not found' });
         }
 
-        // Créer le rendez-vous
-        const appointment = new Appointment({
-            pet: pet._id,
-            appointment_date: appointmentDate,
-            appointment_time: appointmentTime,
-            reason: reason
+        // Création d'un nouveau rendez-vous pour cet animal
+        const appointment = await Appointment.create({
+            appointment_date,
+            appointment_time,
+            duration,
+            pet: vetId
         });
 
-        // Enregistrer le rendez-vous
-        await appointment.save();
-
-        return res.status(200).json({ message: 'Appointment created successfully', appointment });
+        return res.status(200).json({ message: 'Appointment created', appointment });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).send(error.message);
     }
-};
+}
 
+
+
+
+async function scheduleAppointment(req,res){
+    try {
+        const { petName ,appointment_date, appointment_time, duration } = req.body;
+        
+             // Rechercher l'animal par son nom
+        const pet = await Pets.findOne({ name: petName });
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        // Create the appointment
+        const appointment = await Appointment.create({
+            pet: pet._id, // Associate the appointment with the pet
+            appointment_date,
+            appointment_time,
+            veterinaire: req.params.vetId, // Associate the appointment with the veterinarian
+            duration
+            
+        });
+
+        // Add the appointment to the pet's appointments array
+        pet.appointments.push(appointment);
+
+        // Save the updated pet document
+        await pet.save();   
+
+         // Add the pet to the veterinarian's associated pets
+         const veterinaire = await Veterinary.findById(req.params.vetId);
+         if (!veterinaire) {
+             return res.status(404).json({ message: 'Veterinarian not found' });
+         }
+
+          // Add the pet to the veterinarian's associated pets array
+        veterinaire.pets.push(pet);
+
+        // Save the updated veterinarian document
+        await veterinaire.save();
+
+        return res.status(200).json({ message: 'Appointment scheduled', appointment: appointment });
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+  
 
 async function updateAppointment(req, res) {
     try {
@@ -180,9 +252,11 @@ module.exports = {
     getOneAppointment,
     getVetAppointments,
     getPetAppointments,
+    scheduleAppointment,
     getAvailableAppointments,
     createAppointment,
     updateAppointment,
+    getUnavailableAppointments,
     bookAppointment,
     deleteAppointment
 };

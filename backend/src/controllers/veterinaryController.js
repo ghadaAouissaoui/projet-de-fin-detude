@@ -5,6 +5,7 @@ const Veterinary = require('../models/veterinaryModel');
 const Token = require('../models/tokenModel');
 const { envoyerVerification } = require('../utils/sendEmail');
 const crypto = require('crypto');
+const VeterinaryAvailability=require('../models/availabilityModel')
 
 // Function to register a new veterinarian
 const registerVeterinary = asyncHandler(async (req, res) => {
@@ -250,7 +251,24 @@ async function getVetProfile(req, res) {
     }
 }
 
+async function getDateTime(req,res){
+    try{
+        const vetId=req.params
+        const availability=req.body
+       // Enregistrement des jours et heures disponibles dans la base de données
+       const vetAvailability = new VeterinaryAvailability({
+        vetId,
+        availability
+    });
+    await vetAvailability.save();
 
+    return res.status(200).json({ message: 'Availability updated successfully' });
+} catch (error) {
+    console.error("An error occurred while updating availability:", error);
+    return res.status(500).json({ message: 'An error occurred while updating availability' });
+}
+
+}
 // Fonction pour générer le token JWT
 const generateToken = (id,role) => {
     return jwt.sign({ id,role }, process.env.JWT_SECRET, {
@@ -268,6 +286,6 @@ module.exports = {
     verifyEmail,
     deleteVet,
     updateVet,
-    
+    getDateTime,
     getVetProfile,
 };

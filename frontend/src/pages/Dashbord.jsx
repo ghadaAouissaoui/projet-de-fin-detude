@@ -6,7 +6,7 @@ import Axios from "axios";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg'
 import Sidebar from "./Sidebare";
-
+import Scheduler from "react-mui-scheduler";
    // Avatar component
    export const Avatar = ({ children }) => {
     return <div className="flex items-center space-x-4">{children}</div>;
@@ -99,27 +99,11 @@ export const Card = ({ children, className }) => {
 
 export default function Dashboard() {
   const { vetId } = useParams();
-  const [vetProfile, setVetProfile] = useState(null);
+  
   const [loading, setLoading] = useState(true);
 
 
-  useEffect(() => {
-    const fetchVetProfile = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
-        setVetProfile(response.data.veterinaire);
-        setLoading(false);
-      } catch (error) {
-        console.error("Une erreur s'est produite lors de la récupération du profil du vétérinaire :", error);
-        setLoading(false);
-      }
-    };
 
-    fetchVetProfile();
-  }, [vetId]);
-
-
- 
   
   // Initialize state for the date with current date
   const [date, setDate] = useState(new Date());
@@ -131,6 +115,86 @@ export default function Dashboard() {
     setDate(newDate);
   };
 
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+
+  useEffect(() => {
+    const fetchUpcomingAppointments = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/appointment/unavailable/${vetId}`);
+        setUpcomingAppointments(response.data.unavailableAppointments);
+      } catch (error) {
+        console.error('Error fetching upcoming appointments:', error.message);
+      }
+    };
+
+    fetchUpcomingAppointments();
+  }, []);
+ 
+ 
+ 
+  // Format the appointments into the required event structure
+  const formatEventsForScheduler = () => {
+    return upcomingAppointments.map((appointment) => {
+      return {
+        id: appointment.id,
+        label: "Appointment", // You can customize this label as needed
+        groupLabel: appointment.doctorName, // Assuming doctorName is available in the appointment data
+        user: appointment.petName, // Assuming petName is available in the appointment data
+        color: "#ff0000", // Red color for appointments
+        startHour: moment(appointment.appointment_date + "T" + appointment.appointment_time).format("HH:mm"), // Combine date and time
+        endHour: moment(appointment.appointment_date + "T" + appointment.appointment_time).add(appointment.duration, "minutes").format("HH:mm"), // Calculate end time based on duration
+        date: moment(appointment.appointment_date).format("YYYY-MM-DD"), // Format the date
+        createdAt: new Date(),
+        createdBy: appointment.ownerName, // Assuming ownerName is available in the appointment data
+      };
+    });
+  };
+const [state] = useState({
+  options: {
+    transitionMode: "zoom",
+    startWeekOn: "Mon",
+    defaultMode: "month",
+    minWidth: 540,
+    maxWidth: 540,
+    minHeight: 540,
+    maxHeight: 540
+  },
+  alertProps: {
+    open: false,
+    color: "info",
+    severity: "info",
+    message: "🚀 Let's start with awesome react-mui-scheduler 🔥 🔥 🔥",
+    showActionButton: false,
+    showNotification: false,
+    delay: 1500
+  },
+  toolbarProps: {
+    showSearchBar: true,
+    showSwitchModeButtons: true,
+    showDatePicker: true
+  }
+});
+
+ // Créez un ensemble des dates des rendez-vous
+ const appointmentDates = new Set(events.map(event => event.date));
+
+
+
+const handleCellClick = (event, row, day) => {
+  // Do something...
+};
+
+const handleEventClick = (event, item) => {
+  // Do something...
+};
+
+const handleEventsChange = (item) => {
+  // Do something...
+};
+
+const handleAlertCloseButtonClicked = (item) => {
+  // Do something...
+};
 
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -237,7 +301,26 @@ export default function Dashboard() {
                 </a>
             </div>
           </div>
-          <Table className="mt-4 w-full">
+
+          <div className="w-full p-8">
+      <Scheduler
+        locale="en"
+        events={formatEventsForScheduler}
+        legacyStyle={false}
+        options={state?.options}
+        alertProps={state?.alertProps}
+        toolbarProps={state?.toolbarProps}
+        onEventsChange={handleEventsChange}
+        onCellClick={handleCellClick}
+        onTaskClick={handleEventClick}
+        onAlertCloseButtonClicked={handleAlertCloseButtonClicked}
+      
+      />
+    </div>
+
+
+
+          {/*<Table className="mt-4 w-full">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -281,7 +364,7 @@ export default function Dashboard() {
                 <TableCell>Mumps Stage II</TableCell>
               </TableRow>
             </TableBody>
-          </Table>
+          </Table>*/}
 
 
           <div className="flex justify-between items-center mt-4 px-4 py-3">

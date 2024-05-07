@@ -1,114 +1,144 @@
-import React from "react";
+import React, { useState } from "react";
+import Scheduler from "react-mui-scheduler";
 
 
 
 export default function Contenue(){
+
+  const [state] = useState({
+    options: {
+      transitionMode: "zoom", // or fade
+      startWeekOn: "Mon", // or Sun
+      defaultMode: "month", // or week | day | timeline
+      minWidth: 540,
+      maxWidth: 540,
+      minHeight: 540,
+      maxHeight: 540
+    },
+    alertProps: {
+      open: false,
+      color: "info", // info | success | warning | error
+      severity: "info", // info | success | warning | error
+      message: "🚀 Let's start with awesome react-mui-scheduler 🔥 🔥 🔥",
+      showActionButton: false,
+      showNotification: false,
+      delay: 1500
+    },
+    toolbarProps: {
+      showSearchBar: true,
+      showSwitchModeButtons: true,
+      showDatePicker: true
+    }
+  });
+
+  const events = [
+    {
+      id: "event-1",
+      label: "Medical consultation",
+      groupLabel: "Dr Shaun Murphy",
+      user: "Dr Shaun Murphy",
+      color: "#f28f6a",
+      startHour: "04:00 AM",
+      endHour: "05:00 AM",
+      date: "2021-09-28",
+      createdAt: new Date(),
+      createdBy: "Kristina Mayer"
+    },
+    {
+      id: "event-2",
+      label: "Medical consultation",
+      groupLabel: "Dr Claire Brown",
+      user: "Dr Claire Brown",
+      color: "#099ce5",
+      startHour: "09:00 AM",
+      endHour: "10:00 AM",
+      date: "2021-09-29",
+      createdAt: new Date(),
+      createdBy: "Kristina Mayer"
+    },
+    {
+      id: "event-3",
+      label: "Medical consultation",
+      groupLabel: "Dr Menlendez Hary",
+      user: "Dr Menlendez Hary",
+      color: "#263686",
+      startHour: "13 PM",
+      endHour: "14 PM",
+      date: "2021-09-30",
+      createdAt: new Date(),
+      createdBy: "Kristina Mayer"
+    },
+    {
+      id: "event-4",
+      label: "Consultation prénatale",
+      groupLabel: "Dr Shaun Murphy",
+      user: "Dr Shaun Murphy",
+      color: "#f28f6a",
+      startHour: "08:00 AM",
+      endHour: "09:00 AM",
+      date: "2021-10-01",
+      createdAt: new Date(),
+      createdBy: "Kristina Mayer"
+    }
+  ];
+
+  const handleCellClick = (event, row, day) => {
+    // Do something...
+  };
+
+  const handleEventClick = (event, item) => {
+    // Do something...
+  };
+
+  const handleEventsChange = (item) => {
+    // Do something...
+  };
+
+  const handleAlertCloseButtonClicked = (item) => {
+    // Do something...
+  };
     return(
  <>
-        <div className="grid grid-cols-3 gap-6 mt-6">
-        <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
-          <CardTitle>Total Appointment</CardTitle>
-          <h2 className="text-3xl font-bold">489</h2>
-          <CurvedlineChart className="w-full h-36" />
-          <Badge className="mt-2" variant="secondary">
-            +5.9% last week
-          </Badge>
-        </Card>
-        <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
-          <CardTitle>Total Patients</CardTitle>
-          <h2 className="text-3xl font-bold">210</h2>
-          <CurvedlineChart className="w-full h-36" />
-          <Badge className="mt-2" variant="secondary">
-            +4.7 last week
-          </Badge>
-        </Card>
-        <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
-          <CardTitle>Total Earning</CardTitle>
-          <h2 className="text-3xl font-bold">489</h2>
-          <CurvedlineChart className="w-full h-36" />
-          <Badge className="mt-2" variant="secondary">
-            +8.2% last week
-          </Badge>
-        </Card>
-      </div>
-
-      <div className="mt-8 bg-white shadow rounded-lg">
-        <div className="flex justify-between items-center">
-          <h3 className="px-5 pt-4 text-xl font-bold">Appointment Activity</h3>
-          <div className="flex items-center space-x-4 px-5 pt-4 font-bold">
-              <a href="#" onClick={() => handleDateChange(-1)} className="h-5 w-5 text-black font-bold">
-                <ChevronLeftIcon />
-              </a>
-              <time dateTime={date.toISOString()}>
-                {date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-              </time>
-              <a href="#" onClick={() => handleDateChange(1)} className="h-5 w-5 text-black font-bold">
-                <ChevronRightIcon />
-              </a>
-          </div>
-        </div>
-        <Table className="mt-4 w-full">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Age</TableHead>
-              <TableHead>Fees</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Visit Time</TableHead>
-              <TableHead>Doctor</TableHead>
-              <TableHead>Conditions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <div className="flex flex-row flex-wrap items-center px-5 pt-2">
-              <Avatar>
-          <AvatarImage alt="Profile picture" src={Doctor} className='h-9 w-9 rounded-full' />
-        </Avatar>
-                <TableCell className="font-medium">Leslie Alexander</TableCell>
-                </div>
-              <TableCell>25</TableCell>
-              <TableCell>$25/h</TableCell>
-              <TableCell>09-15-2020</TableCell>
-              <TableCell>09:15-09:45am</TableCell>
-              <TableCell>Dr. Jacob Jones</TableCell>
-              <TableCell>Mumps Stage II</TableCell>
-            </TableRow>
-          </TableBody>
-          <TableBody>
-            <TableRow>
-              <div className="flex flex-row flex-wrap items-center px-5 pt-2">
-              <Avatar>
-          <AvatarImage alt="Profile picture" src={Doctor} className='h-9 w-9 rounded-full' />
-        </Avatar>
-                <TableCell className="font-medium">Leslie Alexander</TableCell>
-                </div>
-              <TableCell>25</TableCell>
-              <TableCell>$25/h</TableCell>
-              <TableCell>09-15-2020</TableCell>
-              <TableCell>09:15-09:45am</TableCell>
-              <TableCell>Dr. Jacob Jones</TableCell>
-              <TableCell>Mumps Stage II</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+      
 
 
-        <div className="flex justify-between items-center mt-4 px-4 py-3">
-          <span className="text-gray-500">Showing 1-12 out of 40</span>
-          <div className="flex space-x-2">
-          <Button onClick={goToPreviousPage}>Prev</Button>
-          <div className="flex space-x-2">
-          <Button variant="default">1</Button>
-          <Button variant="outline">2</Button>
-          <Button variant="outline">3</Button>
-          <span>...</span>
-          <Button variant="outline">9</Button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div className="w-full p-8">
+
+ <Scheduler
+      locale="fr"
+      events={events}
+      legacyStyle={false}
+      options={state?.options}
+      alertProps={state?.alertProps}
+      toolbarProps={state?.toolbarProps}
+      onEventsChange={handleEventsChange}
+      onCellClick={handleCellClick}
+      onTaskClick={handleEventClick}
+      onAlertCloseButtonClicked={handleAlertCloseButtonClicked}
+    />
         </div>
-          <Button onClick={goToNextPage}>Next</Button>
-          </div>
-        </div>
-      </div>
+
+
+
+
+
+
+
       </>
     );
 }

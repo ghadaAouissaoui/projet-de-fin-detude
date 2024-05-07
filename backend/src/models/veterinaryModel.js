@@ -78,7 +78,6 @@ const veterinarySchema = mongoose.Schema(
             default: 'veterinaire'
         },
        
-        
 
         profile_picture: String,
         description:String,
@@ -87,9 +86,9 @@ const veterinarySchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
-        patients: [{
+        pets: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'Pet'
         }]
     },
     {

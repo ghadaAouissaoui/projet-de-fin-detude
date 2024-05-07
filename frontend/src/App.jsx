@@ -22,6 +22,10 @@ import Patient from './pages/Patients';
 import Adding from './pages/AddUser';
 import UserDashboard from './pages/EspaceClient';
 import ComponentPets from './pages/Pets';
+import AvailableAppointment from './pages/FindDoctor';
+import AppointmentUser from './pages/AppointmentUser';
+import Calender from './pages/bookAppointment';
+import Contenue from './pages/ContinueDashboard';
 
 const App = () => {
   return (
@@ -30,7 +34,10 @@ const App = () => {
       <>
         <Navbar />
           <Routes>
+          <Route path="/contenu" element={<Contenue/>} />
+           
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
+            <Route path="/calender/:vetId" element={< Calender />} />
             <Route path="/aboutus" element={<AboutUs />}/>
             <Route path="/contactus" element={<ContactUs />}/>
             <Route path="/services" element={<Services />}/>
@@ -46,7 +53,9 @@ const App = () => {
             <Route path="/pro/adding/:vetId" element={<Adding/>} />
             <Route path="/doctorprofile/:vetId" element={<DoctorProfile />} />
             <Route path="/espaceclient/:userId" element={<UserDashboard />} />
-            <Route path="/espaceclient/pets" element={<ComponentPets />} />
+            <Route path="/espaceclient/appointment/:userId" element={<AppointmentUser/>} />
+            <Route path="/espaceclient/pets/:userId" element={<ComponentPets />} />
+            <Route path="/search" element={<AvailableAppointment />} />
           </Routes>
         <Footer />
       </>

@@ -3,10 +3,14 @@ import axios from "axios";
 import { useState ,useEffect } from 'react'; 
 import { Link, useNavigate } from "react-router-dom";
 import { useParams} from "react-router-dom";
-import Axios from "axios";
+import moment from 'moment';
+import { AiFillDelete } from 'react-icons/ai';
+import { FaRegCheckSquare } from "react-icons/fa";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg';
 import Sidebar from "./Sidebare";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -133,16 +137,30 @@ import { DialogContent, DialogTitle, TextField, Button,DialogActions, Dialog } f
     );
   }
 
+
 export default function Appointment() {
-  
   const { vetId } = useParams();
-
-
+  const [appointments, setAppointments] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+   
+
+  const [checkedItems, setCheckedItems] = useState({});
+
+  const handleCheckboxChange = (appointmentId) => {
+    setCheckedItems(prevState => ({
+      ...prevState,
+      [appointmentId]: !prevState[appointmentId]
+    }));
+  };
+
+
+  
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -153,44 +171,144 @@ export default function Appointment() {
     setOpen(false);
   };
 
-
   const [formData, setFormData] = useState({
-    name: '',
-    appointment_date: '',
-    appointment_time: '',
-    reason: ''
+    petName: '',
+    appointment_date: moment().format('MM/DD/YYYY'),
+    appointment_time: moment().format('hh:mm A'),
+    reason: '',
   });
+
+  // Ajoutez un nouvel état pour gérer l'ouverture du modal et l'appointment sélectionné
+const [selectedAppointment, setSelectedAppointment] = useState(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+// Fonction pour ouvrir le modal et définir l'appointment sélectionné
+const handleOpenModal = (appointment) => {
+  setSelectedAppointment(appointment);
+  setIsModalOpen(true);
+};
+
+// Fonction pour fermer le modal
+const handleCloseModal = () => {
+  setSelectedAppointment(null);
+  setIsModalOpen(false);
+};
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     
     try {
-      const response = await axios.post(`http://localhost:5000/api/appointment/${vetId}`, formData);
+        const response = await axios.post(`http://localhost:5000/api/appointment/first/${vetId}`, formData);
 
-      if (!response.data.success) {
-        throw new Error('Failed to create appointment');
-      }
+        if (response.data.success) {
+            // Appointment created successfully
+            setSnackbarSeverity('success');
+            setSnackbarMessage('Appointment created successfully. Please wait for your veterinarian to confirm.');
+            setSnackbarOpen(true);
 
-      // Appointment created successfully, handle any UI updates or notifications
-      handleClose();
+            handleClose();
+        } else {
+            throw new Error(response.data.message);
+        }
     } catch (error) {
-      console.error('Error creating appointment:', error);
-      // Handle error, display error message to the user, etc.
+        console.error('Error creating appointment:', error);
+        setSnackbarSeverity('error');
+        setSnackbarMessage(error.message || 'Failed to create appointment');
+        setSnackbarOpen(true);
+    }
+};
+// Inside your component function
+const handleSubmitConfirmAppointment = () => {
+  try {
+      // Envoyer une demande de réservation de rendez-vous
+      axios.put(`http://localhost:5000/api/appointment/book/${selectedAppointment._id}`, {
+          treatmentIds: [], // Peut-être que vous voudrez passer les IDs des traitements sélectionnés ici
+          petId: selectedAppointment.pet._id
+      })
+      .then(response => {
+          console.log('Appointment booked successfully:', response.data.message);
+          // Mise à jour de l'état ou d'autres actions après la réservation réussie
+          // Par exemple, vous pouvez fermer la boîte de dialogue ici
+          handleCloseModal();
+          // Ajoutez d'autres actions à effectuer après la confirmation de l'appointment
+      })
+      .catch(error => {
+          console.error('Error confirming appointment:', error.message);
+          // Gérer les erreurs ici si nécessaire
+      });
+  } catch (error) {
+      console.error('Error confirming appointment:', error.message);
+      // Gérer les erreurs ici si nécessaire
+  }
+};
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/appointment/vet/${vetId}`);
+        const vetAppointments = response.data.appointments;
+        setAppointments(vetAppointments);
+        console.log(vetAppointments);
+      } catch (error) {
+        console.error('Error fetching vet appointments:', error.message);
+      }
+    };
+
+    fetchData();
+  }, [vetId]);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+// Inside your component function
+const [ownerDetailsMap, setOwnerDetailsMap] = useState({});
+
+useEffect(() => {
+  // Function to fetch owner details for a given pet name
+  const fetchOwnerDetails = async (petName) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/pet/owner', { name: petName });
+      const ownerDetails = response.data; // Extract owner details from the response
+      // Update the owner details map with the new data
+      setOwnerDetailsMap(prevMap => ({
+        ...prevMap,
+        [petName]: ownerDetails
+      }));
+    } catch (error) {
+      console.error('Error fetching owner details:', error.message);
     }
   };
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
-  function Label({ componentName, valueType, isProOnly }) {
-    const content = (
-      <span>
-        <strong>{componentName}</strong> for {valueType} editing
-      </span>
-    );
-  }
+  // Loop through each appointment to fetch owner details
+  appointments.forEach(appointment => {
+    fetchOwnerDetails(appointment.pet.name);
+  });
+}, [appointments]); // Ensure this dependency is correct based on your needs
 
+
+const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+
+  useEffect(() => {
+    const fetchUpcomingAppointments = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/appointment/unavailable/${vetId}`);
+        setUpcomingAppointments(response.data.unavailableAppointments);
+      } catch (error) {
+        console.error('Error fetching upcoming appointments:', error.message);
+      }
+    };
+
+    fetchUpcomingAppointments();
+  }, []);
 
   return (
     
@@ -239,10 +357,9 @@ export default function Appointment() {
           <PlusIcon className="h-4 w-4 mr-2" />
          New Appointment
         </button>
-        <Dialog
-        open={open}
-        onClose={handleClose}>
-          <form onSubmit={handleChange}>
+        <Dialog open={open} onClose={handleClose}>
+          <form onSubmit={handleSubmit}>
+
          <DialogTitle>Make an Appointment</DialogTitle>
          <DialogContent className="sm:w-[425px]">
         <div className="grid gap-4 py-4">
@@ -256,17 +373,41 @@ export default function Appointment() {
                     margin="normal"
                 />
                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                     <DemoItem label={<Label componentName="DatePicker" valueType="date" />} name="appointmentDate"
-                          value={formData.appointmentDate}
-                          onChange={handleChange} >
-                               <DatePicker />
-                     </DemoItem>
-        
-                     <DemoItem label={<Label componentName="TimePicker" valueType="time" />} name="appointmentTime"
-                    value={formData.appointmentTime}
-                    onChange={handleChange}>
-                        <TimePicker />
-                     </DemoItem>
+      
+        <div>
+          <TextField
+            fullWidth
+            label="Appointment Date"
+            name="appointment_date"
+            type="date"
+            value={formData.appointment_date}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              inputProps: { min: moment().format('YYYY-MM-DD') } // Empêcher la sélection de dates antérieures
+            }}
+            margin="normal"
+          />
+        </div>
+        <div>
+          <TextField
+            fullWidth
+            label="Appointment Time"
+            name="appointment_time"
+            type="time"
+            value={formData.appointment_time}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300, // Les intervalles de temps sont de 5 minutes (300 secondes)
+            }}
+            margin="normal"
+          />
+        </div>
                        </LocalizationProvider>  
                         <TextField
                                   fullWidth
@@ -284,6 +425,11 @@ export default function Appointment() {
                     </DialogActions>
                     </form>
                   </Dialog>
+                  <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <MuiAlert elevation={6} variant="filled" onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
 
       </header>
 
@@ -308,58 +454,62 @@ export default function Appointment() {
               </TableHeader>
 
               <TableBody>
-                
-                <TableRow>
-                  <TableCell className="font-medium">April 26, 2023</TableCell>
-                  <TableCell>Whiskers, Cat</TableCell>
-                  <TableCell className="hidden md:table-cell">Jane Smith</TableCell>
-                  <TableCell className="hidden md:table-cell">2:30 PM</TableCell>
-                  <TableCell className="text-left ">
-                    <Badge variant="warning">Pending</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-      <DropdownMenu>
-        <DropdownMenuTrigger onClick={handleDropdownToggle}>
+    {appointments.map((appointment) => (
+       // Vérifier si le statut de l'appointment est "available"
+  appointment.status === "available" && (
+        <TableRow key={appointment._id}>
+            <TableCell className="font-medium">{appointment.appointment_date}</TableCell>
+            <TableCell>{appointment.pet.name}, {appointment.pet.species}</TableCell>
+            <TableCell className="hidden md:table-cell">{ownerDetailsMap[appointment.pet.name]?.fullname}</TableCell>
+            <TableCell className="hidden md:table-cell">{appointment.appointment_time}</TableCell>
+            <TableCell className="text-left">
+                <Badge variant="warning">{appointment.status}</Badge>
+            </TableCell>
+            <TableCell className="text-right">
+                <DropdownMenu>
+                <DropdownMenuTrigger onClick={handleDropdownToggle}>
           <MoreHorizontalIcon className="w-4 h-4" />
           <span className="sr-only">Actions</span>
         </DropdownMenuTrigger>
-        {isDropdownOpen && (
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem>View appointment</DropdownMenuItem>
-            <DropdownMenuItem>Reschedule</DropdownMenuItem>
-            <DropdownMenuItem>Cancel</DropdownMenuItem>
-          </DropdownMenuContent>
-        )}
-      </DropdownMenu>
-    </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">April 27, 2023</TableCell>
-                  <TableCell>Fluffy, Rabbit</TableCell>
-                  <TableCell className="hidden md:table-cell">Sarah Johnson</TableCell>
-                  <TableCell className="hidden md:table-cell">4:45 PM</TableCell>
-                  <TableCell className="text-left">
-                    <Badge variant="success">Confirmed</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    
-                      
-                  <DropdownMenu>
-        <DropdownMenuTrigger onClick={handleDropdownToggle}>
-          <MoreHorizontalIcon className="w-4 h-4" />
-          <span className="sr-only">Actions</span>
-        </DropdownMenuTrigger>
-        {isDropdownOpen && (
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem>View appointment</DropdownMenuItem>
-            <DropdownMenuItem>Reschedule</DropdownMenuItem>
-            <DropdownMenuItem>Cancel</DropdownMenuItem>
-          </DropdownMenuContent>
-        )}
-      </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
+        
+         {/* Contenu du menu déroulant */}
+  {isDropdownOpen && (
+    <DropdownMenuContent align="start">
+      {/* Bouton pour afficher les détails de l'appointment */}
+      <DropdownMenuItem onClick={() => handleOpenModal(appointment)}>View appointment</DropdownMenuItem>
+      {/* Autres options du menu déroulant */}
+      <DropdownMenuItem>Reschedule</DropdownMenuItem>
+      <DropdownMenuItem>Cancel</DropdownMenuItem>
+    </DropdownMenuContent>
+  )}
+</DropdownMenu>
+            </TableCell>
+        </TableRow>
+  )
+    ))}
+    
+<Dialog open={isModalOpen} onClose={handleCloseModal} className="w-full h-full">
+  <DialogTitle>Appointment Details</DialogTitle>
+  <DialogContent>
+    {selectedAppointment && (
+      <div>
+        <p>Date: {selectedAppointment.appointment_date} , {selectedAppointment.appointment_time}</p>
+        <p>Patient: {selectedAppointment.pet.name}, {selectedAppointment.pet.species}</p>
+        <p>Owner :{ownerDetailsMap[selectedAppointment.pet.name]?.fullname}</p>
+        <p>Reason: {selectedAppointment.reason}</p>
+        {/* Autres détails de l'appointment */}
+      </div>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseModal}>Close</Button>
+    <Button onClick={handleSubmitConfirmAppointment}  >Confirm</Button>
+  </DialogActions>
+</Dialog>
+</TableBody>
+
+
+
             </Table>
           </div>
           </main>
@@ -369,33 +519,33 @@ export default function Appointment() {
         <div className="bg-white  rounded-lg shadow-sm overflow-hidden m-4 md:w-1/2 w-full">
           <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Upcoming Appointments</h2>
-          </div>
+          </div> 
+          {upcomingAppointments.map(appointment => (
+        <div key={appointment.id}>
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
             <div className="px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-8">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">April 27, 2023</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">10:00 AM</span>
+                  <span className="text-sm font-medium">{appointment.appointment_date}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{appointment.appointment_time}</span>
                 </div>
+
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">John Doe</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Fluffy the Cat</span>
+                  <span className="text-sm font-medium">{appointment.pet.name}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{ownerDetailsMap[appointment.pet.name]?.fullname}</span>
                 </div>
-              </div>
-              <div className="flex items-center font-semibold gap-2">
-                <button size="sm" variant="outline" className="flex gap-2 items-center bg-transparent border border-gray-400 rounded-md hover:bg-green-400 w-24 p-4">
-                  <PencilIcon className="h-4 w-4" />
-                 <a >Edit</a> 
-                </button>
-                <button className="flex items-center bg-transparent border w-24 p-4 border-gray-400  rounded-md hover:bg-red-500"  variant="outline">
-                  <XIcon className="h-4 w-4 " />
-                  <a>Cancel</a>
-                </button>
+
+                <div className="flex items-center gap-2 ">
+                  
+                  <PencilIcon className="h-4 w-4 cursor-pointer text-green-500" />
+                  <AiFillDelete className="h-6 w-6 cursor-pointer text-red-400" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-       
+      ))}
+</div>
 
         <div className="bg-white rounded-lg shadow-sm  m-4 md:w-1/2 w-full">
           <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">

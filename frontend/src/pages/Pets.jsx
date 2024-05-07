@@ -24,24 +24,52 @@ function CardTitle({ children }) {
   }
   
 export default function ComponentPets() {
+  const { userId } = useParams();
+  const [UserProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/users/profile/${userId}`);
+        const { user } = response.data; // Supposez que les animaux de compagnie sont renvoyés dans la propriété "pets" de la réponse
+        
+        setUserProfile(user);
+        console.log(user);
+        setLoading(false);
+      } catch (error) {
+        console.error("Une erreur s'est produite lors de la récupération du profil de l'utilisateur :", error);
+        setLoading(false);
+      }
+    };
+  
+    fetchUserProfile();
+  }, [userId]);
+
+
+
+
   return (
     <section className="w-full max-w-4xl mx-auto py-8 md:py-12">
-      <div className="flex items-center justify-between mb-6">
+      {/*<div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">My Pets</h1>
         <Button size="sm">Add New Pet</Button>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+  </div>*/}
+ 
+      <div  className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {UserProfile && UserProfile.pets && UserProfile.pets.map((pet) => (
+        <Card key={pet._id}>
           <img
             alt="Pet Image"
             className="rounded-t-lg object-cover w-full aspect-video"
             height={200}
-            src="/placeholder.svg"
+            src=""
             width={300}
           />
           <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-medium">Buddy</h3>
+          
+            <div  className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-medium">{pet.name}</h3>
               <div className="flex gap-2">
                 <Button size="icon" variant="outline">
                   <DeleteIcon className="h-4 w-4" />
@@ -52,36 +80,15 @@ export default function ComponentPets() {
                   <span className="sr-only">Delete</span>
                 </Button>
               </div>
-            </div>
+           
             <div className="text-sm text-gray-500 dark:text-gray-400">Dog</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <img
-            alt="Pet Image"
-            className="rounded-t-lg object-cover w-full aspect-video"
-            height={200}
-            src="/placeholder.svg"
-            width={300}
-          />
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-medium">Whiskers</h3>
-              <div className="flex gap-2">
-                <Button size="icon" variant="outline">
-                  <DeleteIcon className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="text-red-500" size="icon" variant="outline">
-                  <TrashIcon className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </div>
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Cat</div>
+          
           </CardContent>
         </Card>
-        <Card>
+      ))}
+      
+        {/*<Card>
           <img
             alt="Pet Image"
             className="rounded-t-lg object-cover w-full aspect-video"
@@ -105,8 +112,9 @@ export default function ComponentPets() {
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Bird</div>
           </CardContent>
-        </Card>
+        </Card>*/}
       </div>
+    
     </section>
   )
 }

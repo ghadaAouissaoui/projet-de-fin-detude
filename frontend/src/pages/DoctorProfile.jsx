@@ -141,6 +141,8 @@ export default function DoctorProfile() {
   const handleMedicalActionsChange = (event) => {
     setMedicalActions(event.target.value);
   };
+
+  
   const renderEditingControls = () => {
     if (vetProfile && vetProfile.role === "veterinaire") {
       return (
