@@ -4,9 +4,10 @@ import {useParams} from 'react-router-dom';
 import {  Button } from '@mui/material';
 
 import axios from 'axios';
+import ReactCalender from './calendrier';
 
 
-export default function Calender() {
+export default function Calendar() {
 
     const { vetId } = useParams();
    
@@ -60,43 +61,7 @@ export default function Calender() {
            
           </div>
           <div className="col-span-2 bg-white shadow rounded-lg">
-            <div className="flex items-center justify-between border-b p-4">
-              <ChevronLeftIcon className="w-5 h-5 text-gray-500" />
-              <div className="grid grid-flow-col auto-cols-max gap-8">
-                <div className="text-center">
-                  <p className="text-sm font-semibold">Saturday</p>
-                  <p className="text-sm">May 04</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-semibold">Sunday</p>
-                  <p className="text-sm">May 05</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-semibold">Monday</p>
-                  <p className="text-sm">May 06</p>
-                </div>
-              </div>
-              <ChevronRightIcon className="w-5 h-5 text-gray-500" />
-            </div>
-            <div className="p-4 grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <p className="bg-gray-200 rounded-full py-1 px-3 inline-block mb-2">5:30 PM</p>
-                <p className="bg-gray-200 rounded-full py-1 px-3 inline-block">6:15 PM</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-semibold">—</p>
-                <p className="text-sm font-semibold mt-8">—</p>
-              </div>
-              <div className="text-center">
-                <p className="bg-gray-200 rounded-full py-1 px-3 inline-block mb-2">9:45 AM</p>
-                <p className="bg-gray-200 rounded-full py-1 px-3 inline-block">10:00 AM</p>
-              </div>
-            </div>
-            <div className="text-center py-4">
-              <Button className="px-4 py-2 border border-gray-200 rounded-full" variant="outline">
-                VIEW MORE SCHEDULES
-              </Button>
-            </div>
+            <ReactCalender/>
           </div>
         </div>
       </section>

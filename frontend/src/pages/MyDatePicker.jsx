@@ -1,85 +1,74 @@
 import React, { useState } from 'react';
 
-import { Button ,TextField} from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+function Calendar() {
+  // State pour stocker les rendez-vous
+  const [appointments, setAppointments] = useState([]);
 
-const YourComponent = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+  // State pour stocker les détails du nouveau rendez-vous
+  const [newAppointment, setNewAppointment] = useState({
+    date: '',
+    time: '',
+    description: ''
+  });
 
-  const handleChangeDate = (date) => {
-      setSelectedDate(date);
-  };
+  // Fonction pour ajouter un nouveau rendez-vous
+  const addAppointment = () => {
+    // Vérifie si tous les champs du nouveau rendez-vous sont remplis
+    if (newAppointment.date && newAppointment.time && newAppointment.description) {
+      // Crée un nouvel objet rendez-vous
+      const appointment = {
+        id: Date.now(), // Utilise un timestamp comme identifiant unique
+        date: newAppointment.date,
+        time: newAppointment.time,
+        description: newAppointment.description
+      };
 
-  const handleChangeTime = (time) => {
-      setSelectedTime(time);
-  };
+      // Met à jour la liste des rendez-vous avec le nouveau rendez-vous ajouté
+      setAppointments([...appointments, appointment]);
 
-  const handleSaveDateTime = () => {
-      if (selectedDate && selectedTime) {
-          const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-          const formattedTime = moment(selectedTime).format('HH:mm:ss');
-
-          console.log('Selected Date:', formattedDate);
-          console.log('Selected Time:', formattedTime);
-
-          // Vous pouvez faire quelque chose avec la date et l'heure sélectionnées ici
-
-          setSelectedDate(null);
-          setSelectedTime(null);
-      } else {
-          console.error('Please select both date and time');
-      }
+      // Réinitialise les champs du nouveau rendez-vous
+      setNewAppointment({ date: '', time: '', description: '' });
+    } else {
+      alert('Veuillez remplir tous les champs du rendez-vous.');
+    }
   };
 
   return (
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <div>
-              <DatePicker
-                  label="Appointment Date"
-                  value={selectedDate}
-                  onChange={handleChangeDate}
-                  renderInput={(params) => (
-                      <TextField
-                          {...params}
-                          fullWidth
-                          name="appointment_date"
-                          type="date"
-                          InputLabelProps={{
-                              shrink: true,
-                          }}
-                          InputProps={{
-                              inputProps: { min: moment().format('YYYY-MM-DD') },
-                          }}
-                      />
-                  )}
-              />
-          </div>
-          <div>
-              <TimePicker
-                  label="Appointment Time"
-                  value={selectedTime}
-                  onChange={handleChangeTime}
-                  renderInput={(params) => (
-                      <TextField
-                          {...params}
-                          fullWidth
-                          name="appointment_time"
-                          type="time"
-                          InputLabelProps={{
-                              shrink: true,
-                          }}
-                          inputProps={{
-                              step: 300,
-                          }}
-                      />
-                  )}
-              />
-          </div>
-          <Button onClick={handleSaveDateTime}>Save Appointment</Button>
-      </LocalizationProvider>
-  );
-};
+    <div>
+      {/* Formulaire pour ajouter un nouveau rendez-vous */}
+      <div>
+        <input
+          type="date"
+          value={newAppointment.date}
+          onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
+        />
+        <input
+          type="time"
+          value={newAppointment.time}
+          onChange={(e) => setNewAppointment({ ...newAppointment, time: e.target.value })}
+        />
+        <input
+          type="text"
+          value={newAppointment.description}
+          placeholder="Description"
+          onChange={(e) => setNewAppointment({ ...newAppointment, description: e.target.value })}
+        />
+        <button onClick={addAppointment}>Ajouter un rendez-vous</button>
+      </div>
 
-export default YourComponent;
+      {/* Affichage des rendez-vous */}
+      <div>
+        <h2>Rendez-vous</h2>
+        <ul>
+          {appointments.map(appointment => (
+            <li key={appointment.id}>
+              {appointment.date} à {appointment.time}: {appointment.description}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default Calendar;

@@ -24,8 +24,9 @@ import UserDashboard from './pages/EspaceClient';
 import ComponentPets from './pages/Pets';
 import AvailableAppointment from './pages/FindDoctor';
 import AppointmentUser from './pages/AppointmentUser';
-import Calender from './pages/bookAppointment';
-import Contenue from './pages/ContinueDashboard';
+import Calendar from './pages/bookAppointment';
+import ReactCalender from './pages/calendrier';
+
 
 const App = () => {
   return (
@@ -34,10 +35,9 @@ const App = () => {
       <>
         <Navbar />
           <Routes>
-          <Route path="/contenu" element={<Contenue/>} />
            
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
-            <Route path="/calender/:vetId" element={< Calender />} />
+            <Route path="/calendar/:vetId" element={< Calendar />} />
             <Route path="/aboutus" element={<AboutUs />}/>
             <Route path="/contactus" element={<ContactUs />}/>
             <Route path="/services" element={<Services />}/>
@@ -56,6 +56,7 @@ const App = () => {
             <Route path="/espaceclient/appointment/:userId" element={<AppointmentUser/>} />
             <Route path="/espaceclient/pets/:userId" element={<ComponentPets />} />
             <Route path="/search" element={<AvailableAppointment />} />
+            <Route path="/calender" element={<ReactCalender />} />
           </Routes>
         <Footer />
       </>
