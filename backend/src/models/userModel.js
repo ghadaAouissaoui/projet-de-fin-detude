@@ -56,10 +56,7 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Pet'
     }],
-    appointments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Appointment'
-    }],
+    
     vet: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Veterinary'

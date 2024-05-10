@@ -17,6 +17,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DialogContent, DialogTitle, TextField, Button,DialogActions, Dialog } from '@mui/material';
+import useRequireAuth from "../../auth/userRequireAuth";
      // Avatar component
      export const Avatar = ({ children }) => {
       return <div className="flex items-center space-x-4">{children}</div>;
@@ -139,6 +140,8 @@ import { DialogContent, DialogTitle, TextField, Button,DialogActions, Dialog } f
 
 
 export default function Appointment() {
+  // Call the useRequireAuth hook
+  useRequireAuth();
   const { vetId } = useParams();
   const [appointments, setAppointments] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);

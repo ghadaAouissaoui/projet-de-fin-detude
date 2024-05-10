@@ -16,6 +16,7 @@ import { useParams} from "react-router-dom";
 import { Menu, MenuItem, Avatar, Typography, Grid, Card, CardHeader, CardContent } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { TextareaAutosize } from '@mui/material';
+import useRequireAuth from '../../auth/userRequireAuth';
 function CardTitle({ children }) {
     return <h3 className="text-lg font-bold mb-4">{children}</h3>;
   }
@@ -25,6 +26,7 @@ function CardTitle({ children }) {
   
 
 export default function UserDashboard() {
+  useRequireAuth();// Use the custom hook to require authentication
     const { userId } = useParams();
     const [UserProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);

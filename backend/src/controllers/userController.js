@@ -53,6 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
         ref:"user",
         token: verificationToken,
     });
+    
+  
 
     // Envoi de l'email de vérification
     const verificationUrl = `${process.env.BASE_URL}users/${user._id}/verify/${verificationToken}`;
@@ -126,7 +128,7 @@ const loginUser = asyncHandler(async (req, res) => {
         }
 
         // Si l'utilisateur est vérifié, génération du token d'authentification JWT
-        const token = generateToken(user._id);
+        const token = generateToken(user._id,user.role);
         
         // Envoi des détails de l'utilisateur et du token
         res.json({
@@ -146,8 +148,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
 // Fonction pour générer un jeton d'authentification JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generateToken = (id,role) => {
+    return jwt.sign({ id,role }, process.env.JWT_SECRET, {
         expiresIn: '30d',
     });
 };

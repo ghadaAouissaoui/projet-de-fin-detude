@@ -19,6 +19,10 @@ export default function Login() {
   
       if (responseUser.status === 200) {
         // Succès de la connexion pour un utilisateur
+         // Success: save token to localStorage
+         const token = responseUser.data.token;
+         localStorage.setItem('token', token);
+
         const userData = responseUser.data;
         console.log('User data:', userData);
   
@@ -30,10 +34,7 @@ export default function Login() {
           console.log('Redirection vers /espaceclient');
           navigate(`/espaceclient/${userData._id}`);
         }
-      } else {
-        // Code d'état autre que 200 (par exemple 400)
-        throw new Error(responseUser.data.message);
-      }
+      } return;
     } catch (error) {
       console.error('Login error for user:', error.message);
       
@@ -45,6 +46,10 @@ export default function Login() {
   
         if (responseVet.status === 200) {
           // Succès de la connexion pour un vétérinaire
+          // Success: save token to localStorage
+        const token = responseVet.data.token;
+        localStorage.setItem('token', token);
+        
           const vet = responseVet.data;
           console.log('Veterinarian data:', vet);
   

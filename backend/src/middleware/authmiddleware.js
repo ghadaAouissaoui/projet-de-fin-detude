@@ -44,9 +44,39 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
+function authMiddleware(req, res, next) {
+  // Check if authorization header is present
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+      return res.status(401).json({ message: 'Authorization header missing' });
+  }
+
+  // Extract token from header
+  const token = authHeader.split(' ')[1];
+
+  // Verify token
+  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+      if (err) {
+          return res.status(401).json({ message: 'Invalid token' });
+      }
+      // Set user in request object
+      req.user = {
+          id: decodedToken.id,
+          role: decodedToken.role // Optionally, you can also include the user's role
+      };
+      next(); // Proceed to next middleware
+  });
+}
 
 
 
+
+const checkAdmin = (req, res, next) => {
+  if (req.user && req.user.role !== 'admin') {
+      return res.status(401).send('User not authorized')
+  }
+  next()
+}
 
 // Middleware pour vérifier le rôle de l'utilisateur
 const checkVet = (role) => (req, res, next) => {
@@ -57,12 +87,7 @@ const checkVet = (role) => (req, res, next) => {
   }
 };
 
-const checkAdmin = (req, res, next) => {
-  if (req.user && req.user.role !== 'admin') {
-      return res.status(401).send('User not authorized')
-  }
-  next()
-}
 
 
-module.exports = { protect, checkVet,checkAdmin };
+
+module.exports = { protect, authMiddleware,checkVet,checkAdmin };

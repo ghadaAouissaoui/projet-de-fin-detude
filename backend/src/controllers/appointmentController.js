@@ -148,30 +148,49 @@ async function bookAppointment(req, res) {
 
 
 
+
 async function createAppointment(req, res) {
     try {
-        const { appointment_date, appointment_time, duration } = req.body;
-        const vetId = req.params.vetId;
+        const { petName, appointment_date, appointment_time, reason, species } = req.body;
+        const userId = req.user.id;
 
-        // Recherche de l'animal par son identifiant
-        const pet = await Pets.findById(vetId);
+        // Check if the pet exists in the user's account
+        let pet = await Pets.findOne({ name: petName, user: userId });
+        // If the pet doesn't exist, create it implicitly
         if (!pet) {
-            return res.status(404).json({ message: 'Pet not found' });
+            pet = await Pets.create({
+                name: petName,
+                user: userId,
+                species: species
+                // Add other required attributes for the pet
+            });
+
+            // Find the user and update its pets array
+            await User.findByIdAndUpdate(userId, { $push: { pets: pet._id } });
         }
 
-        // Création d'un nouveau rendez-vous pour cet animal
+        // Create the appointment
         const appointment = await Appointment.create({
+            pet: pet._id,
             appointment_date,
             appointment_time,
-            duration,
-            pet: vetId
+            reason,
+            // Add other required attributes for the appointment
         });
 
-        return res.status(200).json({ message: 'Appointment created', appointment });
+        // Update the pet's appointments array
+        await Pets.findByIdAndUpdate(pet._id, { $push: { appointments: appointment._id } });
+
+        // Export the name of the user from the pet
+        const userName = req.user.name; // Assuming the user object has a 'name' field
+
+        return res.status(200).json({ message: 'Appointment created', appointment, userName });
     } catch (error) {
         return res.status(500).send(error.message);
     }
 }
+
+
 
 
 

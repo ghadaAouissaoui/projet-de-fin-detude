@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button ,Dialog,DialogContent} from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import Badge from '@mui/material/Badge';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -34,11 +34,14 @@ export default function ReactCalender() {
   const { vetId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState(dayjs());
-  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [upcomingAppointmentTimes, setUpcomingAppointmentTimes] = useState([]);
   const [highlightedDays, setHighlightedDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [allAppointments,setAllAppointments]=useState([]);
+  const [selectedDateAppointmentTimes,setSelectedDateAppointmentTimes] = useState({});
+  const navigate = useNavigate();
+  // Other state variables...
+
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -57,18 +60,20 @@ export default function ReactCalender() {
         const appointments = response.data.unavailableAppointments;
 
         // Update highlighted days based on upcoming appointments
-        const highlighted = Array.from(new Set(appointments.map(appointment => {
-          const [month, day, year] = appointment.appointment_date.split('/');
+        const highlighted = [];
+        appointments.map((app)=>{
+          const [month, day, year] = app.appointment_date.split('/');
           const parsedDate = dayjs(`${year}-${month}-${day}`);
-          return parsedDate.format('YYYY-MM-DD'); // Format date to avoid duplicate days
-        })));
-        setHighlightedDays(highlighted);
+
+          highlighted.push({
+            appointment_date: parsedDate.format('YYYY-MM-DD'),
+            appointment_time: app.appointment_time
+          })
+       
+        })
+        setAllAppointments(highlighted);
 
         // Update times of upcoming appointments
-        const appointmentTimes = Array.from(new Set(appointments.map(appointment => {
-            return appointment.appointment_time;
-          })));
-          setUpcomingAppointmentTimes(appointmentTimes);
       } catch (error) {
         console.error('Error fetching upcoming appointments:', error.message);
       }
@@ -78,54 +83,47 @@ export default function ReactCalender() {
   }, [vetId]);
 
   useEffect(() => {
-    const fetchHighlightedDays = async () => {
-      setIsLoading(true);
-      try {
-        // Perform your fetch to get highlighted days based on selectedDate
-        const result = await fakeFetch(selectedDate, { signal: null }); // Pass appropriate signal if needed
-        setHighlightedDays(result.daysToHighlight);
-        // Example code for handling highlighted days from fakeFetch
-        // setHighlightedDays(result.daysToHighlight);
-      } catch (error) {
-        console.error('Error fetching highlighted days:', error.message);
-        setIsLoading(false);
-      }
-    };
-
-    fetchHighlightedDays();
+    let newData=[];
+    allAppointments.map((app)=>{
+      
+      if(app.appointment_date==selectedDate.format('YYYY-MM-DD')){
+        newData.push(app.appointment_time)
+         }
+    })
+    setSelectedDateAppointmentTimes(newData)
+     
   }, [selectedDate]);
 
   const handleDateChange = async (date) => {
     setSelectedDate(date);
-  
-    
+    // Check if the user is a veterinarian
+    if (userData.role !== "veterinaire") {
+      // Navigate to AppointmentUser component with the selected date
+      navigate(`/appointment-user/${date.format('YYYY-MM-DD')}`);
+    }
   };
-  
   
 
-  const renderDay = (props) => {
-    const { day } = props;
-    const date = day.format('YYYY-MM-DD');
-    const isSelected = highlightedDays.includes(date);
   
-    return (
-      <Badge
-        key={date}
-        overlap="circular"
-        badgeContent={isSelected ? <span style={{ color: 'red' }}>●</span>  : undefined}
-      >
-        <PickersDay {...props} />
-      </Badge>
-    );
-  };
- // useEffect to update highlighted days when upcomingAppointments change
- useEffect(() => {
-    const highlighted = upcomingAppointments.map(appointment => {
-      const [month, day, year] = appointment.appointment_date.split('/');
-      return dayjs(`${year}-${month}-${day}`).date(); // Extract day of the appointment date
-    });
-    setHighlightedDays(highlighted);
-  }, [upcomingAppointments]);
+
+ const renderDay = (props) => {
+  const { day } = props;
+  const date = day.format('YYYY-MM-DD');
+  const isSelected = highlightedDays.includes(date);
+  const isCellSelected = selectedDate.format('YYYY-MM-DD') === date;
+
+  return (
+    <Badge
+      key={date}
+      overlap="circular"
+      badgeContent={isSelected ? <span className="text-red-500">●</span> : undefined}
+      className={isCellSelected ? 'bg-gray-200 border border-gray-400 rounded p-1' : ''}
+    >
+      <PickersDay {...props} />
+    </Badge>
+  );
+};
+
 
   return (
     <>
@@ -147,53 +145,18 @@ export default function ReactCalender() {
       </div>
       
       <div className="p-4 grid grid-cols-3 gap-4 md:w-1/3 w-full">
-            {upcomingAppointmentTimes.map((time, index) => (
-              <div className="text-center" key={index}>
-                <p className="bg-gray-200 rounded-full py-1 px-3 inline-block mb-2 text-red-500">{time}</p>
-              </div>
-            ))}
-          </div>
+        {selectedDateAppointmentTimes.length > 0 ? (
+          selectedDateAppointmentTimes.map((time, index) => (
+            <div className="text-center" key={index}>
+              <p className="bg-gray-200 rounded-full py-1 px-3 inline-block mb-2 text-red-500">{time}</p>
+            </div>
+          ))
+        ) : (
+          <p>No appointments available for selected date</p>
+        )}
+      </div>
           </div>
 
-
-          {/*<div className="bg-white  rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b dark:border-gray-800">
-              <div className="text-lg font-medium">Appointments</div>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-yellow-900 font-medium">
-                  PET
-                </div>
-                <div>
-                  <div className="font-medium">Buddy the Dog</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">10:00 AM - 11:00 AM</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">Routine Checkup</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-yellow-900 font-medium">
-                  PET
-                </div>
-                <div>
-                  <div className="font-medium">Whiskers the Cat</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">2:00 PM - 3:00 PM</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">Vaccination</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-yellow-900 font-medium">
-                  PET
-                </div>
-                <div>
-                  <div className="font-medium">Fluffy the Bunny</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">4:00 PM - 5:00 PM</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">Nail Trim</div>
-                </div>
-              </div>
-            </div>
-          </div>*/}
-        
       </div>
       <Button onClick={handleOpenDialog}>Open Dialog</Button>
       <Dialog open={openDialog} onClose={handleCloseDialog}>

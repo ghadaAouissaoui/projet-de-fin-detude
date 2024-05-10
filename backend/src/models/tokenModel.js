@@ -7,10 +7,7 @@ const tokenSchema = new Schema({
         required: true,
         ref: "User", // Référence au modèle User
     },
-    ref:{
-        type: String,
-        required: true,
-    },
+   
     token: { type: String, required: true },
     role: {
         type: String,
