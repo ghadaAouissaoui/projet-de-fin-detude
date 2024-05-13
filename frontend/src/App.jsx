@@ -26,7 +26,7 @@ import AvailableAppointment from './pages/FindDoctor';
 import AppointmentUser from './pages/AppointmentUser';
 import Calendar from './pages/bookAppointment';
 import ReactCalender from './pages/calendrier';
-
+import Logged from './pages/Home';
 
 const App = () => {
   return (
@@ -37,6 +37,7 @@ const App = () => {
           <Routes>
            
             <Route path="/" element={<><Home /><ComponentD /><ComponentF /><ComponentQ /></>} />
+            <Route path="/:userId" element={<Logged />}/>
             <Route path="/calendar/:vetId" element={< Calendar />} />
             <Route path="/aboutus" element={<AboutUs />}/>
             <Route path="/contactus" element={<ContactUs />}/>

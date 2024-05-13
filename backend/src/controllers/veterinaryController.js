@@ -35,7 +35,11 @@ const registerVeterinary = asyncHandler(async (req, res) => {
 
     // Hashage du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
+ 
+       // Génération du token de vérification
+       const verificationToken = crypto.randomBytes(32).toString("hex");
 
+       
     // Création du nouveau vétérinaire
     const veterinaire = await Veterinary.create({
         fullname,
@@ -59,18 +63,18 @@ const registerVeterinary = asyncHandler(async (req, res) => {
         return;
     }
 
-    const token=generateToken(veterinaire._id,role);
-
+    
+ 
     // Sauvegarde du token de vérification
-    await Token.create({
+    const tokenInstance= await Token.create({
         userId: veterinaire._id,
         ref: "veterinaire",
         role:'veterinaire',
-        token: token
+        token: verificationToken
     });
 
     // Envoi de l'email de vérification
-    const verificationUrl = `${process.env.BASE_URL}veterinaries/${veterinaire._id}/verify/${token}`;
+    const verificationUrl = `${process.env.BASE_URL}veterinaries/${veterinaire._id}/verify/${verificationToken}`;
     await envoyerVerification(email, verificationUrl);
 
     // Réponse avec succès
@@ -239,6 +243,7 @@ async function getVetProfile(req, res) {
             phoneNumber: 1,
             profile_picture: 1,
             verified: 1,
+            pets:1,
             role: 1
         });
         if (veterinaire) {
@@ -250,6 +255,32 @@ async function getVetProfile(req, res) {
         return res.status(500).json({ message: error.message });
     }
 }
+//fonctionne
+async function getAllPatientsOfVeterinary(req, res) {
+    try {
+        const vetId = req.params.id;
+        // Utilisez la méthode findOne pour trouver le vétérinaire par son ID
+        const veterinary = await Veterinary.findOne({ _id: vetId }).populate({
+            path: 'pets',
+            populate: {
+                path: 'appointments'
+            }
+        });
+        console.log("Veterinarian found:", veterinary);
+
+        // Vérifiez si le vétérinaire existe
+        if (!veterinary) {
+            return res.status(404).json({ message: 'Veterinarian not found' });
+        }
+
+        // Retournez la liste des pets associés au vétérinaire
+        return res.status(200).json(veterinary.pets);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+
 
 async function getDateTime(req,res){
     try{
@@ -286,6 +317,7 @@ module.exports = {
     verifyEmail,
     deleteVet,
     updateVet,
+    getAllPatientsOfVeterinary,
     getDateTime,
     getVetProfile,
 };

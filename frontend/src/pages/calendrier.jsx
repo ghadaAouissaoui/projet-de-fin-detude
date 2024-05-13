@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Button ,Dialog,DialogContent} from "@mui/material";
+import { Button ,Typography,TextField,Dialog,DialogContent,MenuItem} from "@mui/material";
 import { useParams,useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import Badge from '@mui/material/Badge';
@@ -9,6 +9,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import moment from "moment";
+import {jwtDecode} from "jwt-decode";
+
 
 function getRandomNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min);
@@ -31,6 +34,13 @@ function getRandomNumber(min, max) {
   }
 
 export default function ReactCalender() {
+ 
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   const { vetId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState(dayjs());
@@ -38,20 +48,16 @@ export default function ReactCalender() {
   const [highlightedDays, setHighlightedDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [allAppointments,setAllAppointments]=useState([]);
-  const [selectedDateAppointmentTimes,setSelectedDateAppointmentTimes] = useState({});
+  const [selectedDateAppointmentTimes,setSelectedDateAppointmentTimes] = useState([]);
   const navigate = useNavigate();
   // Other state variables...
 
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
+  
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-  };
-
-
+  }; 
 
   useEffect(() => {
     const fetchUpcomingAppointments = async () => {
@@ -72,6 +78,13 @@ export default function ReactCalender() {
        
         })
         setAllAppointments(highlighted);
+        // Update highlighted days based on upcoming appointments
+        const highlight = Array.from(new Set(appointments.map(appointment => {
+          const [month, day, year] = appointment.appointment_date.split('/');
+          const parsedDate = dayjs(`${year}-${month}-${day}`);
+          return parsedDate.format('YYYY-MM-DD'); // Format date to avoid duplicate days
+        })));
+        setHighlightedDays(highlight);
 
         // Update times of upcoming appointments
       } catch (error) {
@@ -81,6 +94,7 @@ export default function ReactCalender() {
 
     fetchUpcomingAppointments();
   }, [vetId]);
+
 
   useEffect(() => {
     let newData=[];
@@ -94,13 +108,26 @@ export default function ReactCalender() {
      
   }, [selectedDate]);
 
+  useEffect(() => {
+    const fetchHighlightedDays = async () => {
+      setIsLoading(true);
+      try {
+        // Perform your fetch to get highlighted days based on selectedDate
+        const result = await fakeFetch(selectedDate, { signal: null }); // Pass appropriate signal if needed
+        setHighlightedDays(result.daysToHighlight);
+        // Example code for handling highlighted days from fakeFetch
+        // setHighlightedDays(result.daysToHighlight);
+      } catch (error) {
+        console.error('Error fetching highlighted days:', error.message);
+        setIsLoading(false);
+      }
+    };
+
+    fetchHighlightedDays();
+  }, [selectedDate]);
+
   const handleDateChange = async (date) => {
     setSelectedDate(date);
-    // Check if the user is a veterinarian
-    if (userData.role !== "veterinaire") {
-      // Navigate to AppointmentUser component with the selected date
-      navigate(`/appointment-user/${date.format('YYYY-MM-DD')}`);
-    }
   };
   
 
@@ -125,14 +152,77 @@ export default function ReactCalender() {
 };
 
 
+
+
+const handleButtonClick = (time) => {
+  if (!selectedDateAppointmentTimes.includes(time)) {
+    console.log(time)
+    // Mettre à jour l'état pour afficher le formulaire
+    setOpenDialog(true);
+     // Mettre à jour la date de rendez-vous avec la date sélectionnée
+     setFormData({
+      ...formData,
+      appointment_date: selectedDate.format('YYYY-MM-DD'),
+      appointment_time: time,
+    });
+  }
+};
+const [userRole, setUserRole] = useState('');
+
+// Récupérer le token et définir le rôle de l'utilisateur
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken)
+    setUserRole(decodedToken.role);
+  }
+}, []);
+
+const [message, setMessage] = useState("");
+
+ 
+const [formData, setFormData] = React.useState({
+  petName: '',
+  species:'',
+  appointment_date: '',
+  appointment_time: '',
+  reason: ''
+});
+
+
+const handleSubmitAppointment = async (e) => {
+  e.preventDefault();
+  try {
+    // Get the token from wherever you store it (localStorage, cookies, etc.)
+    const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+    console.log('Token:', token);
+    // Set the headers with the authorization token
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+
+    // Make a POST request to your backend endpoint with the headers
+    const response = await axios.post(`http://localhost:5000/api/appointment/${vetId}`, formData, { headers });
+    // Mettez à jour le message en cas de succès
+    setMessage("Appointment created successfully!");
+    console.log(response.data); // Log the response data
+    // Optionally, you can display a success message or redirect the user after successful appointment creation
+  } catch (error) {
+    console.error('Error creating appointment:', error.response.data); // Log any errors
+    
+    // Optionally, you can display an error message to the user
+    setMessage("Failed to create appointment. Please try again.");
+  }
+
+};
+
   return (
     <>
-      <div className="w-full max-w-6xl mx-auto px-4 py-8 md:px-6 md:py-12">
-        <div className=" flex md:flex-row flex-col gap-8">
-          <div className="bg-white rounded-lg shadow-sm md:w-2/3 w-full  ">
-         
-
-            <div className="grid  gap-px bg-gray-100 border-t " />
+      <div className="w-full max-w-6xl mx-auto px-4 py-8 md:px-6 md:py-12  ">
+          <div className="flex items-center m-auto border-t-2 border-b-2 rounded-lg shadow-sm md:w-2/3 w-full  ">
+            <div className="md:flex gap-8 " >
+              <div className="md:w-1/2 ">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar
           value={selectedDate}
@@ -143,48 +233,141 @@ export default function ReactCalender() {
         />
       </LocalizationProvider>
       </div>
-      
-      <div className="p-4 grid grid-cols-3 gap-4 md:w-1/3 w-full">
-        {selectedDateAppointmentTimes.length > 0 ? (
-          selectedDateAppointmentTimes.map((time, index) => (
-            <div className="text-center" key={index}>
-              <p className="bg-gray-200 rounded-full py-1 px-3 inline-block mb-2 text-red-500">{time}</p>
-            </div>
-          ))
-        ) : (
-          <p>No appointments available for selected date</p>
-        )}
+
+
+      <div className="p-8 md:w-1/2 gap-4">
+    {/* Afficher tous les horaires par défaut */}
+    <div className="text-center">
+      {Array.from({ length: 8 }).map((_, index) => {
+  const time = `${index + 9}:00`; // Générer les horaires par défaut de 09:00 à 16:00
+  const isHighlighted = selectedDateAppointmentTimes.includes(time); // Vérifier si l'horaire est dans les rendez-vous
+  return (
+    <p 
+    onClick={() => handleButtonClick(time)} // Appeler handleButtonClick lors du clic sur le bouton
+      className={`bg-gray-200 rounded-full py-1 px-3 inline-block mb-2 cursor-pointer text-${isHighlighted ? 'yellow' : 'red'}-500`}
+      key={index}
+    >
+      {time}
+    </p>
+  );
+})}
+
+    </div>
+
+    {/* Conditionnellement afficher les rendez-vous disponibles */}
+    {selectedDateAppointmentTimes.length > 0 && (
+      <div className="text-center">
+        {selectedDateAppointmentTimes.map((time, index) => (
+          <p className="bg-yellow-400 rounded-full py-1 px-3 inline-block mb-2 text-yellow-900" key={index}>{time}</p>
+        ))}
       </div>
-          </div>
+    )}
+   
+  
+  </div>
 
       </div>
-      <Button onClick={handleOpenDialog}>Open Dialog</Button>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      </div>
+
+
+      </div>
+
+
+      <Dialog open={openDialog && userRole === 'user'} onClose={handleCloseDialog} className="w-full">
         <DialogContent>
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-medium">Appointment Details</div>
-            <div>
-              <Button size="small" variant="ghost" onClick={handleCloseDialog}>
-                <XIcon />
-              </Button>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-yellow-900 font-medium">
-                PET
-              </div>
-              <div>
-                <div className="font-medium">Buddy the Dog</div>
-                <div className="text-gray-500 dark:text-gray-400 text-sm">10:00 AM - 11:00 AM</div>
-              </div>
-            </div>
-            <div className="text-gray-500 dark:text-gray-400">Routine Checkup</div>
-            <div className="flex justify-end">
-              <Button variant="outline">Reschedule</Button>
-              <Button className="ml-2">Check In</Button>
-            </div>
-          </div>
+        <form className="space-y-4 p-6" onSubmit={handleSubmitAppointment} >
+        
+          <TextField id="name" label="Your Name" placeholder="Enter your name" variant="outlined" />
+        
+        <div>
+          <TextField id="email" label="Email" placeholder="Enter your email" type="email" variant="outlined" />
+        </div>
+        <div >
+          <TextField id="phone" label="Phone Number" placeholder="Enter your phone number" type="tel" variant="outlined" />
+        </div>
+        <div>
+          
+          <TextField
+          id="petName"
+          name="petName"
+          value={formData.petName}
+          onChange={handleChange}
+          label="Pet Name"
+          placeholder="Enter your pet's name"
+          variant="outlined"
+          fullWidth
+        /> </div>
+       <div>
+       <TextField
+          id="species"
+          name="species"
+          value={formData.species}
+          onChange={handleChange}
+          label="Species"
+          placeholder="Enter your pet's name"
+          variant="outlined"
+          fullWidth
+        />
+          
+        </div>
+        <div className="grid gap-2">
+      
+          <TextField id="reason" 
+          name="reason"
+          value={formData.reason}
+          onChange={handleChange}
+          label="Reason" 
+          variant="outlined" 
+          fullWidth/>
+
+        </div>
+        <div className="grid gap-2">
+          
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Typography htmlFor="appointment_date">Appointment Date</Typography>
+          <TextField
+            fullWidth
+            
+            value={formData.appointment_date}
+            onChange={handleChange}
+            name="appointment_date"
+            type="date"
+
+            InputProps={{
+              inputProps: { min: moment().format('YYYY-MM-DD') } // Empêcher la sélection de dates antérieures
+            }}
+          
+          />
+           <Typography htmlFor="appointment_time">Appointment Time</Typography>
+           <TextField
+            fullWidth
+            value={formData.appointment_time}
+          onChange={handleChange}
+            name="appointment_time"
+            type="time"
+            
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300, // Les intervalles de temps sont de 5 minutes (300 secondes)
+            }}
+          />
+        </LocalizationProvider>  
+       
+         </div>
+         {/* Affichage du message */}
+           {message && (
+        <div className="text-center bg-blue-900 text-green-600">
+          {message}
+        </div>
+      )}
+      <div className="space-y-4">
+        <Button variant="contained" fullWidth type="submit">Request Appointment</Button>
+        <Button variant="contained" fullWidth  onClick={handleCloseDialog}>Close</Button>
+        </div>
+      </form>
+      
         </DialogContent>
       </Dialog>
     </>
@@ -192,96 +375,6 @@ export default function ReactCalender() {
 }
 
 
-
-
-function CalendarDaysIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8 2v4" />
-      <path d="M16 2v4" />
-      <rect width="18" height="18" x="3" y="4" rx="2" />
-      <path d="M3 10h18" />
-      <path d="M8 14h.01" />
-      <path d="M12 14h.01" />
-      <path d="M16 14h.01" />
-      <path d="M8 18h.01" />
-      <path d="M12 18h.01" />
-      <path d="M16 18h.01" />
-    </svg>
-  )
-}
-
-
-function ChevronLeftIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-  )
-}
-
-
-function ChevronRightIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  )
-}
-
-
-function ClockIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  )
-}
 
 
 function XIcon(props) {

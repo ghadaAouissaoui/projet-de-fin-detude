@@ -24,6 +24,7 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+
     reason: String,
     
     veterinaire:{
@@ -40,6 +41,7 @@ const appointmentSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid duration. It should be between 15 and 240 minutes.`
         }
     },
+    
     status: {
         type: String,
         default: 'available'

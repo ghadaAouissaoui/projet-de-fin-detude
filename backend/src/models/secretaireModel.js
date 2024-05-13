@@ -1,33 +1,31 @@
 const mongoose=require('mongoose')
 const secretaireSchema=mongoose.Schema(
     {
-        firstname:{
+        fullname:{
             type:String,
-            required: true,
+            required:true,
         },
-
-        lastname:{
+        email:{
             type:String,
-            required: true,
+            unique:true,
         },
         telephone:{
             type:String,
             required:false,
         },
-        CIN:{
+        cin:{
             type:String,
             required: true,
         },
-
-        email:{
+        role:{
             type:String,
-            unique:true,
+            required:true,
         },
+
         password:{
               type:String,
             required : true,
-        },
-        
+        } 
     },
     {
         timestamps:true,

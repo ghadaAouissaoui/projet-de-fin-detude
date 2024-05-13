@@ -26,12 +26,12 @@ function CardTitle({ children }) {
   
 
 export default function UserDashboard() {
-  useRequireAuth();// Use the custom hook to require authentication
-    const { userId } = useParams();
+  useRequireAuth()
+     const { userId } = useParams();
     const [UserProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     name: '',
     dateOfBirth: '',
     species: '',

@@ -1,5 +1,6 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React ,{useState, useEffect } from "react";
+import {Link, useParams} from "react-router-dom";
+import axios from 'axios';
 import Sidebar from "./Sidebare";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg';
@@ -103,6 +104,27 @@ export const Input = (props) => {
 
 
 export default function Patient() {
+  const [patients, setPatients] = useState([]);
+const {vetId}=useParams()
+  useEffect(() => {
+    // Définissez une fonction asynchrone pour récupérer les patients du vétérinaire
+    const fetchPatients = async () => {
+      try {
+        // Faites une requête GET à votre backend pour récupérer les patients du vétérinaire
+        const response = await axios.get(`http://localhost:5000/api/veterinaries/${vetId}/patients`);
+        
+        // Mettez à jour l'état des patients avec les données de la réponse
+        setPatients(response.data);
+        console.log(response.data)
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    // Appelez la fonction pour récupérer les patients lorsque le composant est monté
+    fetchPatients();
+  }, []); // Assurez-vous de passer un tableau vide comme deuxième argument pour useEffect afin de ne déclencher cette fonction qu'une seule fois lors du montage du composant
+console.log(patients);
   return (
     <div className="flex min-h-screen bg-gray-100 ">
         <div  className="max-md:w-1/3 w-1/5 top-20 "><Sidebar/></div> 
@@ -164,26 +186,27 @@ export default function Patient() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>Buddy</TableCell>
-                <TableCell>Dog</TableCell>
-                <TableCell>2023-04-15</TableCell>
-                <TableCell className="text-right">
-                  <Button size="sm" >
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Whiskers</TableCell>
-                <TableCell>Cat</TableCell>
-                <TableCell>2023-03-28</TableCell>
-                <TableCell className="text-right">
-                  <Button size="sm" >
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
+            {patients.map(patient => (
+    <TableRow key={patient._id}>
+        <TableCell>{patient.name}</TableCell>
+        <TableCell>{patient.species}</TableCell>
+        <TableCell>
+            {patient.appointments
+                .filter(appointment => appointment.status === 'not_available') // Filtrer les rendez-vous avec le statut 'not_available'
+                .map(appointment => appointment.appointment_date) // Extraire les dates de rendez-vous
+                .reduce((maxDate, currentDate) => { // Trouver la date la plus récente
+                    return maxDate > currentDate ? maxDate : currentDate;
+                }, '') // La date initiale est une chaîne vide
+            }
+        </TableCell>
+        <TableCell className="text-right">
+            <Button size="sm" >
+                View
+            </Button>
+        </TableCell>
+    </TableRow>
+))}
+
               
             </TableBody>
           </Table>

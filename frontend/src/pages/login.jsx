@@ -22,23 +22,23 @@ export default function Login() {
          // Success: save token to localStorage
          const token = responseUser.data.token;
          localStorage.setItem('token', token);
+           console.log(token);
+           const userData = responseUser.data;
+           console.log('User data:', userData);
 
-        const userData = responseUser.data;
-        console.log('User data:', userData);
-  
         // Redirection en fonction du type d'utilisateur
-        if (userData.role === "veterinaire") {
-          console.log('Redirection vers /pro');
-          navigate(`/pro/${userData._id}`);
-        } else {
+      
           console.log('Redirection vers /espaceclient');
           navigate(`/espaceclient/${userData._id}`);
+        
+        } else {
+          // Code d'état autre que 200 (par exemple 400)
+          throw new Error(responseUser.data.message);
         }
-      } return;
     } catch (error) {
       console.error('Login error for user:', error.message);
       
-      try {
+    try {
         const responseVet = await axios.post("http://localhost:5000/api/veterinaries/loginVeto", {
           email,
           password

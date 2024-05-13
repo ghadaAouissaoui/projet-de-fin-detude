@@ -32,6 +32,7 @@ export default function Calendar() {
       fetchVetProfile();
     }, [vetId]);
 
+
     return (
       <section className=" mx-auto px-4 sm:px-6 lg:px-8 bg-gray-200 p-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -61,7 +62,7 @@ export default function Calendar() {
            
           </div>
           <div className="col-span-2 bg-white shadow rounded-lg">
-            <ReactCalender/>
+            <ReactCalender />
           </div>
         </div>
       </section>

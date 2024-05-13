@@ -141,7 +141,7 @@ import useRequireAuth from "../../auth/userRequireAuth";
 
 export default function Appointment() {
   // Call the useRequireAuth hook
-  useRequireAuth();
+  
   const { vetId } = useParams();
   const [appointments, setAppointments] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -234,7 +234,8 @@ const handleSubmitConfirmAppointment = () => {
       // Envoyer une demande de réservation de rendez-vous
       axios.put(`http://localhost:5000/api/appointment/book/${selectedAppointment._id}`, {
           treatmentIds: [], // Peut-être que vous voudrez passer les IDs des traitements sélectionnés ici
-          petId: selectedAppointment.pet._id
+          petId: selectedAppointment.pet._id,
+          vetId,
       })
       .then(response => {
           console.log('Appointment booked successfully:', response.data.message);
@@ -260,7 +261,7 @@ const handleSubmitConfirmAppointment = () => {
         const response = await axios.get(`http://localhost:5000/api/appointment/vet/${vetId}`);
         const vetAppointments = response.data.appointments;
         setAppointments(vetAppointments);
-        console.log(vetAppointments);
+        console.log("vet appointments ",vetAppointments);
       } catch (error) {
         console.error('Error fetching vet appointments:', error.message);
       }
@@ -316,7 +317,7 @@ const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   return (
     
     <div className="flex w-full bg-gray-100">
-        <div className="max-md:w-1/3 w-1/5 top-20 ">
+        <div className="max-md:w-1/3 w-1/5 ">
           <Sidebar />
          </div>
 

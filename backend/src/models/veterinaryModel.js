@@ -86,6 +86,7 @@ const veterinarySchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
+     
         pets: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Pet'

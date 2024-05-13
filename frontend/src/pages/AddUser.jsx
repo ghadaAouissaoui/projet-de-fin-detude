@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState,useEffect} from "react"
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,7 +7,10 @@ import Select from '@mui/material/Select';
 import Sidebar from "./Sidebare";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg';
-  
+import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
+import {  useNavigate } from "react-router-dom";
+
 
      // Avatar component
      export const Avatar = ({ children }) => {
@@ -42,91 +45,7 @@ import Doctor from '../images/femaleDoctor.jpg';
         )
       }
       
-      
-      function PawPrintIcon(props) {
-        return (
-          <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="4" r="2" />
-            <circle cx="18" cy="8" r="2" />
-            <circle cx="20" cy="16" r="2" />
-            <path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z" />
-          </svg>
-        )
-      }
-      
-      
-      function PencilIcon(props) {
-        return (
-          <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-            <path d="m15 5 4 4" />
-          </svg>
-        )
-      }
-      
-      
-      function PlusIcon(props) {
-        return (
-          <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
-          </svg>
-        )
-      }
-      
-      
-      function XIcon(props) {
-        return (
-          <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </svg>
-        )
-      }
+
       function BellIcon(props) {
         return (
           <svg
@@ -175,14 +94,47 @@ return (
 
 
 export default function Adding() {
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate=useNavigate()
+  const token = localStorage.getItem("token");
+ console.log(token)
 
 
-    const [role, setRole] = React.useState('');
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    telephone: "",
+    cin: "",
+    password:"",
+    role: "secretaire", // Ajoutez le rôle de l'utilisateur dans les données du formulaire
+  });
+ // Surveiller le changement du token
 
-    const handleChange = (event) => {
-      setRole(event.target.value);
-    };
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:5000/api/veto/secretaire/create", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Ajoutez le jeton dans l'en-tête d'autorisation
+        },
+      });
+      console.log(response.data);
+      setSuccessMessage("Secrétaire créé avec succès.");
+      navigate('/')
 
+    } catch (error) {
+      console.error("Error creating secretary:", error);
+      // Traitez les erreurs en fonction de votre logique (par exemple, affichez un message d'erreur)
+    }
+  };
+
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
 
   return (
     <div className="space-y-6 flex w-full bg-gray-100">
@@ -204,50 +156,95 @@ export default function Adding() {
             </Avatar>
           </div>
         </div>
+
         <main className="bg-white p-12 ">
             <div className=" mx-24 p-2 rounded-lg border-2 ">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">Add User</h1>
         <p className="text-gray-500">Enter the new user's information.</p>
       </div>
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="John Doe" required className='w-full' />
+            <Label htmlFor="fullname">Full Name</Label>
+            <Input
+              id="fullname"
+              name="fullname"
+              placeholder="Enter the name"
+              required
+              className="w-full"
+              value={formData.fullname}
+              onChange={handleChange}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" placeholder="john@example.com" required type="email" className='w-full'/>
+            <Input
+              id="email"
+              name="email"
+              placeholder="example@example.com"
+              required
+              type="email"
+              className="w-full"
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="telephone">Phone Number</Label>
+            <Input
+              id="telephone"
+              name="telephone"
+              placeholder="+216 55-555-555"
+              required
+              type="tel"
+              className="w-full"
+              value={formData.telephone}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cin">CIN</Label>
+            <Input
+              id="cin"
+              name="cin"
+              placeholder="Enter your CIN"
+              required
+              type="text"
+              className="w-full"
+              value={formData.cin}
+              onChange={handleChange}
+            />
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number</Label>
-          <Input id="phone" placeholder="+216 55-555-555" required type="tel" className='w-full' />
-        </div>
+            <Label htmlFor="email">Password</Label>
+            <Input
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+              type="password"
+              className="w-full"
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </div>
 
-        <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Role</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={role}
-          label="Role"
-          onChange={handleChange}
+        <Button
+          className="w-full border-none p-2 rounded-md bg-blue-700 hover:bg-blue-500 text-white"
+          type="submit"
         >
-          <MenuItem value={10}>Veterinarian</MenuItem>
-          <MenuItem value={20}>Nurse</MenuItem>
-          <MenuItem value={30}>secretary</MenuItem>
-        </Select>
-      </FormControl>
-    </Box>
-
-        <Button className="w-full border-none p-2 rounded-md bg-blue-700 hover:bg-blue-500 text-white " type="submit">
           Save User
         </Button>
-      </form></div>
+      </form>
+      
+      </div>
       </main>
+
+
       </div>
     </div>
   )

@@ -23,7 +23,7 @@ const {
     router.get('/unavailable/:vetId',getUnavailableAppointments)
 
 
-    router.post('/',authMiddleware,createAppointment)
+    router.post('/:vetId',authMiddleware,createAppointment)
     router.post('/first/:vetId' ,scheduleAppointment)
     
     router.put('/:appointmentId',checkVet, updateAppointment)  
