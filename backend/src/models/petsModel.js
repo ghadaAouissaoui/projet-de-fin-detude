@@ -18,7 +18,6 @@ const petSchema = new mongoose.Schema({
     breed: String,
     sex: String,
     profilePicture: String,
-    comments: String,
     medicalHistory: String,
     user: {
         type: mongoose.Schema.Types.ObjectId,

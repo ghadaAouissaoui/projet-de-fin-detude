@@ -1,4 +1,7 @@
 const Treatment = require('../models/treatmentModel');
+const Appointment =require('../models/appointmentModel')
+
+
 
 async function getAllTreatments(req, res) {
     try {
@@ -26,12 +29,35 @@ async function getOneTreatment(req, res) {
     }
 }
 
+
+
 async function createTreatment(req, res) {
     try {
+        // Vérifier si l'ID du rendez-vous est fourni dans la requête
+        const { appointmentId } = req.body;
+        if (!appointmentId) {
+            return res.status(400).json({ message: 'Appointment ID is required' });
+        }
+
+        // Vérifier si le rendez-vous existe
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        // Créer le traitement
         const treatment = await Treatment.create(req.body);
+
+        // Récupérer l'ID du traitement créé
+        const treatmentId = treatment._id;
+
+        // Associer le traitement au rendez-vous en ajoutant son ID à la liste des traitements du rendez-vous
+        await Appointment.findByIdAndUpdate(appointmentId, { $push: { treatments: treatmentId } });
+
         return res.status(200).json({ message: 'Treatment created', treatment });
     } catch (error) {
-        res.status(500).send(error.message);
+        // Si une erreur se produit lors de la création du traitement, gérer l'erreur
+        return res.status(500).json({ message: 'Failed to create treatment', error: error.message });
     }
 }
 

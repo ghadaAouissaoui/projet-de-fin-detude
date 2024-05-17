@@ -256,7 +256,7 @@ async function getVetProfile(req, res) {
     }
 }
 //fonctionne
-async function getAllPatientsOfVeterinary(req, res) {
+async function getAllPetsOfVeterinary(req, res) {
     try {
         const vetId = req.params.id;
         // Utilisez la méthode findOne pour trouver le vétérinaire par son ID
@@ -317,7 +317,7 @@ module.exports = {
     verifyEmail,
     deleteVet,
     updateVet,
-    getAllPatientsOfVeterinary,
+    getAllPetsOfVeterinary,
     getDateTime,
     getVetProfile,
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllSecretaries, createSecretary, updateSecretary, deleteSecretary } = require('../controllers/secretaireController');
+
 const { protect, checkVet } = require('../middleware/authmiddleware');
 
 // Route pour récupérer tous les secrétaires

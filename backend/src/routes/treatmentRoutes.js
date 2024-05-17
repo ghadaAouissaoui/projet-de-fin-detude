@@ -1,7 +1,7 @@
 const express= require('express')
 const router=express.Router()
 
-const {checkAdmin}=require('../middleware/authmiddleware')
+const { authMiddleware, checkVet}=require('../middleware/authmiddleware')
 const { getAllTreatments,
     getOneTreatment, 
     createTreatment, 
@@ -12,8 +12,8 @@ const { getAllTreatments,
 
 router.get('/', getAllTreatments)
 router.get('/:treatmentId', getOneTreatment)
-router.post('/',checkAdmin, createTreatment)
-router.put('/:treatmentId',checkAdmin, updateTreatment)
-router.delete('/:treatmentId',checkAdmin, deleteTreatment)
+router.post('/',authMiddleware,checkVet('veterinaire'), createTreatment)
+router.put('/:treatmentId',authMiddleware,checkVet('veterinaire'), updateTreatment)
+router.delete('/:treatmentId',authMiddleware,checkVet('veterinaire'), deleteTreatment)
 
-module.exports = router
+module.exports = router 

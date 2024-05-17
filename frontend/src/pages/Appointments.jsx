@@ -16,9 +16,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DialogContent, DialogTitle, TextField, Button,DialogActions, Dialog } from '@mui/material';
+import { DialogContent, DialogTitle,DialogActions, Dialog,TextField, TextareaAutosize, Button, Grid, Typography } from '@mui/material';
 import useRequireAuth from "../../auth/userRequireAuth";
-     // Avatar component
+import { FaBriefcaseMedical } from "react-icons/fa";    
+import { LuPencilLine } from "react-icons/lu";
+import {jwtDecode} from "jwt-decode";
+
+// Avatar component
      export const Avatar = ({ children }) => {
       return <div className="flex items-center space-x-4">{children}</div>;
     };
@@ -313,6 +317,96 @@ const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
     fetchUpcomingAppointments();
   }, []);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const [formDataTraitement, setFormDataTraitement] = useState({
+    ownerName: '',
+    ownerEmail: '',
+    petName: '',
+    petSpecies: '',
+    vaccines: '',
+    medicationName: '',
+    allergies: '',
+    treatmentName: '',
+    notes: '',
+    vetNotes: ''
+});
+// State pour stocker l'ID de l'appointment sélectionné
+const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+
+const fetchOwnerAndPetDetails = async () => {
+  try {
+    const response = await axios.post('http://localhost:5000/api/pet/owner', { name: upcomingAppointments.find(appointment => appointment.id === appointmentId)?.pet.name });
+    const ownerDetails = response.data;
+    // Mise à jour des détails du propriétaire et de l'animal dans le state du formulaire
+    setFormDataTraitement(prevData => ({
+      ...prevData,
+      ownerName: ownerDetails.fullname,
+      ownerEmail: ownerDetails.email,
+      petName: upcomingAppointments.find(appointment => appointment.id === appointmentId)?.pet.name,
+      petSpecies: upcomingAppointments.find(appointment => appointment.id === appointmentId)?.pet.species
+    }));
+  } catch (error) {
+    console.error('Error fetching owner and pet details:', error.message);
+  }
+};
+fetchOwnerAndPetDetails();
+
+const token=localStorage.getItem('token');
+console.log('Token f traitement',token)
+
+
+
+const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+const handleSaveTreatment = () => {
+  // Ouvrir la boîte de dialogue de confirmation
+  setConfirmDialogOpen(true);
+};
+
+const handleCancelSave = () => {
+  // Annuler la sauvegarde du traitement
+  console.log('Sauvegarde du traitement annulée.');
+  // Fermer la boîte de dialogue de confirmation
+  setConfirmDialogOpen(false);
+}; 
+
+const handleChangeTraitement = (event) => {
+  const { name, value } = event.target;
+  setFormDataTraitement(prevData => ({
+      ...prevData,
+      [name]: value
+  }));
+};
+// Fonction pour soumettre le traitement
+const handleSubmitTraitement = async (e) => {
+  e.preventDefault();
+  try {
+      const response = await axios.post('http://localhost:5000/api/treatment/', { ...formDataTraitement, appointmentId: selectedAppointmentId }, {
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`, // Ajoutez le jeton dans l'en-tête d'autorisation
+          }
+      });
+      console.log(response.data); // Loggez la réponse du backend
+      // Fermez la boîte de dialogue de confirmation après la sauvegarde réussie
+      setConfirmDialogOpen(false);
+      // Effectuez d'autres actions après la création du traitement si nécessaire
+  } catch (error) {
+      console.error('Error creating treatment:', error);
+      // Gérez les erreurs en conséquence
+  }
+};
+
+
+
 
   return (
     
@@ -541,8 +635,9 @@ const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
                 <div className="flex items-center gap-2 ">
                   
-                  <PencilIcon className="h-4 w-4 cursor-pointer text-green-500" />
+                  <PencilIcon  className="h-6 w-5 cursor-pointer text-green-500" />
                   <AiFillDelete className="h-6 w-6 cursor-pointer text-red-400" />
+                  <FaBriefcaseMedical className="h-6 w-6 text-blue-800"  onClick={handleOpenDialog} />
                 </div>
               </div>
             </div>
@@ -550,6 +645,192 @@ const [upcomingAppointments, setUpcomingAppointments] = useState([]);
         </div>
       ))}
 </div>
+
+
+
+
+<Dialog open={openDialog} onClose={handleCloseDialog}>
+      <DialogTitle>
+        Dossier médical - Animaux de compagnie
+      </DialogTitle>
+      <DialogContent>
+      <form onSubmit={handleSubmitTraitement}>
+        <Typography variant="h6" gutterBottom> Owner</Typography>
+        <Grid container spacing={2} className="pt-">
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="ownerName"
+              value={formDataTraitement.ownerName}
+              label="Name"
+              variant="outlined" 
+              onChange={handleChangeTraitement}/>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="ownerEmail"
+              value={formDataTraitement.ownerEmail}
+              label="Email"
+              variant="outlined"
+              type="email" 
+              onChange={handleChangeTraitement}
+              />
+          </Grid>
+          
+        </Grid>
+
+        <Typography variant="h6" gutterBottom>
+          Pet
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="petName"
+              value={formDataTraitement.petName}
+              label="Pet Name"
+              variant="outlined"
+              onChange={handleChangeTraitement}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="petSpecies"
+              value={formDataTraitement.petSpecies}
+              label="Espèce"
+              variant="outlined"
+              onChange={handleChangeTraitement}
+            />
+          </Grid>
+        </Grid>
+
+        <Typography variant="h6" gutterBottom>Vaccines</Typography>
+<Grid container spacing={2}>
+    <Grid item xs={12} sm={6}>
+        <TextField
+            fullWidth
+            name="vaccineName"
+            value={formDataTraitement.vaccineName}
+            label="Nom du vaccin"
+            variant="outlined"
+            onChange={handleChangeTraitement}
+        />
+    </Grid>
+    <Grid item xs={12} sm={6}>
+        <TextField
+            fullWidth
+            label="Date"
+            name="vaccineDate"
+            value={formDataTraitement.vaccineDate}
+            variant="outlined"
+            type="date"
+            InputLabelProps={{
+                shrink: true,
+            }}
+            onChange={handleChangeTraitement}
+        />
+    </Grid>
+</Grid>
+
+{/* Medication section */}
+<Typography variant="h6" gutterBottom>Médicaments</Typography>
+<Grid container>
+    <Grid item xs={12} sm={6}>
+        <TextField
+            fullWidth
+            name="medicationName"
+            value={formDataTraitement.medicationName}
+            label="Nom du médicament"
+            variant="outlined"
+            onChange={handleChangeTraitement}
+        />
+    </Grid>
+</Grid>
+
+{/* Allergies section */}
+<Typography variant="h6" gutterBottom>Allergies</Typography>
+<TextField
+    name="allergies"
+    value={formDataTraitement.allergies}
+    fullWidth
+    placeholder="Entrez les allergies de l'animal"
+    rowsMin={4}
+    onChange={handleChangeTraitement}
+/>
+
+{/* Medical Treatments section */}
+<Typography variant="h6" gutterBottom>Traitements médicaux</Typography>
+<Grid container spacing={2}>
+    <Grid item xs={12} sm={6}>
+        <TextField
+            fullWidth
+            name="treatmentName"
+            value={formDataTraitement.treatmentName}
+            label="Nom du traitement"
+            variant="outlined"
+            onChange={handleChangeTraitement}
+        />
+    </Grid>
+    <Grid item xs={12} sm={6}>
+        <TextField
+            fullWidth
+            name="notes"
+            value={formDataTraitement.notes}
+            label="Notes"
+            variant="outlined"
+            onChange={handleChangeTraitement}
+        />
+    </Grid>
+</Grid>
+
+{/* Vet Notes section */}
+<Typography variant="h6" gutterBottom>Notes du vétérinaire</Typography>
+<TextField
+    name="vetNotes"
+    value={formDataTraitement.vetNotes}
+    fullWidth
+    placeholder="Entrez les notes du vétérinaire"
+    onChange={handleChangeTraitement}
+/>
+    
+      <DialogActions>
+        <div className="flex gap-6 w-full">
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handleCloseDialog}>
+          Close
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveTreatment}
+          fullWidth>
+          Save Treatement
+        </Button>
+       {/* Afficher la boîte de dialogue de confirmation */}
+       {confirmDialogOpen && (
+                <div>
+                    <p>Are you sure to save?</p>
+                    <Button variant="contained" color="primary" onClick={handleSubmitTraitement}>Yes</Button>
+                    <Button variant="contained" color="secondary" onClick={handleCancelSave}>No</Button>
+                </div>
+            )}
+        </div>
+      </DialogActions>
+      </form>
+      </DialogContent>
+    </Dialog>
+
+
+
+
+
+
+
 
         <div className="bg-white rounded-lg shadow-sm  m-4 md:w-1/2 w-full">
           <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
