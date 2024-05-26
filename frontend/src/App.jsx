@@ -51,6 +51,7 @@ const App = () => {
             <Route path="/veterinaries/:id/verify/:token" element={<EmailVerifyVeto />} />
             <Route path="/secretaires/:id/verify/:token" element={<EmailVerifySecretaire />} />
             <Route path="/pro/:vetId" element={<Dashboard />} />
+            <Route path="/pro/:id" element={<Dashboard />} />
             <Route path="/pro/appointment/:vetId" element={<Appointment />} />
             <Route path="/pro/inbox/:vetId" element={<Inbox />} />
             <Route path="/pro/patients/:vetId" element={<Patient />} />

@@ -17,15 +17,15 @@ const createSecretary = asyncHandler(async (req, res) => {
 
   // Vérification si tous les champs requis sont fournis
   if (!fullname || !email || !telephone || !cin || !password || !role) {
-      res.status(400);
-      throw new Error('Ajoutez tous les champs requis');
+    res.status(400);
+    throw new Error('Ajoutez tous les champs requis');
   }
 
   // Vérification si l'utilisateur existe déjà dans la base de données
   const secretaireExists = await Secretaire.findOne({ email });
   if (secretaireExists) {
-      res.status(400);
-      throw new Error("Le secrétaire existe déjà.");
+    res.status(400);
+    throw new Error("Le secrétaire existe déjà.");
   }
 
   // Hacher le mot de passe
@@ -36,24 +36,36 @@ const createSecretary = asyncHandler(async (req, res) => {
 
   // Vérifiez si l'utilisateur authentifié est un vétérinaire
   if (req.veterinaire) {
+    try {
       // Créez le secrétaire associé au vétérinaire
       const secretary = new Secretaire({
-          fullname,
-          email,
-          telephone,
-          cin,
-          role: "secretaire",
-          password: hashedPassword,
-          veterinarian: req.veterinaire._id, // Associez le secrétaire au vétérinaire authentifié
+        fullname,
+        email,
+        telephone,
+        cin,
+        role: "secretaire",
+        password: hashedPassword,
+        veterinarian: req.veterinaire._id // Associez le secrétaire au vétérinaire authentifié
       });
 
-      await secretary.save(); // Sauvegarder le secrétaire avant de créer le token
+      // Vérifiez si le vétérinaire existe
+      const vet = await Veterinary.findById(req.veterinaire._id);
+      if (vet) {
+        // Sauvegarder le secrétaire
+        await secretary.save();
+
+        // Associez le secrétaire au vétérinaire
+        await vet.secretaires.push(secretary);
+        await vet.save();
+      } else {
+        return res.status(404).send('Veterinary not found');
+      }
 
       // Enregistrement du token de vérification dans la base de données
-      const tokenInstance = await Token.create({
-          userId: secretary._id,
-          ref: "secretaire",
-          token: verificationToken,
+      await Token.create({
+        userId: secretary._id,
+        ref: "secretaire",
+        token: verificationToken,
       });
 
       // Envoi de l'email de vérification
@@ -62,16 +74,21 @@ const createSecretary = asyncHandler(async (req, res) => {
 
       // Envoi d'une réponse JSON contenant les détails de l'utilisateur et un message
       res.status(201).json({
-          fullname,
-          email,
-          role,
-          message: "Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre email pour activer votre compte."
+        fullname,
+        email,
+        role,
+        message: "Un email de vérification a été envoyé à votre adresse. Veuillez vérifier votre email pour activer votre compte."
       });
+    } catch (error) {
+      console.error("Error creating secretary:", error);
+      res.status(500).send("Une erreur s'est produite lors de la création du secrétaire.");
+    }
   } else {
-      res.status(403);
-      throw new Error("Non autorisé");
+    res.status(403);
+    throw new Error("Non autorisé");
   }
 });
+
 
 // Fonction pour vérifier l'email
 const verifyEmail = async (req, res) => {
@@ -129,6 +146,7 @@ const loginSecretaire = asyncHandler(async (req, res) => {
           fullname: secretaire.fullname,
           email: secretaire.email,
           token: token,
+          veterinarian: secretaire.veterinarian,
       });
   } else {
       res.status(400);

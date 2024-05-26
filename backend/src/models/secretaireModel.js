@@ -32,6 +32,11 @@ const secretaireSchema=mongoose.Schema(
         }, 
         role: {
             type: String,          
+        },
+        veterinarian:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Veterinary',
+            required:true
         }
     },
     {

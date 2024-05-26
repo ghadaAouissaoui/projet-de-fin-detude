@@ -18,7 +18,12 @@ export default function Login() {
       });
 
       if (responseUser.status === 200) {
-        handleLoginSuccess(responseUser, 'client');
+        const token = responseUser.data.token;
+        localStorage.setItem('token', token);
+        const userData = responseUser.data;
+        console.log('User data:', userData);
+        
+        navigate(`/espaceclient/${userData._id}`);
         return;
       }
     } catch (error) {
@@ -32,7 +37,13 @@ export default function Login() {
       });
 
       if (responseVet.status === 200) {
-        handleLoginSuccess(responseVet, 'pro');
+        const token = responseVet.data.token;
+        localStorage.setItem('token', token);
+        
+        const vetData = responseVet.data;
+        console.log('Veterinarian data:', vetData);
+        
+        navigate(`/pro/${vetData._id}`, { state: { role: 'veterinaire' } });
         return;
       }
     } catch (error) {
@@ -46,31 +57,20 @@ export default function Login() {
       });
 
       if (responseSec.status === 200) {
-        handleLoginSuccess(responseSec, 'home');
+        const token = responseSec.data.token;
+        localStorage.setItem('token', token);
+        
+        const secData = responseSec.data;
+        console.log('Secretary data:', secData);
+        console.log("veeeeet",secData.veterinarian)
+        navigate(`/pro/${secData.veterinarian}`, { state: { role: 'secretaire' } });
         return;
       }
     } catch (error) {
       console.error('Login error for secretary:', error.message);
-      alert("Wrong details. Please try again.");
     }
-  }
 
-  function handleLoginSuccess(response, role) {
-    const token = response.data.token;
-    localStorage.setItem('token', token);
-    console.log(token);
-
-    const userData = response.data;
-    console.log(`${role} data:`, userData);
-
-    const paths = {
-      'client': `/espaceclient/${userData._id}`,
-      'pro': `/pro/${userData._id}`,
-      'home': '/'
-    };
-
-    console.log(`Redirection vers ${paths[role]}`);
-    navigate(paths[role]);
+    alert("Wrong details. Please try again.");
   }
 
   return (
@@ -86,15 +86,15 @@ export default function Login() {
               Login to your account below
             </p>
           </div>
-          <div className="my-6">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 px-4 rounded flex items-center justify-center">
-              <ChromeIcon className="w-4 h-4 mr-2" />
+          <div className="my-6 ">
+            <button className=" bg-blue-500 hover:bg-blue-600 text-white w-full py-2 px-4 rounded">
+              <ChromeIcon className="w-4 h-4 mr-2 mt-2" />
               Continue with Google
             </button>
           </div>
           <div className="space-y-4">
-            <input id="email" className="w-full px-4 py-2 border rounded" placeholder="Enter email..." value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
-            <input id="password" className="w-full px-4 py-2 border rounded" placeholder="Enter password..." value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
+            <input id="email" className="w-full px-4 py-2 border rounded" placeholder="Enter email..." value={email} onChange={(e) => { setEmail(e.target.value) }} type="email" />
+            <input id="password" className="w-full px-4 py-2 border rounded" placeholder="Enter password..." value={password} onChange={(e) => { setPassword(e.target.value) }} type="password" />
           </div>
           <div className="my-6">
             <button type='submit' className="bg-indigo-500 hover:bg-indigo-600 text-white w-full py-2 px-4 rounded">Login</button>

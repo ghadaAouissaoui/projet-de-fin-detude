@@ -93,6 +93,10 @@ const veterinarySchema = mongoose.Schema(
         pets: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Pet'
+        }],
+        secretaires: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Secretaire'
         }]
     },
     {

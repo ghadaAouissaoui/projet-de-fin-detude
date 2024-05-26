@@ -10,7 +10,7 @@ import Doctor from '../images/femaleDoctor.jpg';
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {  useNavigate } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 
      // Avatar component
      export const Avatar = ({ children }) => {
@@ -94,6 +94,7 @@ return (
 
 
 export default function Adding() {
+  const { vetId } = useParams();
   const [successMessage, setSuccessMessage] = useState("");
   const navigate=useNavigate()
   const token = localStorage.getItem("token");
@@ -107,6 +108,7 @@ export default function Adding() {
     cin: "",
     password:"",
     role: "secretaire", // Ajoutez le rôle de l'utilisateur dans les données du formulaire
+    veterinarian:token.id,
   });
  // Surveiller le changement du token
 
@@ -136,6 +138,23 @@ export default function Adding() {
     });
   };
 
+  const [vetprofile, setVetProfile] = useState(null);
+  useEffect(() => {
+    const fetchVetProfile = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
+        setVetProfile(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Une erreur s'est produite lors de la récupération du profil du vétérinaire :", error);
+        setLoading(false);
+      }
+    };
+
+    fetchVetProfile();
+  }, [vetId]);
+console.log("prooooofile",vetprofile)
+
   return (
     <div className="space-y-6 flex w-full bg-gray-100">
         <div  className="max-md:w-1/3 w-1/5 top-20 "><Sidebar/></div>  
@@ -158,6 +177,32 @@ export default function Adding() {
         </div>
 
         <main className="bg-white p-12 ">
+        <div className="flex space-x-8 bg-black">fdgdf
+    {/* Render veterinarian profile */}
+    {vetprofile && (
+      <div className="flex flex-col">
+        <img
+          className="w-28 h-28 rounded-full"
+          src={Doctor}
+          alt="{vetprofile.fullname}"
+        />
+        <div className="flex flex-col ml-4">
+          {/* Render veterinarian details */}
+          <h3 className="pt-8">{vetprofile.fullname}</h3>
+          <p>{vetprofile.specialite}</p>
+          <div>
+            <p>{vetprofile.address.rue}</p>
+            <p>{vetprofile.address.city}</p>
+            <p>{vetprofile.address.postalCode}</p>
+          </div>
+        </div>
+        <div className="flex items-center mb-20">
+          <StarIcon className="w-4 h-4 text-yellow-400" />
+          <span className="ml-1 text-blue-700">4.9</span>
+        </div>
+      </div>
+    )}
+    </div>
             <div className=" mx-24 p-2 rounded-lg border-2 ">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">Add User</h1>
