@@ -23,15 +23,19 @@ const ComponentD = () => {
   console.log(veterinarians);
   return (
     <div className="flex items-center justify-between flex-col bg-white mx-auto">
-      <h2 className='text-3xl font-semibold text-gray-800'>Find top specialist doctors here</h2>
-      <div className="overflow-hidden  whitespace-nowrap flex-col  px-4 py-2 rounded-md flex items-center slide-container">
-        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Cardiovascular</button>
-        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Orthopedist</button>
-      { /* <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Internist</button>
-        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Pulmonologist</button>
-        <button className="inline-block mr-8 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600  w-64 h-24 cursor-pointer">Dentist</button>
-  */ }  </div>
-      <div className="grid lg:grid-cols-3 gap-6 m-5 md:grid-cols-2 mx-5 md:mx-0 my-5">
+      <div className='flex flex-col items-center justify-between '>
+      <h2 className='text-3xl font-semibold text-gray-800 pb-8  '>Find top specialist doctors here</h2>
+      <div className="overflow-hidden max-md:flex-wrap px-4 py-2 rounded-md flex items-center">
+  <button className="inline-block mr-4 mb-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-24 cursor-pointer">Anesthesia and analgesia</button>
+  <button className="inline-block mr-4 mb-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-24 cursor-pointer">Animal welfare</button>
+  <button className="inline-block mr-4 mb-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-24 cursor-pointer">Behavioral medicine</button>
+  <button className="inline-block mr-4 mb-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-24 cursor-pointer">Dermatology</button>
+  <button className="inline-block mr-4 mb-4 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 h-24 cursor-pointer">Dentistry</button>
+</div>
+</div>
+
+
+      <div className="grid lg:grid-cols-3 gap-6 m-5 md:grid-cols-2 mx-5 md:mx-0 my-12">
 
 
           {veterinarians.map((vet, index) => (

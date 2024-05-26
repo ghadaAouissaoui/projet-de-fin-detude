@@ -1,7 +1,17 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import {Link,useParams} from "react-router-dom";
 import Sidebar from "./Sidebare";
+import Doctor from '../images/femaleDoctor.jpg';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
 
+} from '@mui/material';
  // Avatar component
  export const Avatar = ({ children }) => {
     return <div className="flex items-center space-x-4">{children}</div>;
@@ -62,65 +72,137 @@ export const Input = (props) => {
       />
     );
   };
-  function Button({ children, variant }) {
+
+
+  export default function Inbox() {
+    const {vetId}=useParams();
+    console.log("veeetid",vetId)
+    const [messages, setMessages] = useState([]);
+    const [newMessageDialogOpen, setNewMessageDialogOpen] = useState(false);
+    const [newMessageContent, setNewMessageContent] = useState({
+      senderId:'',
+      receiverId: vetId,
+      content: ''
+    });
+ 
+    useEffect(() => {
+      const fetchMessages = async () => {
+        try {
+          if (typeof vetId !== 'string' || !vetId) {
+            throw new Error('Invalid vetId');
+          }
+  
+          const response = await axios.get(`http://localhost:5000/api/messages/${vetId}`);
+          setMessages(response.data);
+          console.log("messages", response.data);
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+        }
+      };
+  
+      fetchMessages();
+    }, [vetId]); // Ajouter vetId comme dépendance pour s'assurer que les messages sont récupérés lorsque vetId change
+  
+  
+    const handleNewMessageChange = (e) => {
+      const { name, value } = e.target;
+      setNewMessageContent({ ...newMessageContent, [name]: value });
+    };
+  
+    const handleNewMessageSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await axios.post('http://localhost:5000/api/messages', newMessageContent);
+        setMessages([...messages, response.data]);
+        setNewMessageDialogOpen(false);
+        setNewMessageContent({ receiverId: '', content: '' });
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    };
+  
     return (
-      <button
-        className={`py-2 px-4 rounded-md text-white ${
-          variant === "outline" ? "bg-transparent border border-gray-400 hover:bg-gray-100 hover:text-gray-800" : "bg-blue-500 hover:bg-blue-600"
-        }`}
-      >
-        {children}
-      </button>
-    );
-  }
-
-
-export default function Inbox() {
-  return (
-    <div className="flex w-full bg-gray-100">  
-    <div  className="max-md:w-1/3 w-1/5 top-20 "><Sidebar/></div>  
-        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6 ">
-
-          <div className="border shadow-sm rounded-lg p-2">
+<div className="flex w-full bg-gray-100">
+      <div className="max-md:w-1/3 w-1/5 top-20">
+        <Sidebar />
+      </div>
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+        <div className="flex justify-between w-full pb-8 p-6">
+          <div className="flex rounded-lg w-1/2">
+            <div className="bg-gray-200 pt-2.5 pl-2 rounded-l-xl">
+              <SearchIcon />
+            </div>
+            <Input
+              className="block w-full p-2 bg-gray-200 rounded-r-xl outline-none"
+              placeholder="Search"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <BellIcon className="h-6 w-6 text-gray-600" />
+            <Avatar alt="User profile" src={Doctor} className="h-12 w-12 rounded-full" />
+          </div>
+        </div>
+        <div className="border shadow-sm rounded-lg p-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-lg">Messages</h2>
+              <Button variant="outline" onClick={() => setNewMessageDialogOpen(true)}>
+                New Message
+              </Button>
+            </div>
             <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-lg">Messages</h2>
-                <Button variant="outline">New Message</Button>
-              </div>
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start gap-4">
-                  <Avatar>
-                    <AvatarImage alt="John Doe" src="/placeholder-user.jpg" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
+              {messages.map((message) => (
+                <div className="flex items-start gap-4" key={message._id}>
+                  <Avatar alt={message.sender.fullname} src="/placeholder-user.jpg" />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">John Doe</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Apr 23, 2023</div>
+                      <div className="font-medium">dgffh{message.sender}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(message.createdAt).toLocaleDateString()}
+                      </div>
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Hi Dr. Doe, I wanted to follow up on Buddy's appointment yesterday. How is he doing?
+                      {message.content}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <Avatar>
-                    <AvatarImage alt="Jane Smith" src="/placeholder-user.jpg" />
-                    <AvatarFallback>JS</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div className="font-medium">Jane Smith</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Apr 21, 2023</div>
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Good morning, I wanted to schedule a check-up for Whiskers. Can you please let me know your
-                      availability?
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <Card>
+              ))}
+            </div>
+            <Dialog open={newMessageDialogOpen} onClose={() => setNewMessageDialogOpen(false)}>
+              <DialogTitle>New Message</DialogTitle>
+              <DialogContent>
+                <form onSubmit={handleNewMessageSubmit}>
+                  <TextField
+                    name="receiverId"
+                    label="Receiver ID"
+                    value={newMessageContent.receiverId}
+                    onChange={handleNewMessageChange}
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    name="content"
+                    label="Content"
+                    value={newMessageContent.content}
+                    onChange={handleNewMessageChange}
+                    fullWidth
+                    required
+                    multiline
+                    rows={4}
+                    margin="normal"
+                  />
+                  <DialogActions>
+                    <Button onClick={() => setNewMessageDialogOpen(false)} color="primary">
+                      Cancel
+                    </Button>
+                    <Button type="submit" color="primary">
+                      Send
+                    </Button>
+                  </DialogActions>
+                </form>
+              </DialogContent>
+            </Dialog>
+            <Card>
               <CardHeader>
                 <CardTitle>Communication with patients</CardTitle>
                 <CardDescription>Send messages to your patients.</CardDescription>
@@ -145,14 +227,48 @@ export default function Inbox() {
                 </form>
               </CardContent>
             </Card>
-            </div>
           </div>
-        </main>
-      
+        </div>
+      </main>
     </div>
+  );
+}
+function BellIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
   )
 }
 
-
+function SearchIcon(props) {
+  return (
+      <svg xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="gray" 
+      stroke-width="2" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      class="feather feather-activity">
+        <circle cx="10.5" cy="10.5" r="7.5"></circle>
+        <line x1="21" y1="21" x2="15.8" y2="15.8"></line>
+        </svg>
+  )
+}
 
 

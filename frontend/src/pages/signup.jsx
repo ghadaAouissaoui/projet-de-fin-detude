@@ -111,22 +111,30 @@ export default function Signup() {
       }
     }
   };
-  
+  const CustomInput = ({ value, onClick }) => (
+    <input
+      className="border-2 border-gray-300 rounded-md p-2 h-[58px] md:w-full px-3"
+      placeholder="MM-DD-YYYY"
+      value={value}
+      onClick={onClick}
+      readOnly
+    />
+  );
   return (
     <div className="flex flex-col p-10 rounded-lg shadow-lg lg:max-w-[50rem] max-w-md mx-auto my-8">
-      <Avatar className="mb-4">
+      {/*<Avatar className="mb-4">
         <img alt="Sign Up" src="/placeholder.svg?height=64&width=64" />
-      </Avatar>
+      </Avatar>*/}
       <h1 className="text-3xl font-bold mb-2">Sign up</h1>
       <p className="mb-6 text-sm text-gray-600">Enter your details below to create your account and get started.</p>
       <form className="w-full lg:max-w-[700px] max-w-md" onSubmit={handleSubmit}>
         
         <div className="flex flex-row w-full mb-5">
         <div className="flex flex-col w-full md:w-1/2 px-3">
-        <Button className="bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md" type="button">User</Button>
+        <Button className="bg-blue-600 hover:bg-blue-500 text-white w-90 ml-1 h-[58px] rounded-md" type="button">User</Button>
           </div>
           <div className="flex flex-col w-full md:w-1/2 px-3">
-          <button className="hover:bg-purple-600 bg-gray-400 text-white w-90 ml-1 h-[58px] rounded-md"  onClick={handleButtonClick} >Veterinary</button>
+          <button className="hover:bg-blue-500 bg-gray-300 text-white w-90 ml-1 h-[58px] rounded-md"  onClick={handleButtonClick} >Veterinary</button>
           </div>
           </div>
           <div className="flex flex-row w-full mb-5">
@@ -141,15 +149,15 @@ export default function Signup() {
         </div>
 
         <div className="flex flex-row w-full mb-5">
-          <div className="flex flex-col w-full md:w-1/2 px-3">
-            <Label htmlFor="datebirth">Date of Birth</Label>
-            <DatePicker 
-              selected={datebirth} 
-              onChange={(date) => setDateBirth(date)} 
-              className="border-2 border-gray-300 rounded-md p-2 h-[58px] md:w-full px-3" 
-              placeholder='MM-DD-YYYY'
-            />
-          </div>
+        <div className="flex flex-col w-full md:w-1/2 px-3">
+      <label htmlFor="datebirth">Date of Birth</label>
+      <DatePicker
+        selected={datebirth}
+        onChange={(date) => setDateBirth(date)}
+        customInput={<CustomInput />}
+        dateFormat="MM-dd-yyyy"
+      />
+    </div>
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="phoneNumber">Phone Number</Label>
             <Input id="phoneNumber" placeholder="Enter your phone number" type="text" value={phoneNumber} onChange={handleChange} />
@@ -167,12 +175,12 @@ export default function Signup() {
         </div>
         <div className="flex flex-row w-full mb-5">
           <div  className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="bg-gray-200 text-gray-800 w-full mr-2 h-[58px] rounded-md border-2 border-gray-300 " type="button">Cancel</Button></div>
-          <div className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md" type="submit">Confirm</Button></div>
+          <div className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="hover:bg-blue-500 bg-blue-600 text-white w-90 ml-1 h-[58px] rounded-md" type="submit">Confirm</Button></div>
         </div>
         {emailSent && <p className="w-full p-4 my-1 text-md bg-blue-200 text-white font-bold rounded-lg text-center">{msg}</p>}
         <div className="text-center mt-4">
           <span className="text-sm text-gray-600">Already have an account? </span>
-          <Link className="text-sm text-purple-600 hover:underline" to="/login">Login</Link>
+          <Link className="text-sm text-blue-500 hover:underline" to="/login">Login</Link>
         </div>
       </form>
     </div>

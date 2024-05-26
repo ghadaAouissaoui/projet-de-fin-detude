@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { GoArrowUpRight, GoArrowLeft, GoArrowRight } from 'react-icons/go';
-import image from '../images/doc.jpg';
+import image from '../images/veterinaire.png';
 
 const ComponentQ = () => {
   return (
-    <div className='p-4 flex w-full'>
-    <div className="bg-gray-100 flex flex-col  w-full sm:w-auto ">
+    <div className='flex w-full '>
+    <div className=" flex flex-col  w-full sm:w-auto ">
       
-      <section className="bg-[#bebec0] flex flex-col w-full">
+      <section className="bg-[#bebec0] h-[400px] flex flex-col w-full">
         <div className=" bg-white w-1/3 h-20  rounded-br-3xl">
           <div className="pt-4">
             <span className="text-black font-bold text-2xl pl-9">What Users Say About </span>
             <span className="text-indigo-600 font-bold text-2xl mb-4">Visito</span>
           </div>
         </div>
-        <div className="flex items-center justify-between w-full p-6">
+        <div className="flex  w-full px-6 ">
           <UserReview
             review="Using Visito was a wonderful experience for me. It has a simple and efficient user interface and I was able to easily book an appointment at the office I wanted at the time I wanted. Also, getting a booking confirmation and reminder before my appointment helped me to always be on time at the office."
             avatarSrc={image}
@@ -57,9 +57,9 @@ const ComponentQ = () => {
 
 const UserReview = ({ review, avatarSrc, username, rating, className }) => {
   return (
-    <div className={`flex items-center justify-between ${className}`}>
+    <div className={`flex w-full  ${className}`}>
       <div>
-        <div className="flex flex-row mb-4">
+        <div className="flex flex-row pt-8 mb-4">
           <div>
             <p className="ml-4 text-gray-600">{username}</p>
           </div>
@@ -68,15 +68,15 @@ const UserReview = ({ review, avatarSrc, username, rating, className }) => {
             <span className="ml-1 text-yellow-400">{rating}</span>
           </div>
         </div>
-        <blockquote className="flex ml-4 w-1/2 text-gray-700">"{review}"</blockquote>
+        <blockquote className="flex ml-4 w-1/2 text-gray-900">"{review}"</blockquote>
         <div className="ml-[30%] flex flex-row gap-8 ">
           <GoArrowLeft className="text-gray-700" />
           <GoArrowRight className="text-gray-700" />
         </div>
       </div>
 
-      <div className="relative flex-row max-md:gap-8 w-full flex max-md:flex-col ">
-        <div className="bg-white bg-opacity-50 w-[300px] pt-2 pl-4 max-md:pl-20 h-[60px] top-[200px] md:relative left-[100px]">
+      <div className="flex-row max-md:gap-8 w-full flex max-md:flex-col mt-[-16]">
+        <div className="bg-white bg-opacity-50 w-[300px] pt-2 pl-4 max-md:pl-20 h-[60px] top-[100px] md:relative left-0">
           <a href="#" className="text-gray-700 ml-1 text-sm hover:underline">
             +500 Users reviews
           </a>
@@ -85,7 +85,8 @@ const UserReview = ({ review, avatarSrc, username, rating, className }) => {
           <a href="#" className="text-gray-700 ml-1 text-sm hover:underline">
             see all reviews
           </a>
-          <GoArrowUpRight className="text-gray-700 ml-1 mt-1" /></div>
+          <GoArrowUpRight className="text-gray-700 ml-1 mt-1" />
+          </div>
         </div>
         <Avatar src={avatarSrc} alt={username} fallbackText={username.substring(0, 2).toUpperCase()}  />
       </div>
@@ -137,7 +138,7 @@ function Avatar({ src, alt, fallbackText }) {
         <img
           src={src}
           alt={alt}
-          className="flex items-center m-auto w-[500px]"
+          className="flex items-center w-[100%] h-[70%] "
           onError={(e) => {
             const target = e.target;
             target.src = `https://via.placeholder.com/40?text=${fallbackText}`;

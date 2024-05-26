@@ -12,6 +12,7 @@ const {
     scheduleAppointment,
     bookAppointment,
     getUnavailableAppointments,
+    getRecentAppointments,
     updateAppointment,
     deleteAppointment } = require('../controllers/appointmentController')
 
@@ -21,7 +22,7 @@ const {
     router.get ('/owner/appointments', getPetAppointments)
     router.get('/owner/available',getAvailableAppointments)
     router.get('/unavailable/:vetId',getUnavailableAppointments)
-
+    router.get('/isTreated/:vetId',getRecentAppointments)
 
     router.post('/:vetId',authMiddleware,createAppointment)
     router.post('/first/:vetId' ,scheduleAppointment)
@@ -31,7 +32,6 @@ const {
 
     router.delete('/:appointmentId',checkVet('veterinaire'), deleteAppointment)
    
-  
 
   
   

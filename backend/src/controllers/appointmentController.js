@@ -98,6 +98,29 @@ async function getUnavailableAppointments(req, res) {
 }
 
 
+async function getRecentAppointments(req, res) {
+    try {
+        const { vetId } = req.params;
+
+        // Recherchez les rendez-vous non disponibles pour le vétérinaire spécifié avec des traitements non vides
+        const recentAppointments = await Appointment.find({
+            status: 'not_available', 
+            veterinaire: vetId,
+            treatments: { $exists: true, $ne: [] } // Traitements non vides
+        }).populate('pet')
+        .select('id appointment_date appointment_time status pet');
+
+        const message = `Recents appointments for veterinarian ${vetId} with non-empty treatments:`;
+        console.log("messsaaage",message)
+        return res.status(200).json({ recentAppointments });
+
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+
+
 
 async function bookAppointment(req, res) {
     try {
@@ -312,6 +335,7 @@ module.exports = {
     createAppointment,
     updateAppointment,
     getUnavailableAppointments,
+    getRecentAppointments,
     bookAppointment,
     deleteAppointment
 };

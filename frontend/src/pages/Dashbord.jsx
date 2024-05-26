@@ -105,7 +105,7 @@ export const Card = ({ children, className }) => {
 export default function Dashboard() {
   // Initialize state for the date with current date
   const [date, setDate] = useState(new Date());
-
+  const [totalPatients, setTotalPatients] = useState(0);
   // Function to handle changing the date
   const handleDateChange = (increment) => {
     const newDate = new Date(date);
@@ -125,6 +125,11 @@ export default function Dashboard() {
       try {
         const response = await axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
         setVetProfile(response.data.veterinaire); // Assuming the vet data structure
+        // Calculate the number of patients
+        const numberOfPatients = response.data.veterinaire.pets.length;
+        
+        setTotalPatients(numberOfPatients);
+        console.log('Number of patients:', numberOfPatients);
       } catch (error) {
         console.error("Une erreur s'est produite lors de la récupération du profil du vétérinaire :", error);
       } finally {
@@ -137,7 +142,20 @@ export default function Dashboard() {
 
 
 
-
+  const [totalAppointments,setTotalAppointment]=useState(0);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/appointment/vet/${vetId}`);
+      
+        console.log('number appointment',response.data.appointments.length)
+        setTotalAppointment(response.data.appointments.length)
+      } catch (error) {
+        console.error('Error fetching vet appointments:', error.message);
+      }
+    };
+    fetchData();
+  }, [vetId]);
 
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -205,27 +223,21 @@ export default function Dashboard() {
         <div className="grid grid-cols-3 gap-6 mt-6">
           <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
             <CardTitle>Total Appointment</CardTitle>
-            <h2 className="text-3xl font-bold">489</h2>
+            <h2 className="text-3xl font-bold">{totalAppointments}</h2>
             <CurvedlineChart className="w-full h-36" />
-            <Badge className="mt-2" variant="secondary">
-              +5.9% last week
-            </Badge>
+           
           </Card>
           <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
             <CardTitle>Total Patients</CardTitle>
-            <h2 className="text-3xl font-bold">210</h2>
+            <h2 className="text-3xl font-bold">{totalPatients}</h2>
             <CurvedlineChart className="w-full h-36" />
-            <Badge className="mt-2" variant="secondary">
-              +4.7 last week
-            </Badge>
+            
           </Card>
           <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
             <CardTitle>Total Earning</CardTitle>
             <h2 className="text-3xl font-bold">489</h2>
             <CurvedlineChart className="w-full h-36" />
-            <Badge className="mt-2" variant="secondary">
-              +8.2% last week
-            </Badge>
+            
           </Card>
         </div>
 
@@ -244,74 +256,9 @@ export default function Dashboard() {
                 </a>
             </div>
           </div>
-
-          <div className="w-full p-8">
-          
-          
+          <div className="w-full p-8">  
 <ReactCalender/>
 
-
-
-        {/*<Table className="mt-4 w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Age</TableHead>
-                <TableHead>Fees</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Visit Time</TableHead>
-                <TableHead>Doctor</TableHead>
-                <TableHead>Conditions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <div className="flex flex-row flex-wrap items-center px-5 pt-2">
-                <Avatar>
-            <AvatarImage alt="Profile picture" src={Doctor} className='h-9 w-9 rounded-full' />
-          </Avatar>
-                  <TableCell className="font-medium">Leslie Alexander</TableCell>
-                  </div>
-                <TableCell>25</TableCell>
-                <TableCell>$25/h</TableCell>
-                <TableCell>09-15-2020</TableCell>
-                <TableCell>09:15-09:45am</TableCell>
-                <TableCell>Dr. Jacob Jones</TableCell>
-                <TableCell>Mumps Stage II</TableCell>
-              </TableRow>
-            </TableBody>
-            <TableBody>
-              <TableRow>
-                <div className="flex flex-row flex-wrap items-center px-5 pt-2">
-                <Avatar>
-            <AvatarImage alt="Profile picture" src={Doctor} className='h-9 w-9 rounded-full' />
-          </Avatar>
-                  <TableCell className="font-medium">Leslie Alexander</TableCell>
-                  </div>
-                <TableCell>25</TableCell>
-                <TableCell>$25/h</TableCell>
-                <TableCell>09-15-2020</TableCell>
-                <TableCell>09:15-09:45am</TableCell>
-                <TableCell>Dr. Jacob Jones</TableCell>
-                <TableCell>Mumps Stage II</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-  */}
-          </div>
-          <div className="flex justify-between items-center mt-4 px-4 py-3">
-            <span className="text-gray-500">Showing 1-12 out of 40</span>
-            <div className="flex space-x-2">
-            <Button onClick={goToPreviousPage}>Prev</Button>
-            <div className="flex space-x-2">
-            <Button variant="default">1</Button>
-            <Button variant="outline">2</Button>
-            <Button variant="outline">3</Button>
-            <span>...</span>
-            <Button variant="outline">9</Button>
-          </div>
-            <Button onClick={goToNextPage}>Next</Button>
-            </div>
           </div>
         </div>
       </main>
@@ -501,201 +448,6 @@ function CurvedlineChart(props) {
         role="application"
       />
     </div>
-  )
-}
-
-
-function GroupIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 7V5c0-1.1.9-2 2-2h2" />
-      <path d="M17 3h2c1.1 0 2 .9 2 2v2" />
-      <path d="M21 17v2c0 1.1-.9 2-2 2h-2" />
-      <path d="M7 21H5c-1.1 0-2-.9-2-2v-2" />
-      <rect width="7" height="5" x="7" y="7" rx="1" />
-      <rect width="7" height="5" x="10" y="12" rx="1" />
-    </svg>
-  )
-}
-
-
-function HomeIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  )
-}
-
-
-function InboxIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-    </svg>
-  )
-}
-
-
-function LogOutIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" x2="9" y1="12" y2="12" />
-    </svg>
-  )
-}
-
-
-function SpeakerIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
-      <circle cx="12" cy="14" r="4" />
-      <line x1="12" y1="6" x2="12.01" y2="6" />
-    </svg>
-  )
-}
-
-
-function StarIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  )
-}
-
-
-function TextIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 6.1H3" />
-      <path d="M21 12.1H3" />
-      <path d="M15.1 18H3" />
-    </svg>
-  )
-}
-
-
-function UserPlusIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <line x1="19" x2="19" y1="8" y2="14" />
-      <line x1="22" x2="16" y1="11" y2="11" />
-    </svg>
-  )
-}
-
-function UserEtoileIcon(props) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" 
-      width="24" height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className="feather feather-activity">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-    </svg>
   )
 }
 

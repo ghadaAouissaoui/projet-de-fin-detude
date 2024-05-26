@@ -5,8 +5,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaRegUserCircle } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
 import {jwtDecode} from "jwt-decode";
+import { useFocus } from '../pages/FocusContext'; 
 
 export default function Navbar () {
+
   const [isNavOpen, setIsNavOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -50,7 +52,14 @@ export default function Navbar () {
       setDecodedToken(decoded);
     }
   }, [token]);
+  const { setFocusTarget } = useFocus();
 
+  const handleFindDoctorClick = (e) => {
+    e.preventDefault(); // Prevent the default behavior
+    setFocusTarget('city'); // Set the focus target to the city input
+    setIsNavOpen(false); // Close the navbar if needed
+  };
+  
   return (
     <header id="navbar" className="flex items-center max-md:absolute w-full md:h-[80px] justify-between bg-white px-20 py-5  bg-fixed table-fixed top-0 z-50">
       <div>
@@ -78,11 +87,13 @@ export default function Navbar () {
             <span className="absolute  right-[20px] -left-[0px] md:group-hover:w-[100%] block w-[60%] h-[2px] bg-[#6799fc] max-md:left-[20px] max-md:w-[30%] max-md:h-[2px]"></span>
           </a>
 
-          <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group
-            max-md:p-5" href="/" onClick={() => setIsNavOpen(false)}>
-            Find Doctor
-            <span className="absolute  -left-[0px]  block w-0 h-[2px] bg-[#6799fc] transition-all duration-300 ease-in-out group-hover:w-[60px] max-md:group-hover:left-5"></span>
-          </a>
+          <button
+        onClick={handleFindDoctorClick}
+        className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group max-md:p-5"
+      >
+        Find Doctor
+        <span className="absolute -left-[0px] block w-0 h-[2px] bg-[#6799fc] transition-all duration-300 ease-in-out group-hover:w-[60px] max-md:group-hover:left-5"></span>
+      </button>
           <a className="relative mx-4 text-md font-semibold hover:text-blue-500 text-gray-800 no-underline transition duration-300 ease-in-out group
             max-md:p-5" href="/services" onClick={() => setIsNavOpen(false)}>
             Services

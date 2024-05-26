@@ -5,7 +5,7 @@ const Appointment =require('../models/appointmentModel')
 
 async function getAllTreatments(req, res) {
     try {
-        const treatments = await Treatment.find(req.query);
+        const treatments = await Treatment.find(req.query).populate("Appointments");
         if (treatments.length > 0) {
             return res.status(200).json(treatments);
         } else {

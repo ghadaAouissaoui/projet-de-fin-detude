@@ -10,64 +10,68 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-  
+
     try {
       const responseUser = await axios.post("http://localhost:5000/api/users/loginUser", {
         email,
         password
       });
-  
-      if (responseUser.status === 200) {
-        // Succès de la connexion pour un utilisateur
-         // Success: save token to localStorage
-         const token = responseUser.data.token;
-         localStorage.setItem('token', token);
-           console.log(token);
-           const userData = responseUser.data;
-           console.log('User data:', userData);
 
-        // Redirection en fonction du type d'utilisateur
-      
-          console.log('Redirection vers /espaceclient');
-          navigate(`/espaceclient/${userData._id}`);
-        
-        } else {
-          // Code d'état autre que 200 (par exemple 400)
-          throw new Error(responseUser.data.message);
-        }
+      if (responseUser.status === 200) {
+        handleLoginSuccess(responseUser, 'client');
+        return;
+      }
     } catch (error) {
       console.error('Login error for user:', error.message);
-      
+    }
+
     try {
-        const responseVet = await axios.post("http://localhost:5000/api/veterinaries/loginVeto", {
-          email,
-          password
-        });
-  
-        if (responseVet.status === 200) {
-          // Succès de la connexion pour un vétérinaire
-          // Success: save token to localStorage
-        const token = responseVet.data.token;
-        localStorage.setItem('token', token);
-        
-          const vet = responseVet.data;
-          console.log('Veterinarian data:', vet);
-  
-          // Redirection vers /pro
-          console.log('Redirection vers /pro');
-          navigate(`/pro/${vet._id}`);
-        } else {
-          // Code d'état autre que 200 (par exemple 400)
-          throw new Error(responseVet.data.message);
-        }
-      } catch (error) {
-        console.error('Login error for veterinarian:', error.message);
-        alert("Wrong details. Please try again.");
+      const responseVet = await axios.post("http://localhost:5000/api/veterinaries/loginVeto", {
+        email,
+        password
+      });
+
+      if (responseVet.status === 200) {
+        handleLoginSuccess(responseVet, 'pro');
+        return;
       }
+    } catch (error) {
+      console.error('Login error for veterinarian:', error.message);
+    }
+
+    try {
+      const responseSec = await axios.post("http://localhost:5000/api/veto/secretaire/loginsec", {
+        email,
+        password
+      });
+
+      if (responseSec.status === 200) {
+        handleLoginSuccess(responseSec, 'home');
+        return;
+      }
+    } catch (error) {
+      console.error('Login error for secretary:', error.message);
+      alert("Wrong details. Please try again.");
     }
   }
-  
-  
+
+  function handleLoginSuccess(response, role) {
+    const token = response.data.token;
+    localStorage.setItem('token', token);
+    console.log(token);
+
+    const userData = response.data;
+    console.log(`${role} data:`, userData);
+
+    const paths = {
+      'client': `/espaceclient/${userData._id}`,
+      'pro': `/pro/${userData._id}`,
+      'home': '/'
+    };
+
+    console.log(`Redirection vers ${paths[role]}`);
+    navigate(paths[role]);
+  }
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -82,15 +86,15 @@ export default function Login() {
               Login to your account below
             </p>
           </div>
-          <div className="my-6 ">
-            <button className=" bg-blue-500 hover:bg-blue-600 text-white w-full py-2 px-4 rounded">
-              <ChromeIcon className="w-4 h-4 mr-2 mt-2" />
+          <div className="my-6">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white w-full py-2 px-4 rounded flex items-center justify-center">
+              <ChromeIcon className="w-4 h-4 mr-2" />
               Continue with Google
             </button>
           </div>
           <div className="space-y-4">
-            <input id="email" className="w-full px-4 py-2 border rounded" placeholder="Enter email..." value={email} onChange={(e) => { setEmail(e.target.value) }} type="email" />
-            <input id="password" className="w-full px-4 py-2 border rounded" placeholder="Enter password..." value={password} onChange={(e) => { setPassword(e.target.value) }} type="password" />
+            <input id="email" className="w-full px-4 py-2 border rounded" placeholder="Enter email..." value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
+            <input id="password" className="w-full px-4 py-2 border rounded" placeholder="Enter password..." value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
           </div>
           <div className="my-6">
             <button type='submit' className="bg-indigo-500 hover:bg-indigo-600 text-white w-full py-2 px-4 rounded">Login</button>

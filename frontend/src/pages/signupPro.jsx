@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
 import { useNavigate } from 'react-router-dom';
-
+import Separator from './important/Separator'
 
 function Avatar({ children, className }) {
   return <div className={className}>{children}</div>;
@@ -150,24 +150,32 @@ function Button({ className, children, type, onClick }) {
       }
     };
     
+    const CustomInput = ({ value, onClick }) => (
+      <input
+        className="border-2 border-gray-300 rounded-md p-2 h-[58px] w-full px-3"
+        placeholder="MM-DD-YYYY"
+        value={value}
+        onClick={onClick}
+
+      />
+    );
+    
     return (
       <div className="flex flex-col p-10 rounded-lg shadow-lg lg:max-w-[50rem] max-w-md mx-auto my-8">
-        <Avatar className="mb-4">
-          <img alt="Sign Up" src="/placeholder.svg?height=64&width=64" />
-        </Avatar>
+       
         <h1 className="text-3xl font-bold mb-2">Sign up</h1>
         <p className="mb-6 text-sm text-gray-600">Enter your details below to create your account and get started.</p>
-        <form className="w-full lg:max-w-[700px] max-w-md" onSubmit={handleSubmit}>
+        <form className="w-full lg:max-w-[700px] max-w-md flex flex-col" onSubmit={handleSubmit}>
           
           <div className="flex flex-row w-full mb-5">
             <div className="flex flex-col w-full md:w-1/2 px-3">
-              <Button className={`hover:bg-purple-600 bg-gray-400 text-white w-90 ml-1 h-[58px] rounded-md`} onClick={handleButtonClick}>User</Button>
+              <Button className={`hover:bg-blue-500 bg-gray-300 text-white w-90 ml-1 h-[58px] rounded-md`} onClick={handleButtonClick}>User</Button>
             </div>
             <div className="flex flex-col w-full md:w-1/2 px-3">
-              <Button className={`bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md`}  onClick={handleClick}>Veterinary</Button>
+              <Button className={`bg-blue-600 hover:bg-blue-500 text-white w-90 ml-1 h-[58px] rounded-md`}  onClick={handleClick}>Veterinary</Button>
             </div>
           </div>
-          <div className="flex flex-row w-full mb-5">
+          <div className="flex md:flex-row flex-col w-full mb-5">
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="fullname">Full Name</Label>
             <Input id="fullname" placeholder="Enter your full name" type="text" value={fullname} onChange={handleChange} />
@@ -178,7 +186,7 @@ function Button({ className, children, type, onClick }) {
           </div>
         </div>
         
-        <div className="flex flex-row w-full mb-5">
+        <div className="flex md:flex-row flex-col  w-full mb-5">
               <div className="flex flex-col w-full md:w-1/2 px-3">
                 <Label htmlFor="specialite">Speciality</Label>
                 <Input id="specialite"  placeholder="Enter your speciality" type="text" value={specialite}  onChange={handleChange} />
@@ -190,24 +198,24 @@ function Button({ className, children, type, onClick }) {
               </div>   
           </div>
            
-          <div className="flex flex-row w-full mb-5 ">
+          <div className="flex md:flex-row flex-col w-full mb-5 ">
           
-           <div className='flex   md:w-1/2 w-1/2 '>
+           <div className='flex  mx-4 gap-1 md:w-[320px]'>
           
           
-                  <div className="flex flex-col md:w-1/2 w-[30%]">
+                  <div className="flex flex-col w-1/2 ">
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" placeholder="Enter your city" type="text" value={city} onChange={handleChange} className="border-2 rounded-none " />
+                    <Input id="city" placeholder="Enter your city" type="text" value={city} onChange={handleChange} />
                   </div>
-                  <div className="flex flex-col md:w-1/2 w-[30%] ">
+                  <div className="flex flex-col w-1/2  ">
                   <Label htmlFor="postalCode">Postal Code</Label>
-                    <Input id="postalCode" placeholder="Enter your postal code" type="text" value={postalCode} onChange={handleChange} className="border-2 rounded-none"/>
+                    <Input id="postalCode" placeholder="Enter your postal code" type="text" value={postalCode} onChange={handleChange} />
                   </div>
         
             </div>
 
 
-            <div className="flex flex-col md:w-full  w-1/2 px-3 ">
+            <div className="flex flex-col w-full  md:w-1/2 px-3 ">
             <Label htmlFor="nomCabinet">Cabinet Name</Label>
             <Input id="nomCabinet" placeholder="Enter the name of your cabinet" type="text" value={nomCabinet} onChange={handleChange} />
           </div>
@@ -215,23 +223,24 @@ function Button({ className, children, type, onClick }) {
 
         </div>
 
-        <div className="flex flex-row w-full mb-5">
-          <div className="flex flex-col w-full md:w-1/2 px-3">
+        <div className="flex md:flex-row flex-col w-full mb-5">
+          <div className="flex flex-col w-full md:w-1/2 px-3 ">
             <Label htmlFor="datebirth">Date of Birth</Label>
-            <TextField type='date'></TextField>
-            <DatePicker 
-              selected={datebirth} 
-              onChange={(date) => setDateBirth(date)} 
-              className="border-2 border-gray-300 rounded-md p-2 h-[58px] md:w-full px-3" 
-              
-            />
+          
+            <DatePicker
+        selected={datebirth}
+        onChange={(date) => setDateBirth(date)}
+        customInput={<CustomInput />}
+        dateFormat="MM-dd-yyyy"
+       
+      />
           </div>
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="phoneNumber">Phone Number</Label>
             <Input id="phoneNumber" placeholder="Enter your phone number" type="text" value={phoneNumber} onChange={handleChange} />
           </div>
         </div>
-        <div className="flex flex-row w-full mb-5">
+        <div className="flex md:flex-row flex-col w-full mb-5">
           <div className="flex flex-col w-full md:w-1/2 px-3">
             <Label htmlFor="password">Password</Label>
             <Input id="password" placeholder="Enter your password" type="password" value={password} onChange={handleChange} />
@@ -243,12 +252,12 @@ function Button({ className, children, type, onClick }) {
         </div>
         <div className="flex flex-row w-full mb-5">
           <div  className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="bg-gray-200 text-gray-800 w-full mr-2 h-[58px] rounded-md border-2 border-gray-300 " type="submit">Cancel</Button></div>
-          <div className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="bg-purple-600 text-white w-90 ml-1 h-[58px] rounded-md" type="submit">Confirm</Button></div>
+          <div className="flex flex-col w-full md:w-1/2 px-3 mb-5"><Button className="hover:bg-blue-500 bg-blue-600 text-white w-90 ml-1 h-[58px] rounded-md" type="submit">Confirm</Button></div>
         </div>
         {emailSent && <p className="w-full p-4 my-1 text-md bg-blue-200 text-white font-bold rounded-lg text-center">{msg}</p>}
         <div className="text-center mt-4">
           <span className="text-sm text-gray-600">Already have an account? </span>
-          <Link className="text-sm text-purple-600 hover:underline" to="/login">Login</Link>
+          <Link className="text-sm text-blue-500 hover:underline" to="/login">Login</Link>
         </div>
       </form>
     </div>

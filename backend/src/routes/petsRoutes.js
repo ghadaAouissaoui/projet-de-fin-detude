@@ -11,12 +11,13 @@ const {
     createPetPersonnel,
     updatePet,
     addPetToUser,
-    deletePet } = require('../controllers/petsController')
+    deletePet, 
+    historical} = require('../controllers/petsController')
 
 router.post('/owner', getOwnerPet)
 router.get('/', getAllPets)
 router.get('/:petId', checkVet('veterinaire'), getOnePet)
-
+router.get('/historical/:petId',protect,checkVet('veterinaire'), historical)
 
 router.post('/:userId', createPetProfile)
 router.post('/',protect,checkVet('veterinaire'), createPetPersonnel)

@@ -1,6 +1,8 @@
 const Pet = require('../models/petsModel');
 const User = require('../models/userModel');
-
+const Appointment=require('../models/appointmentModel');
+const Treatment =require("../models/treatmentModel");
+const Veterinary=require("../models/veterinaryModel")
 async function getAllPets(req, res) {
     try {
         const pets = await Pet.find(req.query);
@@ -89,32 +91,6 @@ const createPetProfile = async (req, res) => {
 
 
 
-async function createPet(req, res) {
-    try {
-        // Création d'un nouvel objet Pet à partir du corps de la requête
-        const pet = await Pet.create(req.body);
-
-        // Recherche de l'utilisateur associé à l'animal de compagnie
-        const user = await User.findById(req.params.id);
-
-        // Vérification si l'utilisateur existe
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-         // Ajout de l'ID de l'animal de compagnie à la liste des animaux de l'utilisateur
-         user.pets.push(pet._id); // Ajoutez pet._id au lieu de pet
-
-         // Sauvegarde des modifications de l'utilisateur dans la base de données
-         await user.save();
-
-        // Réponse avec un message de succès et les détails de l'animal de compagnie créé
-        return res.status(200).json({ message: `${pet.name} created and added to ${user.fullname}`, pet });
-    } catch (error) {
-        // Gestion des erreurs et envoi d'une réponse d'erreur avec le message d'erreur approprié
-        return res.status(500).send(error.message);
-    }
-}
 
 async function getOwnerPet(req, res) {
     try {
@@ -140,21 +116,56 @@ async function getOwnerPet(req, res) {
 
 async function createPetPersonnel(req, res) {
     try {
-        const pet = await Pet.create(req.body);
-        const user = await User.findById(req.body.email);
+        const { email, vetId, ...petData } = req.body;
+        
+        console.log('Pet data:', petData);
 
-        if (!user) {
-            return res.status(404).send('User not found');
+        // Créer un nouvel animal de compagnie avec les données fournies
+        const pet = await Pet.create(petData);
+        if (!pet) {
+            console.log('Failed to create pet');
+            return res.status(400).send('Failed to create pet');
         }
 
-        user.pets.push(pet);
-        await user.save();
+        console.log('Created pet:', pet);
 
-        return res.status(200).json({ message: `${pet.name} created and added to ${user.fullname}`, pet });
+        // Rechercher l'utilisateur par e-mail
+        const user = await User.findOne({ email });
+        if (user) {
+            // Ajouter l'animal de compagnie à l'utilisateur s'il existe
+            user.pets.push(pet._id);
+            await user.save();
+        } else {
+            // Si l'utilisateur n'existe pas, afficher un message
+            console.log('User not found. Pet will be linked when user registers.');
+        }
+
+        console.log('User:', user);
+
+        // Rechercher le vétérinaire par ID
+        const veterinary = await Veterinary.findById(vetId);
+        if (!veterinary) {
+            console.log('Veterinary not found');
+            return res.status(404).send('Veterinary not found');
+        }
+
+        console.log('Veterinary:', veterinary);
+
+        // Ajouter l'animal de compagnie au vétérinaire
+        veterinary.pets.push(pet._id);
+        await veterinary.save();
+
+        return res.status(200).json({ message: `${pet.name} created and added to ${user ? user.fullname : 'the new user'}`, pet });
     } catch (error) {
+        console.error('Error:', error);
         return res.status(500).send(error.message);
     }
 }
+
+
+
+
+
 
 async function updatePet(req, res) {
     try {
@@ -166,6 +177,30 @@ async function updatePet(req, res) {
         }
     } catch (error) {
         return res.status(500).send(error.message);
+    }
+}
+
+async function historical(req, res) {
+    const { petId } = req.params;
+
+    try {
+        // Récupérer le document Pet et remplir les champs appointments et treatments
+        const pet = await Pet.findById(petId).populate('user')
+            .populate({
+                path: 'appointments',
+                populate: {
+                    path: 'treatments'
+                }
+            });
+
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet not found' });
+        }
+
+        res.status(200).json(pet);
+    } catch (error) {
+        console.error('Error fetching medical history:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
@@ -207,7 +242,7 @@ module.exports = {
     createPetProfile,
     createPetPersonnel,
     updatePet,
-    
+    historical,
     addPetToUser,
     deletePet
 };

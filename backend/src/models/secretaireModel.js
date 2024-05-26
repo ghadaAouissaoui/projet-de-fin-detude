@@ -25,7 +25,14 @@ const secretaireSchema=mongoose.Schema(
         password:{
               type:String,
             required : true,
-        } 
+        },
+        verified: {
+            type: Boolean,
+            default: false,
+        }, 
+        role: {
+            type: String,          
+        }
     },
     {
         timestamps:true,

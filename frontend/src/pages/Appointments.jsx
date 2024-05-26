@@ -145,165 +145,85 @@ import {jwtDecode} from "jwt-decode";
 
 export default function Appointment() {
   // Call the useRequireAuth hook
-  
   const { vetId } = useParams();
   const [appointments, setAppointments] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-   
-
   const [checkedItems, setCheckedItems] = useState({});
-
-  const handleCheckboxChange = (appointmentId) => {
-    setCheckedItems(prevState => ({
-      ...prevState,
-      [appointmentId]: !prevState[appointmentId]
-    }));
-  };
-
-
-  
-  const handleDropdownToggle = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+  const [open, setOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     petName: '',
     appointment_date: moment().format('MM/DD/YYYY'),
     appointment_time: moment().format('hh:mm A'),
     reason: '',
   });
+  const token=localStorage.getItem('token');
+  console.log("token: ",token);
+  const [formDataTraitement, setFormDataTraitement] = useState({
+    ownerName: '',
+    ownerEmail: '',
+    petName: '',
+    petSpecies: '',
+    vaccines: {
+        vaccineName: '',
+        vaccineDate: Date.now
+    },
+    medicationName: '',
+    allergies: '',
+    medicalTreatments: {
+        treatmentName: '',
+        notes: ''
+    },
+    vetNotes: ''
+});
 
-  // Ajoutez un nouvel état pour gérer l'ouverture du modal et l'appointment sélectionné
-const [selectedAppointment, setSelectedAppointment] = useState(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
-
-// Fonction pour ouvrir le modal et définir l'appointment sélectionné
-const handleOpenModal = (appointment) => {
-  setSelectedAppointment(appointment);
-  setIsModalOpen(true);
-};
-
-// Fonction pour fermer le modal
-const handleCloseModal = () => {
-  setSelectedAppointment(null);
-  setIsModalOpen(false);
-};
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    
-    try {
-        const response = await axios.post(`http://localhost:5000/api/appointment/first/${vetId}`, formData);
-
-        if (response.data.success) {
-            // Appointment created successfully
-            setSnackbarSeverity('success');
-            setSnackbarMessage('Appointment created successfully. Please wait for your veterinarian to confirm.');
-            setSnackbarOpen(true);
-
-            handleClose();
-        } else {
-            throw new Error(response.data.message);
-        }
-    } catch (error) {
-        console.error('Error creating appointment:', error);
-        setSnackbarSeverity('error');
-        setSnackbarMessage(error.message || 'Failed to create appointment');
-        setSnackbarOpen(true);
-    }
-};
-// Inside your component function
-const handleSubmitConfirmAppointment = () => {
-  try {
-      // Envoyer une demande de réservation de rendez-vous
-      axios.put(`http://localhost:5000/api/appointment/book/${selectedAppointment._id}`, {
-          treatmentIds: [], // Peut-être que vous voudrez passer les IDs des traitements sélectionnés ici
-          petId: selectedAppointment.pet._id,
-          vetId,
-      })
-      .then(response => {
-          console.log('Appointment booked successfully:', response.data.message);
-          // Mise à jour de l'état ou d'autres actions après la réservation réussie
-          // Par exemple, vous pouvez fermer la boîte de dialogue ici
-          handleCloseModal();
-          // Ajoutez d'autres actions à effectuer après la confirmation de l'appointment
-      })
-      .catch(error => {
-          console.error('Error confirming appointment:', error.message);
-          // Gérer les erreurs ici si nécessaire
-      });
-  } catch (error) {
-      console.error('Error confirming appointment:', error.message);
-      // Gérer les erreurs ici si nécessaire
-  }
-};
-
-
+  const [ownerDetailsMap, setOwnerDetailsMap] = useState({});
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+const [totalAppointments,setTotalAppointment]=useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/appointment/vet/${vetId}`);
         const vetAppointments = response.data.appointments;
         setAppointments(vetAppointments);
-        console.log("vet appointments ",vetAppointments);
+        console.log('number',response.data.appointments.length)
+        setTotalAppointment(response.data.appointments.length)
+        console.log("vet appointments", vetAppointments);
       } catch (error) {
         console.error('Error fetching vet appointments:', error.message);
       }
     };
-
     fetchData();
   }, [vetId]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-// Inside your component function
-const [ownerDetailsMap, setOwnerDetailsMap] = useState({});
 
-useEffect(() => {
-  // Function to fetch owner details for a given pet name
-  const fetchOwnerDetails = async (petName) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/pet/owner', { name: petName });
-      const ownerDetails = response.data; // Extract owner details from the response
-      // Update the owner details map with the new data
-      setOwnerDetailsMap(prevMap => ({
-        ...prevMap,
-        [petName]: ownerDetails
-      }));
-    } catch (error) {
-      console.error('Error fetching owner details:', error.message);
-    }
-  };
-
-  // Loop through each appointment to fetch owner details
-  appointments.forEach(appointment => {
-    fetchOwnerDetails(appointment.pet.name);
-  });
-}, [appointments]); // Ensure this dependency is correct based on your needs
-
-
-const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  useEffect(() => {
+    const fetchOwnerDetails = async (petName) => {
+      try {
+        const response = await axios.post('http://localhost:5000/api/pet/owner', { name: petName });
+        const ownerDetails = response.data;
+        setOwnerDetailsMap(prevMap => ({
+          ...prevMap,
+          [petName]: ownerDetails
+        }));
+      } catch (error) {
+        console.error('Error fetching owner details:', error.message);
+      }
+    };
+    appointments.forEach(appointment => {
+      fetchOwnerDetails(appointment.pet.name);
+    });
+  }, [appointments]);
 
   useEffect(() => {
     const fetchUpcomingAppointments = async () => {
@@ -314,98 +234,148 @@ const [upcomingAppointments, setUpcomingAppointments] = useState([]);
         console.error('Error fetching upcoming appointments:', error.message);
       }
     };
-
     fetchUpcomingAppointments();
-  }, []);
-  const [openDialog, setOpenDialog] = useState(false);
+  }, [vetId]);
 
-  const handleOpenDialog = () => {
+  const handleCheckboxChange = (appointmentId) => {
+    setCheckedItems(prevState => ({
+      ...prevState,
+      [appointmentId]: !prevState[appointmentId]
+    }));
+  };
+
+  const handleDropdownToggle = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpenModal = (appointment) => {
+    setSelectedAppointment(appointment);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAppointment(null);
+    setIsModalOpen(false);
+  };
+
+  const handleOpenDialog = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
+    
     setOpenDialog(true);
   };
+
+  console.log("apppppointment id :",selectedAppointmentId)
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
 
-  const [formDataTraitement, setFormDataTraitement] = useState({
-    ownerName: '',
-    ownerEmail: '',
-    petName: '',
-    petSpecies: '',
-    vaccines: '',
-    medicationName: '',
-    allergies: '',
-    treatmentName: '',
-    notes: '',
-    vetNotes: ''
-});
-// State pour stocker l'ID de l'appointment sélectionné
-const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const handleSaveTreatment = () => {
+    setConfirmDialogOpen(true);
+  };
 
-const fetchOwnerAndPetDetails = async () => {
-  try {
-    const response = await axios.post('http://localhost:5000/api/pet/owner', { name: upcomingAppointments.find(appointment => appointment.id === appointmentId)?.pet.name });
-    const ownerDetails = response.data;
-    // Mise à jour des détails du propriétaire et de l'animal dans le state du formulaire
-    setFormDataTraitement(prevData => ({
-      ...prevData,
-      ownerName: ownerDetails.fullname,
-      ownerEmail: ownerDetails.email,
-      petName: upcomingAppointments.find(appointment => appointment.id === appointmentId)?.pet.name,
-      petSpecies: upcomingAppointments.find(appointment => appointment.id === appointmentId)?.pet.species
-    }));
-  } catch (error) {
-    console.error('Error fetching owner and pet details:', error.message);
-  }
-};
-fetchOwnerAndPetDetails();
+  const handleCancelSave = () => {
+    setConfirmDialogOpen(false);
+  };
 
-const token=localStorage.getItem('token');
-console.log('Token f traitement',token)
-
-
-
-const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-const handleSaveTreatment = () => {
-  // Ouvrir la boîte de dialogue de confirmation
-  setConfirmDialogOpen(true);
-};
-
-const handleCancelSave = () => {
-  // Annuler la sauvegarde du traitement
-  console.log('Sauvegarde du traitement annulée.');
-  // Fermer la boîte de dialogue de confirmation
-  setConfirmDialogOpen(false);
-}; 
-
-const handleChangeTraitement = (event) => {
-  const { name, value } = event.target;
-  setFormDataTraitement(prevData => ({
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
       ...prevData,
       [name]: value
-  }));
-};
-// Fonction pour soumettre le traitement
-const handleSubmitTraitement = async (e) => {
-  e.preventDefault();
-  try {
-      const response = await axios.post('http://localhost:5000/api/treatment/', { ...formDataTraitement, appointmentId: selectedAppointmentId }, {
-          headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`, // Ajoutez le jeton dans l'en-tête d'autorisation
-          }
+    }));
+  };
+
+  const handleChangeTraitement = (event) => {
+    const { name, value } = event.target;
+    setFormDataTraitement(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post(`http://localhost:5000/api/appointment/first/${vetId}`, formData);
+      if (response.data.success) {
+        setSnackbarSeverity('success');
+        setSnackbarMessage('Appointment created successfully. Please wait for your veterinarian to confirm.');
+        setSnackbarOpen(true);
+        handleClose();
+      } else {
+        throw new Error(response.data.message);
+      }
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      setSnackbarSeverity('error');
+      setSnackbarMessage(error.message || 'Failed to create appointment');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSubmitConfirmAppointment = async () => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/appointment/book/${selectedAppointment._id}`, {
+        treatmentIds: [],
+        petId: selectedAppointment.pet._id,
+        vetId,
       });
-      console.log(response.data); // Loggez la réponse du backend
-      // Fermez la boîte de dialogue de confirmation après la sauvegarde réussie
-      setConfirmDialogOpen(false);
-      // Effectuez d'autres actions après la création du traitement si nécessaire
-  } catch (error) {
+      console.log('Appointment booked successfully:', response.data.message);
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error confirming appointment:', error.message);
+    }
+  };
+
+
+
+  const handleSubmitTraitement = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.post('http://localhost:5000/api/treatment/', { ...formDataTraitement, appointmentId: selectedAppointmentId }, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      console.log(response.data);
+        // Afficher une alerte de succès
+    alert('Treatment created successfully.'); 
+    // Fermez la boîte de dialogue après la création réussie du traitement
+    handleCloseDialog();
+     
+    } catch (error) {
       console.error('Error creating treatment:', error);
-      // Gérez les erreurs en conséquence
-  }
-};
+    }
+  };
+    // Déclaration et initialisation de recentAppointments avec useState
+    const [recentAppointments, setRecentAppointments] = useState([]);
+    useEffect(() => {
+      // Fonction pour récupérer les rendez-vous récents depuis le backend
+      const fetchRecentAppointments = async () => {
+          try {
+              const response = await axios.get(`http://localhost:5000/api/appointment/isTreated/${vetId}`);
+              setRecentAppointments(response.data.recentAppointments);
+              console.log('receeeeents :',response.data.recentAppointments)
+              console.log("kalfouussa",recentAppointments)
+          } catch (error) {
+              console.error('Error fetching recent appointments:', error);
+          }
+      };
 
-
+      // Appel de la fonction pour récupérer les rendez-vous récents lors du chargement du composant
+      fetchRecentAppointments();
+  }, []); // L'effet se déclenche seulement lors du montage initial
 
 
   return (
@@ -637,7 +607,7 @@ const handleSubmitTraitement = async (e) => {
                   
                   <PencilIcon  className="h-6 w-5 cursor-pointer text-green-500" />
                   <AiFillDelete className="h-6 w-6 cursor-pointer text-red-400" />
-                  <FaBriefcaseMedical className="h-6 w-6 text-blue-800"  onClick={handleOpenDialog} />
+                  <FaBriefcaseMedical className="h-6 w-6 text-blue-800"  onClick={() => handleOpenDialog(appointment._id)} />
                 </div>
               </div>
             </div>
@@ -650,180 +620,172 @@ const handleSubmitTraitement = async (e) => {
 
 
 <Dialog open={openDialog} onClose={handleCloseDialog}>
-      <DialogTitle>
-        Dossier médical - Animaux de compagnie
-      </DialogTitle>
-      <DialogContent>
-      <form onSubmit={handleSubmitTraitement}>
-        <Typography variant="h6" gutterBottom> Owner</Typography>
-        <Grid container spacing={2} className="pt-">
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              name="ownerName"
-              value={formDataTraitement.ownerName}
-              label="Name"
-              variant="outlined" 
-              onChange={handleChangeTraitement}/>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              name="ownerEmail"
-              value={formDataTraitement.ownerEmail}
-              label="Email"
-              variant="outlined"
-              type="email" 
-              onChange={handleChangeTraitement}
-              />
-          </Grid>
-          
+  <DialogTitle>
+    Dossier médical - Animaux de compagnie
+  </DialogTitle>
+  <DialogContent>
+    <form onSubmit={handleSubmitTraitement}>
+      <Typography variant="h6" gutterBottom>Owner</Typography>
+      <Grid container spacing={2} className="pt-">
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            name="ownerName"
+            value={formDataTraitement.ownerName}
+            label="Name"
+            variant="outlined"
+            onChange={handleChangeTraitement} />
         </Grid>
-
-        <Typography variant="h6" gutterBottom>
-          Pet
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              name="petName"
-              value={formDataTraitement.petName}
-              label="Pet Name"
-              variant="outlined"
-              onChange={handleChangeTraitement}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              name="petSpecies"
-              value={formDataTraitement.petSpecies}
-              label="Espèce"
-              variant="outlined"
-              onChange={handleChangeTraitement}
-            />
-          </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            name="ownerEmail"
+            value={formDataTraitement.ownerEmail}
+            label="Email"
+            variant="outlined"
+            type="email"
+            onChange={handleChangeTraitement}
+          />
         </Grid>
+      </Grid>
 
-        <Typography variant="h6" gutterBottom>Vaccines</Typography>
-<Grid container spacing={2}>
-    <Grid item xs={12} sm={6}>
-        <TextField
+      <Typography variant="h6" gutterBottom>Pet</Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            name="petName"
+            value={formDataTraitement.petName}
+            label="Pet Name"
+            variant="outlined"
+            onChange={handleChangeTraitement}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            name="petSpecies"
+            value={formDataTraitement.petSpecies}
+            label="Espèce"
+            variant="outlined"
+            onChange={handleChangeTraitement}
+          />
+        </Grid>
+      </Grid>
+
+      <Typography variant="h6" gutterBottom>Vaccines</Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <TextField
             fullWidth
             name="vaccineName"
-            value={formDataTraitement.vaccineName}
+            value={formDataTraitement.vaccines[0]}
             label="Nom du vaccin"
             variant="outlined"
             onChange={handleChangeTraitement}
-        />
-    </Grid>
-    <Grid item xs={12} sm={6}>
-        <TextField
+          />
+        </Grid>
+        {/*<Grid item xs={12} sm={6}>
+          <TextField
             fullWidth
             label="Date"
             name="vaccineDate"
-            value={formDataTraitement.vaccineDate}
+            value={formDataTraitement.vaccines[1]}
             variant="outlined"
             type="date"
             InputLabelProps={{
-                shrink: true,
+              shrink: true,
             }}
             onChange={handleChangeTraitement}
-        />
-    </Grid>
-</Grid>
+          />
+        </Grid>*/}
+      </Grid>
 
-{/* Medication section */}
-<Typography variant="h6" gutterBottom>Médicaments</Typography>
-<Grid container>
-    <Grid item xs={12} sm={6}>
-        <TextField
+      <Typography variant="h6" gutterBottom>Médicaments</Typography>
+      <Grid container>
+        <Grid item xs={12} sm={6}>
+          <TextField
             fullWidth
             name="medicationName"
             value={formDataTraitement.medicationName}
             label="Nom du médicament"
             variant="outlined"
             onChange={handleChangeTraitement}
-        />
-    </Grid>
-</Grid>
+          />
+        </Grid>
+      </Grid>
 
-{/* Allergies section */}
-<Typography variant="h6" gutterBottom>Allergies</Typography>
-<TextField
-    name="allergies"
-    value={formDataTraitement.allergies}
-    fullWidth
-    placeholder="Entrez les allergies de l'animal"
-    rowsMin={4}
-    onChange={handleChangeTraitement}
-/>
+      <Typography variant="h6" gutterBottom>Allergies</Typography>
+      <TextField
+        name="allergies"
+        value={formDataTraitement.allergies}
+        fullWidth
+        placeholder="Entrez les allergies de l'animal"
+        rowsMin={4}
+        onChange={handleChangeTraitement}
+      />
 
-{/* Medical Treatments section */}
-<Typography variant="h6" gutterBottom>Traitements médicaux</Typography>
-<Grid container spacing={2}>
-    <Grid item xs={12} sm={6}>
-        <TextField
+      <Typography variant="h6" gutterBottom>Traitements médicaux</Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <TextField
             fullWidth
             name="treatmentName"
-            value={formDataTraitement.treatmentName}
+            value={formDataTraitement.medicalTreatments[0]}
             label="Nom du traitement"
             variant="outlined"
             onChange={handleChangeTraitement}
-        />
-    </Grid>
-    <Grid item xs={12} sm={6}>
-        <TextField
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
             fullWidth
             name="notes"
-            value={formDataTraitement.notes}
+            value={formDataTraitement.medicalTreatments[1]}
             label="Notes"
             variant="outlined"
             onChange={handleChangeTraitement}
-        />
-    </Grid>
-</Grid>
+          />
+        </Grid>
+      </Grid>
 
-{/* Vet Notes section */}
-<Typography variant="h6" gutterBottom>Notes du vétérinaire</Typography>
-<TextField
-    name="vetNotes"
-    value={formDataTraitement.vetNotes}
-    fullWidth
-    placeholder="Entrez les notes du vétérinaire"
-    onChange={handleChangeTraitement}
-/>
-    
+      <Typography variant="h6" gutterBottom>Notes du vétérinaire</Typography>
+      <TextField
+        name="vetNotes"
+        value={formDataTraitement.vetNotes}
+        fullWidth
+        placeholder="Entrez les notes du vétérinaire"
+        onChange={handleChangeTraitement}
+      />
+
       <DialogActions>
         <div className="flex gap-6 w-full">
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleCloseDialog}>
-          Close
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSaveTreatment}
-          fullWidth>
-          Save Treatement
-        </Button>
-       {/* Afficher la boîte de dialogue de confirmation */}
-       {confirmDialogOpen && (
-                <div>
-                    <p>Are you sure to save?</p>
-                    <Button variant="contained" color="primary" onClick={handleSubmitTraitement}>Yes</Button>
-                    <Button variant="contained" color="secondary" onClick={handleCancelSave}>No</Button>
-                </div>
-            )}
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleCloseDialog}>
+            Close
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSaveTreatment}
+            fullWidth>
+            Save Treatment
+          </Button>
+          {confirmDialogOpen && (
+            <div>
+              <p>Are you sure to save?</p>
+              <Button variant="contained" color="primary" onClick={handleSubmitTraitement}>Yes</Button>
+              <Button variant="contained" color="secondary" onClick={handleCancelSave}>No</Button>
+            </div>
+          )}
         </div>
       </DialogActions>
-      </form>
-      </DialogContent>
-    </Dialog>
+    </form>
+  </DialogContent>
+</Dialog>
 
 
 
@@ -832,26 +794,31 @@ const handleSubmitTraitement = async (e) => {
 
 
 
-        <div className="bg-white rounded-lg shadow-sm  m-4 md:w-1/2 w-full">
-          <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+<div className="bg-white rounded-lg shadow-sm  m-4 md:w-1/2 w-full">
+        <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Recent Appointments</h2>
-          </div>
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            <div className="px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">April 24, 2023</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">9:00 AM</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">Sarah Lee</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Whiskers the Hamster</span>
-                </div>
-              </div>  
-            </div>
-          </div>
         </div>
-
+        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+            {recentAppointments.length === 0 ? (
+                <div className="px-6 py-4">No recent appointments found.</div>
+            ) : (
+                 recentAppointments.map(appointment => (
+                    <div key={appointment.id} className="px-6 py-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="flex flex-col">
+                                <span className="text-sm font-medium">{appointment.appointment_date}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{appointment.appointment_time}</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-medium">{appointment.pet.name}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">ghada</span>
+                            </div>
+                        </div>  
+                    </div>
+                ))
+            )}
+        </div>
+    </div>  
         </main>
         
         

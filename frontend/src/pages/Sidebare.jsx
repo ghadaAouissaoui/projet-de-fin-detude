@@ -5,7 +5,7 @@ import { useParams} from "react-router-dom";
 import Axios from "axios";
 import { ResponsiveLine } from '@nivo/line';
 import Doctor from '../images/femaleDoctor.jpg';
-
+import { jwtDecode } from "jwt-decode";
     // Avatar component
     export const Avatar = ({ children }) => {
         return <div className="flex items-center space-x-4">{children}</div>;
@@ -54,7 +54,8 @@ export default function Sidebar(){
     const { vetId } = useParams();
   const [vetProfile, setVetProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-
+const token=localStorage.getItem('token');
+console.log("sidebaaaaar tokeeen",token)
 
   useEffect(() => {
     const fetchVetProfile = async () => {
@@ -71,19 +72,6 @@ export default function Sidebar(){
     fetchVetProfile();
   }, [vetId]);
 
-  const handleClick = async (event) => {
-    event.preventDefault(); // Prevent default action of navigating to the URL
-
-    const fetchVetProfile = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
-        setVetProfile(response.data.veterinaire);
-        setLoading(false);
-      } catch (error) {
-        console.error("An error occurred while fetching veterinarian profile:", error);
-        setLoading(false);
-      }
-    };
 
     try {
       fetchVetProfile(); // Call the fetchVetProfile function defined within handleClick
@@ -172,8 +160,7 @@ export default function Sidebar(){
               )}
               {showContent && (
         <div className="p-4">
-          {/* Content to be displayed when the link is clicked */}
-          {/* For example, you can place Appointment-related content here */}
+
         </div>
       )}
 </>
@@ -193,8 +180,6 @@ export default function Sidebar(){
 
       {showContent && (
         <div className="p-4">
-          {/* Content to be displayed when the link is clicked */}
-          {/* For example, you can place Appointment-related content here */}
         </div>
       )}
     </>
@@ -211,8 +196,6 @@ export default function Sidebar(){
               </Link>)}
               {showContent && (
         <div className="p-4">
-          {/* Content to be displayed when the link is clicked */}
-          {/* For example, you can place Appointment-related content here */}
         </div>
       )}
     </>
@@ -230,8 +213,6 @@ export default function Sidebar(){
               )}
               {showContent && (
         <div className="p-4">
-          {/* Content to be displayed when the link is clicked */}
-          {/* For example, you can place Appointment-related content here */}
         </div>
       )}
     </>
@@ -268,85 +249,6 @@ export default function Sidebar(){
 );
 }
 
-
-  
-  
-  
-
-  {/*<li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="settings">
-                <ClipboardListIcon className="h-5 w-5" />
-                <span>Clinic Settings</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="ptomotions">
-                <SpeakerIcon className="h-5 w-5" />
-                <span>Promotions</span>
-              </Link>
-            </li>
-            <li className=" hover:bg-blue-100  w-full h-full font-semibold">
-              <Link className="flex items-center space-x-3 text-gray-700 pl-4 h-14 hover:border-r-4 border-[#dc6a07] border-solid" to="featured">
-                <StarIcon className="h-5 w-5" />
-                <span>Get Featured</span>
-              </Link>
-            </li>*/}
-
-
-  
-  function CalendarIcon(props) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-        <line x1="16" x2="16" y1="2" y2="6" />
-        <line x1="8" x2="8" y1="2" y2="6" />
-        <line x1="3" x2="21" y1="10" y2="10" />
-      </svg>
-    )
-  }
-  
-  
-  
-  
-
-  
-  
-  function ClipboardListIcon(props) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-        <path d="M12 11h4" />
-        <path d="M12 16h4" />
-        <path d="M8 11h.01" />
-        <path d="M8 16h.01" />
-      </svg>
-    )
-  }
-  
-  
   
   
   
@@ -411,33 +313,6 @@ export default function Sidebar(){
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
         <polyline points="16 17 21 12 16 7" />
         <line x1="21" x2="9" y1="12" y2="12" />
-      </svg>
-    )
-  }
-  
-  
-
-  
-
-  
-  
-  function TextIcon(props) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M17 6.1H3" />
-        <path d="M21 12.1H3" />
-        <path d="M15.1 18H3" />
       </svg>
     )
   }
