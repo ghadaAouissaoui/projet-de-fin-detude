@@ -22,6 +22,7 @@ app.use('/api/treatment',protect, require('./src/routes/treatmentRoutes'))
 app.use('/api/appointment', require('./src/routes/appointmentRoutes'))
 app.use('/api/pet', require('./src/routes/petsRoutes'))
 app.use('/api/messages', require('./src/routes/messageRoutes'))
+app.use('/api/reviews', require('./src/routes/reviewRoutes'));
 app.use(errorHandler)
 
 app.listen(port,()=>console.log (`server stated on port ${ port }`))

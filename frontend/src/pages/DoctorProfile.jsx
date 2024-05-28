@@ -114,27 +114,7 @@ export default function DoctorProfile() {
 
 
 
-     // Render description paragraph based on editing mode and full description state
-  const renderDescription = () => {
-    if (isEditing) {
-      return (
-        <textarea
-          value={vetProfile.description}
-          onChange={handleDescriptionChange}
-          rows={5}
-          className="w-full p-2 border rounded-md"
-        />
-      );
-    } else if (showFullDescription) {
-      return (
-        <p>{vetProfile?.description}</p>
-      );
-    } else {
-      return (
-        <p>{vetProfile?.description.substring(0, 3)}...</p>
-      );
-    }
-  };
+ 
 
   const [medicalActions, setMedicalActions] = useState(null);
 
@@ -142,26 +122,7 @@ export default function DoctorProfile() {
     setMedicalActions(event.target.value);
   };
 
-  
-  const renderEditingControls = () => {
-    if (vetProfile && vetProfile.role === "veterinaire") {
-      return (
-        <div>
-          {/* Implement avatar upload functionality */}
-          <div>
-  <textarea
-    value={medicalActions}
-    onChange={handleMedicalActionsChange}
-    rows={4}
-    cols={30}
-  />
-</div>
-          <Button onClick={toggleEditing}>Edit Description</Button>
-        </div>
-      );
-    }
-    return null;
-  };
+
 
   return (
     <div className="bg-white mb-10 ">
@@ -298,53 +259,7 @@ Their journey in ENT care has been marked by continuous refinement of skills and
           </div>
           
 
-          <div className="col-span-2 space-y-4 w-1/2 max-md:w-full">
-          <h2 className="text-lg font-bold">Doctor's Review</h2>
-          <div className="space-y-2">
-            <Card className="p-4">
-              <CardHeader>
-                <CardTitle>Makena Schiefler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">20 January 2024 • 06:54</p>
-                <p className="text-sm">
-                  My ENT consultation on Wellness was a game-changer. Scheduling was easy, the virtual session was
-                  informative, and the expert advice for my ear issues surpassed my expectations.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="p-4">
-              <CardHeader>
-                <CardTitle>Lydia Lipshutz</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">19 January 2024 • 17:42</p>
-                <p className="text-sm">
-                  Wellness deserved a seamless ENT consultation. The knowledgeable specialist, combined with the
-                  comfortable virtual platform, has significantly improved my health. It's now my go-to for reliable
-                  healthcare guidance.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="p-4">
-              <CardHeader>
-                <CardTitle>Talan Mango</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">13 January 2024 • 16:24</p>
-                <p className="text-sm">
-                  Exceptional ENT consultation on Wellness. Scheduling was straightforward, the doctor's expertise
-                  extended beyond my expectations, and the platform provides reliable expert consultations from the
-                  comfort of home.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="flex items-center justify-between">
-            <Button variant="outline " className="rounded-md">Previous</Button>
-            <Button variant="outline " className="rounded-md">Next</Button>
-          </div>
-        </div>
+         
         
         </div> 
       

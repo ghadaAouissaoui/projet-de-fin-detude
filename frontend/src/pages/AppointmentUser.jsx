@@ -82,7 +82,7 @@ export default function AppointmentUser() {
     <div className="flex w-full h-[600px]">
       <div className="bg-[#0B2447] md:[15%] w-[20%] px-6 py-4 text-white sticky top-0 h-[600px] overflow-y-auto">
         <div className="flex flex-col items-start gap-6">
-          <Link className="flex items-center gap-2" to="">
+          <Link className="flex items-center gap-2" to={`/espaceclient/${UserProfile?._id}`}>
             <PawPrintIcon className="h-6 w-6" />
             <span className=''>{UserProfile?.fullname} Dashboard</span>
           </Link>
@@ -91,7 +91,7 @@ export default function AppointmentUser() {
           
             <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
             <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Appointments</Link>
-            <Link className="hover:text-[#A5D7E8]" to="#">Review</Link>
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
             <Link className="hover:text-[#A5D7E8]" to="#">Messages</Link>
           </nav>)}
           <div className="flex items-center gap-4">

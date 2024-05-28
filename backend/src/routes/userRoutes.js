@@ -16,6 +16,7 @@ const { registerUser,
     deleteUser,
     deleteOwner,
     deleteOwnUser, 
+    getByEmail,
 }=require('../controllers/userController')
 
 router.post('/signup', registerUser)
@@ -24,6 +25,7 @@ router.post('/loginUser',loginUser)
 router.get('/:id/verify/:token', verifyEmail)
 
 router.get('/',checkAdmin,getAllUsers)
+router.get('/email/:email',getByEmail)
 router.get('/owner',checkVet, getAllOwners)
 router.get('/profile/:id', getOwnProfile)
 router.get('/:userId', getOneUser)

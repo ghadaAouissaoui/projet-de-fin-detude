@@ -3,13 +3,23 @@ const mongoose = require('mongoose');
 const messageSchema = new mongoose.Schema({
     sender: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        refPath: 'senderModel',
         required: true,
     },
     receiver: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        refPath: 'receiverModel',
         required: true,
+    },
+    senderModel: {
+        type: String,
+        required: true,
+        enum: ['User', 'Veterinary']
+    },
+    receiverModel: {
+        type: String,
+        required: true,
+        enum: ['User', 'Veterinary']
     },
     content: {
         type: String,

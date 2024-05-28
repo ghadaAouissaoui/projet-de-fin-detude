@@ -177,7 +177,7 @@ console.log("prooooofile",vetprofile)
         </div>
 
         <main className="bg-white p-12 ">
-        <div className="flex space-x-8 bg-black">fdgdf
+        <div className="flex space-x-8 ">
     {/* Render veterinarian profile */}
     {vetprofile && (
       <div className="flex flex-col">

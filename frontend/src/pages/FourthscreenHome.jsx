@@ -1,28 +1,97 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { GoArrowUpRight, GoArrowLeft, GoArrowRight } from 'react-icons/go';
 import image from '../images/veterinaire.png';
 
-const ComponentQ = () => {
+
+
+
+
+
+
+const UserReview = ({ review, avatarSrc, username, rating, className }) => {
+  // Vérifiez si username est défini avant d'appeler substring
+  const fallbackText = username ? username.substring(0, 2).toUpperCase() : "NA";
+
   return (
-    <div className='flex w-full '>
-    <div className=" flex flex-col  w-full sm:w-auto ">
-      
-      <section className="bg-[#bebec0] h-[400px] flex flex-col w-full">
-        <div className=" bg-white w-1/3 h-20  rounded-br-3xl">
-          <div className="pt-4">
-            <span className="text-black font-bold text-2xl pl-9">What Users Say About </span>
-            <span className="text-indigo-600 font-bold text-2xl mb-4">Visito</span>
+    <div className={`flex w-full ${className}`}>
+      <div className="flex-1">
+        <div className="flex flex-row pt-8 mb-4">
+          <div>
+            <p className="ml-4 text-gray-600">{username || "Anonymous"}</p>
+          </div>
+          <div className="flex items-center ml-3">
+            <StarIcon className="text-yellow-400" />
+            <span className="ml-1 text-yellow-400">{rating || 0}</span>
           </div>
         </div>
-        <div className="flex  w-full px-6 ">
-          <UserReview
-            review="Using Visito was a wonderful experience for me. It has a simple and efficient user interface and I was able to easily book an appointment at the office I wanted at the time I wanted. Also, getting a booking confirmation and reminder before my appointment helped me to always be on time at the office."
-            avatarSrc={image}
-            username="Sara Tylor"
-            rating={4.5}
-          />
+        <blockquote className="flex ml-4 w-1/2 text-gray-900">"{review || "No review available"}"</blockquote>
+      </div>
+
+      <div className="absolute right-[-200px]">
+        <Avatar src={avatarSrc} alt={username || "NA"} fallbackText={fallbackText} />
+      </div>
+    </div>
+  );
+};
+
+const ComponentQ = () => {
+  const [reviews, setReviews] = useState([]);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/reviews');
+        setReviews(response.data);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  
+  const handleNextReview = () => {
+    setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % reviews.length);
+  };
+
+  const handlePrevReview = () => {
+    setCurrentReviewIndex((prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length);
+  };
+
+  if (reviews.length === 0) {
+    return null; // Ne rien afficher si aucun avis
+  }
+
+  const currentReview = reviews[currentReviewIndex];
+
+  
+  return (
+    <div className='flex  flex-col bg-white '>
+    <div className=" flex flex-col  w-full sm:w-auto ">
+      
+    <section className="bg-[#bebec0] h-[400px] flex flex-col w-full">
+      <div className=" bg-white w-1/3 h-20 rounded-br-3xl">
+        <div className="pt-4">
+          <span className="text-black font-bold text-2xl pl-9">What Users Say About </span>
+          <span className="text-indigo-600 font-bold text-2xl mb-4">Visito</span>
         </div>
-      </section>
+      </div>
+      <div className="flex flex-col ">
+        <UserReview
+          review={currentReview.review}
+          avatarSrc={image}
+          username={currentReview.name}
+          rating={currentReview.rating}
+        />
+        <div className="flex flex-row m-8 gap-8">
+          <GoArrowLeft onClick={handlePrevReview} className="cursor-pointer text-gray-700" />
+          <GoArrowRight onClick={handleNextReview} className="cursor-pointer text-gray-700" />
+        </div>
+      </div>
+    </section>
 
       <section className="w-full md:w-3/4 lg:w-2/3 xl:w-1/2 mx-auto ">
         <h2 className="mt-16 mb-8 font-semibold text-2xl text-center text-black">Got Questions?</h2>
@@ -54,46 +123,6 @@ const ComponentQ = () => {
       </div></div>
   );
 };
-
-const UserReview = ({ review, avatarSrc, username, rating, className }) => {
-  return (
-    <div className={`flex w-full  ${className}`}>
-      <div>
-        <div className="flex flex-row pt-8 mb-4">
-          <div>
-            <p className="ml-4 text-gray-600">{username}</p>
-          </div>
-          <div className="flex items-center ml-3">
-            <StarIcon className="text-yellow-400" />
-            <span className="ml-1 text-yellow-400">{rating}</span>
-          </div>
-        </div>
-        <blockquote className="flex ml-4 w-1/2 text-gray-900">"{review}"</blockquote>
-        <div className="ml-[30%] flex flex-row gap-8 ">
-          <GoArrowLeft className="text-gray-700" />
-          <GoArrowRight className="text-gray-700" />
-        </div>
-      </div>
-
-      <div className="flex-row max-md:gap-8 w-full flex max-md:flex-col mt-[-16]">
-        <div className="bg-white bg-opacity-50 w-[300px] pt-2 pl-4 max-md:pl-20 h-[60px] top-[100px] md:relative left-0">
-          <a href="#" className="text-gray-700 ml-1 text-sm hover:underline">
-            +500 Users reviews
-          </a>
-          <br />
-          <div className='flex flex-row mb-4'>
-          <a href="#" className="text-gray-700 ml-1 text-sm hover:underline">
-            see all reviews
-          </a>
-          <GoArrowUpRight className="text-gray-700 ml-1 mt-1" />
-          </div>
-        </div>
-        <Avatar src={avatarSrc} alt={username} fallbackText={username.substring(0, 2).toUpperCase()}  />
-      </div>
-    </div>
-  );
-};
-
 
 const Accordion = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,21 +161,22 @@ const StarIcon = (props) => {
   );
 };
 
-function Avatar({ src, alt, fallbackText }) {
-    return (
-      <div>
-        <img
-          src={src}
-          alt={alt}
-          className="flex items-center w-[100%] h-[70%] "
-          onError={(e) => {
-            const target = e.target;
-            target.src = `https://via.placeholder.com/40?text=${fallbackText}`;
-          }}
-        />
-      </div>
-    );
-  }
+
+const Avatar = ({ src, alt, fallbackText }) => {
+  return (
+    <div>
+      <img
+        src={src}
+        alt={alt}
+        className="w-[50%] h-[70%]"
+        onError={(e) => {
+          const target = e.target;
+          target.src = `https://via.placeholder.com/40?text=${fallbackText}`;
+        }}
+      />
+    </div>
+  );
+};
   
 
 const ChevronIcon = ({ isOpen }) => {

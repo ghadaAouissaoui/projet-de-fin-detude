@@ -2,69 +2,69 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <>
-      <footer className="bg-blue-800 text-white ">
-        <div className="md:mx-20 lg:mx-2 flex justify-between ">
-          <div className="flex flex-col w-full space-y-4 ml-8 pb-10">
-            <div className=" w-1/5 mx-auto flex text-center  ">
-              <a className="text-[#3C4E91] w-full text-lg mx-auto bg-white rounded-bl-xl rounded-br-xl p-4 flex items-center justify-center hover:underline flex-nowrap" href="#">
-                Back to Top <ArrowUpIcon className="h-4 w-4 ml-1" />
-              </a>
-            </div>
-            <div className='flex flex-row w-full pt-6 gap-10'>
-              <div className="flex flex-col w-80">
-                <div className="flex space-x-3 mb-2">
-                  <StethoscopeIcon className="h-6 w-6 " />
-                  <span className="font-bold">Visit</span>
-                </div>
-                <p className="lg:text-md ms:text-ms py-2 ">With Visit, you can easily book your desired doctor's appointment from anywhere and anytime.</p>
-                <div className="flex space-x-4 mt-4">
-                  <InstagramIcon className="h-6 w-6" />
-                  <TwitterIcon className="h-6 w-6" />
-                  <FacebookIcon className="h-6 w-6" />
-                  <LinkedinIcon className="h-6 w-6" />
-                </div>
+    <footer className="bg-blue-800 text-white">
+      <div className="md:mx-20 lg:mx-2 flex justify-between">
+        <div className="flex flex-col w-full space-y-4 ml-8 pb-10">
+          <div className="w-1/5 mx-auto flex text-center">
+            <a className="text-[#3C4E91] w-full text-lg mx-auto bg-white rounded-bl-xl rounded-br-xl p-4 flex items-center justify-center hover:underline flex-nowrap" href="#">
+              Back to Top <ArrowUpIcon className="h-4 w-4 ml-1" />
+            </a>
+          </div>
+          <div className='flex flex-row w-full pt-6 gap-10'>
+            <div className="flex flex-col w-80">
+              <div className="flex space-x-3 mb-2">
+                <StethoscopeIcon className="h-6 w-6" />
+                <span className="font-bold">Vitoline</span>
               </div>
-              <div className='flex flex-row w-full gap-10 justify-center'>
-                <div className="flex flex-col w-1/4">
-                  <FooterLinksGroup
-                    links={['Patient registration','Registration of doctors', 'Terms & Conditions', 'Privacy Policy', 'FAQ']}
-                  />
-                </div>
-                <div className="flex flex-col w-1/4">
-                  <FooterLinksGroup
-                    links={['About Us','Contact Us', 'Careers', 'Blog', 'Hospital & Clinics']}
-                  />
-                </div>
-                <div className="flex flex-col w-1/4">
-                  <FooterLinksGroup
-                    links={['Optometrist','Cardiovascular', 'Women specialist', 'Orthopedist', 'Otorhinolaryngologist', 'Radiotherapy']}
-                  />
-                </div>
-                <div className="flex flex-col w-1/4">
-                  <FooterLinksGroup
-                    links={['Nutritionist','General surgeon', 'Optometry', 'Pediatrician', 'Dermatologist', 'Psychologist']}
-                  />
-                </div>
+              <p className="lg:text-md ms:text-ms py-2">With Vitoline, you can easily schedule appointments with your preferred veterinarian for your pet, from anywhere and at any time.</p>
+              <div className="flex space-x-4 mt-4">
+                <InstagramIcon className="h-6 w-6" />
+                <TwitterIcon className="h-6 w-6" />
+                <FacebookIcon className="h-6 w-6" />
+                <LinkedinIcon className="h-6 w-6" />
               </div>
             </div>
+            <div className='flex flex-col w-full gap-4'>
+              <FooterLink href="/signup">Patient registration</FooterLink>
+              <FooterLink href="/signuppro">Registration of doctors</FooterLink>
+              <FooterLink href="#">Terms & Conditions</FooterLink>
+              <FooterLink href="#">Privacy Policy</FooterLink>
+              <FooterLink href="#">FAQ</FooterLink>
+            </div>
+            <div className='flex flex-col w-full gap-4'>
+              <FooterLink href="/aboutus">About Us</FooterLink>
+              <FooterLink href="contactus">Contact Us</FooterLink>
+              <FooterLink href="#">Careers</FooterLink>
+              <FooterLink href="#">Blog</FooterLink>
+              <FooterLink href="#">Hospital & Clinics</FooterLink>
+            </div>
+            <div className='flex flex-col w-full gap-4'>
+  <FooterLink href="#">Dentistry</FooterLink>
+  <FooterLink href="#">Orthopedics</FooterLink>
+  <FooterLink href="#">Dermatology</FooterLink>
+  <FooterLink href="#">Ophthalmology</FooterLink>
+  <FooterLink href="#">Neurology</FooterLink>
+  <FooterLink href="#">Cardiology</FooterLink>
+</div>
+<div className='flex flex-col w-full gap-4'>
+  <FooterLink href="#">Oncology</FooterLink>
+  <FooterLink href="#">Behavioral Medicine</FooterLink>
+  <FooterLink href="#">Internal Medicine</FooterLink>
+  <FooterLink href="#">Surgery</FooterLink>
+  <FooterLink href="#">Emergency and Critical Care</FooterLink>
+  <FooterLink href="#">Radiology</FooterLink>
+</div>
           </div>
         </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   );
 }
-
-function FooterLinksGroup({ links }) {
+function FooterLink({ href, children }) {
   return (
-    <div>
-      {links.map((link, index) => (
-        <h3 key={index} className='font-semibold '>{link}</h3>
-      ))}
-    </div>
+    <a href={href} className="font-semibold hover:underline">{children}</a>
   );
 }
-
 // Icon components
 function ArrowUpIcon(props) {
   return (

@@ -35,7 +35,7 @@ export default function ComponentPets() {
         const { user } = response.data; // Supposez que les animaux de compagnie sont renvoyés dans la propriété "pets" de la réponse
         
         setUserProfile(user);
-        console.log(user);
+        console.log("useeeer",user);
         setLoading(false);
       } catch (error) {
         console.error("Une erreur s'est produite lors de la récupération du profil de l'utilisateur :", error);
@@ -46,15 +46,51 @@ export default function ComponentPets() {
     fetchUserProfile();
   }, [userId]);
 
-
+console.log("hgchgcgh")
 
 
   return (
+    <div className="flex w-full h-[600px]">
+      <div className="bg-[#0B2447] md:[15%] w-[20%] px-6 py-4 text-white sticky top-0 h-[600px] overflow-y-auto">
+        <div className="flex flex-col items-start gap-6">
+          <Link className="flex items-center gap-2" to={`/espaceclient/${UserProfile?._id}`}>
+            <PawPrintIcon className="h-6 w-6" />
+            <span className=''>{UserProfile?.fullname} Dashboard</span>
+          </Link>
+          {UserProfile && (
+          <nav className="flex flex-col items-start gap-4">
+          
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Appointments</Link>
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
+            <Link className="hover:text-[#A5D7E8]" to="#">Messages</Link>
+          </nav>)}
+          <div className="flex items-center gap-4">
+            
+            <Menu
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              getContentAnchorEl={null}
+              anchorEl={null}
+              open={false}
+            >
+              <Avatar alt="Avatar" src="/placeholder.svg" />
+              <MenuItem>{UserProfile?.fullname}</MenuItem>
+              <MenuItem>Settings</MenuItem>
+              <MenuItem>Support</MenuItem>
+              <MenuItem>Logout</MenuItem>
+            </Menu>
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 bg-[#F0F0F0] overflow-y-auto ">
+      <header className="bg-white dark:bg-[#0B2447] px-6 py-4 shadow sticky top-0 z-10">
+          <div className="container mx-auto flex items-center justify-between">
+          <Button  className="hidden md:inline-flex bg-[#1F4690] hover:bg-[#1F4690]/90 text-white " variant="text" > My pets</Button>
+          </div>
+        </header>
+
     <section className="w-full max-w-4xl mx-auto py-8 md:py-12">
-      {/*<div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">My Pets</h1>
-        <Button size="sm">Add New Pet</Button>
-  </div>*/}
  
       <div  className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {UserProfile && UserProfile.pets && UserProfile.pets.map((pet) => (
@@ -116,6 +152,30 @@ export default function ComponentPets() {
       </div>
     
     </section>
+    </div>
+    </div>
+  )
+}
+
+function PawPrintIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="4" r="2" />
+      <circle cx="18" cy="8" r="2" />
+      <circle cx="20" cy="16" r="2" />
+      <path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z" />
+    </svg>
   )
 }
 

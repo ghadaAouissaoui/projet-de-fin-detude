@@ -192,14 +192,21 @@ async function getOneVet(req, res) {
     }
 }
 
-/*async function createVet(req, res) {
+async function getByEmail(req,res){
+    const { email } = req.params;
+
     try {
-        const vet = await Veterinary.create(req.body);
-        return res.status(200).json({ message: 'Vet created', vet });
+      const veterinaire = await Veterinary.findOne({ email });
+  
+      if (!veterinaire) {
+        return res.status(404).json({ message: 'Veterinary not found' });
+      }
+  
+      res.status(200).json(user);
     } catch (error) {
-        return res.status(500).send(error.message);
+      res.status(500).json({ message: error.message });
     }
-}*/
+  };
 
 async function updateVet(req, res) {
     try {
@@ -320,4 +327,5 @@ module.exports = {
     getAllPetsOfVeterinary,
     getDateTime,
     getVetProfile,
+    getByEmail,
 };

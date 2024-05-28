@@ -30,6 +30,8 @@ import ReactCalender from './pages/calendrier';
 import Logged from './pages/Home';
 import PetInfoDialog from './pages/PetInfoDialog';
 import EmailVerifySecretaire from './Verification/verification';
+import Review from './pages/Review';
+import Message from './pages/messages';
 
 const App = () => {
   return (
@@ -59,7 +61,10 @@ const App = () => {
             <Route path="/doctorprofile/:vetId" element={<DoctorProfile />} />
             <Route path="/espaceclient/:userId" element={<UserDashboard />} />
             <Route path="/espaceclient/appointment/:userId" element={<AppointmentUser />} />
+            <Route path="/espaceclient/pets/:userId" element={<ComponentPets />} />
             <Route path="/calender/:petId" element={<PetInfoDialog />} />
+            <Route path="/espaceclient/review/:userId" element={<Review />} />
+            <Route path="/espaceclient/messages/:userId" element={<Message/>} />
           </Routes>
           <Footer />
         </>

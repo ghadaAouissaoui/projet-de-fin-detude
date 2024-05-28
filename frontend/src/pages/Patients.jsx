@@ -184,7 +184,7 @@ export const Input = (props) => {
                 <Card>
                   <CardHeader className="flex items-center justify-between">
                     <ActivityIcon className="w-6 h-6 text-gray-500" />
-                    <span className="text-2xl font-bold">789</span>
+                    <span className="text-2xl font-bold">7</span>
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-500">Active Patients</p>
