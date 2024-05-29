@@ -203,7 +203,12 @@ const getAllOwners = async (req, res) => {
 const getOwnProfile = async (req, res) => {
     try {
         // Query the database for the user based on the logged-in user's ID
-        const user = await User.findById(req.params.id).populate('pets');
+        const user = await User.findById(req.params.id).populate({
+            path: 'pets',
+            populate: {
+                path: 'appointments'
+            }
+        });
 
         // Check if the user was found
         if (user) {

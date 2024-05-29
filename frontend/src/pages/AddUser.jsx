@@ -11,7 +11,8 @@ import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import {  useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-
+import { Card, CardContent, Typography } from "@mui/material/";
+import { MdDelete } from "react-icons/md";
      // Avatar component
      export const Avatar = ({ children }) => {
         return <div className="flex items-center space-x-4">{children}</div>;
@@ -155,6 +156,47 @@ export default function Adding() {
   }, [vetId]);
 console.log("prooooofile",vetprofile)
 
+const [secretaries, setSecretaries] = useState([]);
+
+useEffect(() => {
+  const fetchSecretaries = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:5000/api/veto/secretaire/${vetId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setSecretaries(response.data);
+    } catch (error) {
+      console.error("Error fetching secretaries:", error);
+    }
+  };
+  fetchSecretaries();
+}, [vetId]);
+
+const handleSubmitDelete = async (secretaryId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(
+      `http://localhost:5000/api/veto/secretaire/${secretaryId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // Votre logique pour gérer la suppression réussie, par exemple, mettre à jour la liste des secrétaires
+    console.log(response.data.message);
+    setTimeout(() => {
+      window.location.reload(); 
+    }, 20);
+  } catch (error) {
+    console.error('Error deleting secretary:', error);
+    // Votre logique pour gérer les erreurs de suppression
+  }
+};
+
   return (
     <div className="space-y-6 flex w-full bg-gray-100">
         <div  className="max-md:w-1/3 w-1/5 top-20 "><Sidebar/></div>  
@@ -202,6 +244,28 @@ console.log("prooooofile",vetprofile)
         </div>
       </div>
     )}
+    </div>
+    <div>
+      <Typography variant="h5" gutterBottom>Secretary List</Typography>
+      {secretaries.map((secretary) => (
+        <div key={secretary._id} style={{ marginBottom: "20px" }}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography className="flex justify-between" variant="h6" gutterBottom>
+                {secretary.fullname} <MdDelete className="cursor-pointer" onClick={() =>handleSubmitDelete(secretary._id) }/>
+              </Typography>
+              <Typography color="textSecondary">
+                {secretary.email}
+              </Typography>
+              <Typography variant="body2" component="p">
+                CIN: {secretary.cin}
+              </Typography>
+              
+            </CardContent>
+            
+          </Card>
+        </div>
+      ))}
     </div>
             <div className=" mx-24 p-2 rounded-lg border-2 ">
       <div className="space-y-2 text-center">

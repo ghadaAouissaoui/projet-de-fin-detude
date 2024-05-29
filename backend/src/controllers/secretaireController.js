@@ -155,9 +155,10 @@ const loginSecretaire = asyncHandler(async (req, res) => {
 });
 
 
-// Fonction pour obtenir tous les secrétaires
 const getAllSecretaries = asyncHandler(async (req, res) => {
-  const secretaries = await Secretaire.find();
+  const { vetId } = req.params.id;
+  // Récupérer les secrétaires associés au vétérinaire spécifié par vetId
+  const secretaries = await Secretaire.find({ vetId });
   res.status(200).json(secretaries);
 });
 

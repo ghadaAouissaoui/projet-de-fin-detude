@@ -30,7 +30,7 @@ const {
     router.put('/:appointmentId',protect, updateAppointment)  
     router.put('/book/:appointmentId', bookAppointment)
 
-    router.delete('/:appointmentId',checkVet('veterinaire'), deleteAppointment)
+    router.delete('/:appointmentId',protect, deleteAppointment)
    
 
   

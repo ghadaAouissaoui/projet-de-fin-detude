@@ -5,7 +5,7 @@ const { getAllSecretaries, createSecretary, updateSecretary, deleteSecretary, ve
 const { protect, checkVet } = require('../middleware/authmiddleware');
 
 // Route pour récupérer tous les secrétaires
-router.get('/', protect, checkVet('veterinaire'), getAllSecretaries);
+router.get('/:id', protect, getAllSecretaries);
 router.get('/:secretaireId',getOneSec)
 router.get('/:id/verify/:token', verifyEmail)
 
@@ -16,7 +16,7 @@ router.post('/loginsec',loginSecretaire);
 router.put('/:id', protect, checkVet('veterinaire'), updateSecretary);
 
 // Route pour supprimer un secrétaire
-router.delete('/:id', protect, checkVet('veterinaire'), deleteSecretary);
+router.delete('/:id', protect, deleteSecretary);
 
 
 

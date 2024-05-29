@@ -191,7 +191,7 @@ export const Input = (props) => {
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div className="font-medium">
-                              {message.sender.fullname} - {message.sender.email}
+                              {message.sender?.fullname} - {message?.sender?.email}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
                               {new Date(message.createdAt).toLocaleDateString()}
@@ -266,7 +266,7 @@ export const Input = (props) => {
             <div className="flex items-start gap-4" key={message._id}>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <div className="font-medium">{message.receiver.fullname}</div>
+                  <div className="font-medium">{message.receiver?.fullname}</div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     {new Date(message.createdAt).toLocaleDateString()}
                   </div>

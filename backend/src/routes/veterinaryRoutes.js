@@ -24,7 +24,7 @@ router.delete('/:id',protect,deleteVet)
 
 router.delete('/experience/:id', protect, deleteExperience);
 
-router.put('/:id/photo',checkVet('veterinaire'),protect,upload.single('profilePhoto'),uploadPhoto)
+router.put('/:id/photo',protect,upload.single('profilePhoto'),uploadPhoto)
 
 // Route for getting veterinarian profile
 router.get('/', getAllVet);

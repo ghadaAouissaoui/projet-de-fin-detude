@@ -60,7 +60,7 @@ const ComponentD = () => {
           <div className="flex">
             <img
               className="w-28 h-28 rounded-full"
-              src={doctor}
+              src={`http://localhost:5000/${vet.profilePhoto}`}
               alt={vet.fullname} // Utilize the veterinarian's name as an alternative to the image
             />
             <div className="flex flex-row ml-4 ">

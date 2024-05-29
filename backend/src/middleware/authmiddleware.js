@@ -29,6 +29,11 @@ const protect = asyncHandler(async (req, res, next) => {
         if (!req.user) {
           throw new Error('Utilisateur introuvable');
         }
+      } else if (decoded.role === 'secretaire') {
+        req.secretaire = await Secretaire.findById(decoded.id).select('-password');
+        if (!req.secretaire) {
+          throw new Error('Secrétaire introuvable');
+        }
       } else {
         throw new Error('Rôle invalide dans le jeton');
       }

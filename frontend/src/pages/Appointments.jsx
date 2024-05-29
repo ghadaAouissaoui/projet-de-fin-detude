@@ -221,7 +221,7 @@ const [totalAppointments,setTotalAppointment]=useState(0);
       }
     };
     appointments.forEach(appointment => {
-      fetchOwnerDetails(appointment.pet.name);
+      fetchOwnerDetails(appointment.pet?.name);
     });
   }, [appointments]);
 
@@ -251,21 +251,41 @@ const [totalAppointments,setTotalAppointment]=useState(0);
   const handleClickOpen = () => {
     setOpen(true);
   };
-
+  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleClick = (event, appointment) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedAppointment(appointment);
+  };
   const handleClose = () => {
     setOpen(false);
   };
+  // Fonction pour fermer le popover
+  const handleClos = () => {
+    setAnchorEl(null);
+    setSelectedAppointment(null);
+  };
+  const [openPopovers, setOpenPopovers] = useState({});
 
+  
   const handleOpenModal = (appointment) => {
     setSelectedAppointment(appointment);
-    setIsModalOpen(true);
+    setSelectedAppointmentId(appointment._id)
+    setIsModalOpen(true)
+    setOpenPopovers(prevState => ({
+      ...prevState,
+      [appointment._id]: true
+    }));
   };
 
   const handleCloseModal = () => {
     setSelectedAppointment(null);
-    setIsModalOpen(false);
+    setIsModalOpen(false)
+    setOpenPopovers(prevState => ({
+      ...prevState,
+      [selectedAppointment._id]: false
+    }));
   };
-
   const handleOpenDialog = (appointmentId) => {
     setSelectedAppointmentId(appointmentId);
     
@@ -294,6 +314,7 @@ const [totalAppointments,setTotalAppointment]=useState(0);
     }));
   };
 
+  
   const handleChangeTraitement = (event) => {
     const { name, value } = event.target;
     setFormDataTraitement(prevData => ({
@@ -302,25 +323,36 @@ const [totalAppointments,setTotalAppointment]=useState(0);
     }));
   };
 
+  const handleOpenPopover = (appointmentId) => {
+    setOpenPopovers(prevState => ({
+      ...prevState,
+      [appointmentId]: true
+    }));
+  };
+  
+  const handleClosePopover = (appointmentId) => {
+    setOpenPopovers(prevState => ({
+      ...prevState,
+      [appointmentId]: false
+    }));
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await axios.post(`http://localhost:5000/api/appointment/first/${vetId}`, formData);
-      if (response.data.success) {
-        setSnackbarSeverity('success');
-        setSnackbarMessage('Appointment created successfully. Please wait for your veterinarian to confirm.');
-        setSnackbarOpen(true);
-        handleClose();
-      } else {
-        throw new Error(response.data.message);
-      }
+
+      
+       alert('Appointment created successfully.');
+        
+        setOpen(false); // Fermer le dialogue de création d'appointement
+      
     } catch (error) {
       console.error('Error creating appointment:', error);
-      setSnackbarSeverity('error');
-      setSnackbarMessage(error.message || 'Failed to create appointment');
-      setSnackbarOpen(true);
+      
     }
   };
+  
 
   const handleSubmitConfirmAppointment = async () => {
     try {
@@ -331,6 +363,9 @@ const [totalAppointments,setTotalAppointment]=useState(0);
       });
       console.log('Appointment booked successfully:', response.data.message);
       handleCloseModal();
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 20);
     } catch (error) {
       console.error('Error confirming appointment:', error.message);
     }
@@ -376,6 +411,79 @@ const [totalAppointments,setTotalAppointment]=useState(0);
       // Appel de la fonction pour récupérer les rendez-vous récents lors du chargement du composant
       fetchRecentAppointments();
   }, []); // L'effet se déclenche seulement lors du montage initial
+
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editedAppointment, setEditedAppointment] = useState(null);
+
+  const handleOpenEditDialog = (appointment) => {
+    setEditedAppointment(appointment);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditedAppointment(null);
+  };
+
+  const handleSaveEditedAppointment = async () => {
+    try {
+      const token = localStorage.getItem('token'); // Récupérer le token depuis le stockage local
+      const response = await axios.put(
+        `http://localhost:5000/api/appointment/${editedAppointment._id}`,
+        editedAppointment,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}` // Ajouter le token dans les en-têtes
+          }
+        }
+      );
+      if (response.status === 200) {
+        // Mise à jour réussie, vous pouvez mettre en œuvre les actions nécessaires ici
+        console.log('Appointment updated successfully:', response.data.message);
+        handleCloseEditDialog(); // Fermer le dialogue d'édition
+      } else {
+        // Gérer les erreurs ou les cas où la mise à jour a échoué
+        console.error('Failed to update appointment:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error updating appointment:', error.message);
+    }
+  };
+  
+  const handleDeleteAppointment = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token'); // Récupérer le token depuis le stockage local
+      const response = await axios.delete(
+        `http://localhost:5000/api/appointment/${appointmentId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}` // Ajouter le token dans les en-têtes
+          }
+        }
+      );
+      if (response.status === 200) {
+        // Suppression réussie, vous pouvez mettre en œuvre les actions nécessaires ici
+        console.log('Appointment deleted successfully');
+        alert('Appointment deleted successfully');
+        setTimeout(() => {
+          window.location.reload(); 
+        }, 20);
+        // Mettre à jour l'état ou effectuer d'autres actions nécessaires après la suppression
+      } else {
+        // Gérer les erreurs ou les cas où la suppression a échoué
+        console.error('Failed to delete appointment:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error.message);
+    }
+  };
+  
+  
+    const handleDeleteClick = (appointment) => {
+      const confirmDelete = window.confirm('Are you sure you want to delete this appointment?');
+      if (confirmDelete) {
+        handleDeleteAppointment(appointment._id);
+      } }
 
 
   return (
@@ -522,54 +630,61 @@ const [totalAppointments,setTotalAppointment]=useState(0);
               </TableHeader>
 
               <TableBody>
-    {appointments.map((appointment) => (
-       // Vérifier si le statut de l'appointment est "available"
-  appointment.status === "available" && (
-        <TableRow key={appointment._id}>
-            <TableCell className="font-medium">{appointment.appointment_date}</TableCell>
-            <TableCell>{appointment.pet.name}, {appointment.pet.species}</TableCell>
-            <TableCell className="hidden md:table-cell">{ownerDetailsMap[appointment.pet.name]?.fullname}</TableCell>
-            <TableCell className="hidden md:table-cell">{appointment.appointment_time}</TableCell>
-            <TableCell className="text-left">
-                <Badge variant="warning">{appointment.status}</Badge>
-            </TableCell>
-            <TableCell className="text-right">
+              {appointments.map((appointment) =>
+            appointment.status === "available" && (
+              <TableRow key={appointment._id}>
+                <TableCell className="font-medium">{appointment.appointment_date}</TableCell>
+                <TableCell>
+                  {appointment.pet ? (
+                    <>
+                      {appointment.pet.name}, {appointment.pet.species}
+                    </>
+                  ) : (
+                    'Pet not found'
+                  )}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {ownerDetailsMap[appointment.pet?.name]?.fullname}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">{appointment.appointment_time}</TableCell>
+                <TableCell className="text-left">
+                  <Badge variant="warning">{appointment.status}</Badge>
+                </TableCell>
+                <TableCell className="text-right">
                 <DropdownMenu>
-                <DropdownMenuTrigger onClick={handleDropdownToggle}>
-          <MoreHorizontalIcon className="w-4 h-4" />
-          <span className="sr-only">Actions</span>
-        </DropdownMenuTrigger>
-        
-         {/* Contenu du menu déroulant */}
-  {isDropdownOpen && (
-    <div>
-    <Button
-      aria-describedby={id}
-      onClick={handleClicked}
-      startIcon={<MoreHorizontalIcon />}
-    >
-    </Button>
-    <Popover
-      id={id}
-      open={opened}
-      anchorEl={anchorEl}
-      onClose={handleClosed}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-    >
-      <MenuItem onClick={() => handleOpenModal(appointment)}>View appointment</MenuItem>
-      <MenuItem >Reschedule</MenuItem>
-      <MenuItem onClick={handleClosed}>Cancel</MenuItem>
-    </Popover>
-  </div>
-  )}
-</DropdownMenu>
-            </TableCell>
-        </TableRow>
-  )
-    ))}
+          <DropdownMenuTrigger onClick={() => handleOpenPopover(appointment._id)}>
+            <MoreHorizontalIcon className="w-4 h-4" />
+            <span className="sr-only">Actions</span>
+          </DropdownMenuTrigger>
+
+          {openPopovers[appointment._id] && (
+            <div>
+              <Button
+                aria-describedby={appointment._id}
+                onClick={() => handleOpenPopover(appointment._id)}
+               
+              >
+              </Button>
+              <Popover
+                id={appointment._id}
+                open={openPopovers[appointment._id]}
+                anchorEl={anchorEl}
+                onClose={() => handleClosePopover(appointment._id)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+              >
+                <MenuItem onClick={() => handleOpenModal(appointment)}>View appointment</MenuItem>
+                <MenuItem onClick={() => handleOpenEditDialog(appointment)}>Reschedule</MenuItem>
+                <MenuItem onClick={() => handleClosePopover(appointment._id)}>Cancel</MenuItem>
+              </Popover>
+            </div>
+          )}
+        </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
     
 
 
@@ -616,15 +731,25 @@ const [totalAppointments,setTotalAppointment]=useState(0);
                   <span className="text-sm text-gray-500 dark:text-gray-400">{appointment.appointment_time}</span>
                 </div>
 
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{appointment.pet.name}</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{ownerDetailsMap[appointment.pet.name]?.fullname}</span>
-                </div>
+                {appointment.pet ? (
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">{appointment.pet.name}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {ownerDetailsMap[appointment.pet.name]?.fullname}
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-red-500">
+                Pet not found
+              </span>
+            </div>
+          )}
 
                 <div className="flex items-center gap-2 ">
                   
-                  <PencilIcon  className="h-6 w-5 cursor-pointer text-green-500" />
-                  <AiFillDelete className="h-6 w-6 cursor-pointer text-red-400" />
+                  <PencilIcon  className="h-6 w-5 cursor-pointer text-green-500" onClick={() => handleOpenEditDialog(appointment)}/>
+                  <AiFillDelete className="h-6 w-6 cursor-pointer text-red-400"  onClick={() => handleDeleteClick(appointment)} />
                   <FaBriefcaseMedical className="h-6 w-6 text-blue-800"  onClick={() => handleOpenDialog(appointment._id)} />
                 </div>
               </div>
@@ -635,6 +760,39 @@ const [totalAppointments,setTotalAppointment]=useState(0);
 </div>
 
 
+{/* Dialogue de modification */}
+<Dialog open={isEditDialogOpen} onClose={handleCloseEditDialog}>
+  <DialogTitle>Edit Appointment</DialogTitle>
+  <DialogContent>
+    <form onSubmit={handleSaveEditedAppointment}>
+      <TextField
+        label="Date"
+
+        value={editedAppointment?.appointment_date}
+        onChange={(e) => setEditedAppointment(prevState => ({ ...prevState, appointment_date: e.target.value }))}
+        fullWidth
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          inputProps: { min: moment().format('YYYY-MM-DD') } // Empêcher la sélection de dates antérieures
+        }}
+      />
+      <TextField
+        label="Time"
+        
+        value={editedAppointment?.appointment_time}
+        onChange={(e) => setEditedAppointment(prevState => ({ ...prevState, appointment_time: e.target.value }))}
+        fullWidth
+      />
+      
+    </form>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseEditDialog}>Cancel</Button>
+    <Button onClick={handleSaveEditedAppointment}>Save</Button>
+  </DialogActions>
+</Dialog>
 
 
 <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -703,20 +861,7 @@ const [totalAppointments,setTotalAppointment]=useState(0);
             onChange={handleChangeTraitement}
           />
         </Grid>
-        {/*<Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Date"
-            name="vaccineDate"
-            value={formDataTraitement.vaccines[1]}
-            variant="outlined"
-            type="date"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={handleChangeTraitement}
-          />
-        </Grid>*/}
+       
       </Grid>
 
       <Typography variant="h6" gutterBottom>Médicaments</Typography>
@@ -827,10 +972,20 @@ const [totalAppointments,setTotalAppointment]=useState(0);
                                 <span className="text-sm font-medium">{appointment.appointment_date}</span>
                                 <span className="text-sm text-gray-500 dark:text-gray-400">{appointment.appointment_time}</span>
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-medium">{appointment.pet.name}</span>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">ghada</span>
-                            </div>
+                            {appointment.pet ? (
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">{appointment.pet.name}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {ownerDetailsMap[appointment.pet.name]?.fullname}
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-red-500">
+                Pet not found
+              </span>
+            </div>
+          )}
                         </div>  
                     </div>
                 ))
