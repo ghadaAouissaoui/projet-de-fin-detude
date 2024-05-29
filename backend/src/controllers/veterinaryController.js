@@ -208,18 +208,23 @@ async function getByEmail(req,res){
     }
   };
 
-async function updateVet(req, res) {
+  async function updateVet(req, res) {
     try {
-        const vet = await Veterinary.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (vet) {
-            return res.status(200).json({ message: 'Vet updated', vet });
-        } else {
-            return res.status(404).send('Vet not found');
-        }
-    } catch (error) {
-        return res.status(500).send(error.message);
-    }
-}
+    const vetId=req.params.id;
+    const updateData = req.body;
+
+    const updatedVet = await Veterinary.findByIdAndUpdate(
+      vetId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    res.json({ message: 'Vet updated', vet: updatedVet });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating vet', error });
+  }
+};
+  
 
 async function deleteVet(req, res) {
     try {
@@ -233,6 +238,54 @@ async function deleteVet(req, res) {
         return res.status(500).send(error.message);
     }
 }
+
+async function deleteExperience(req, res) {
+    try {
+        const { vetId } = req.body; // Obtenez l'ID du vétérinaire à partir du corps de la requête
+        const { id: experienceId } = req.params; // Obtenez l'ID de l'expérience à supprimer à partir de la requête
+        console.log("vetId:", vetId);
+        console.log("experienceId:", experienceId);
+        
+        // Vérifiez si l'expérience appartient au vétérinaire
+        const vet = await Veterinary.findById(vetId);
+        if (!vet) {
+            return res.status(404).send('Veterinarian not found');
+        }
+
+        const experience = vet.experience.id(experienceId);
+        if (!experience) {
+            return res.status(404).send('Experience not found or does not belong to the vet');
+        }
+
+         // Supprimez l'expérience de la liste des expériences du vétérinaire
+         vet.experience.pull(experienceId);
+        await vet.save();
+
+        // Répondez avec un statut 200 OK et un message approprié
+        return res.status(200).json('Experience deleted');
+    } catch (error) {
+        // Gérez les erreurs
+        return res.status(500).send(error.message);
+    }
+}
+
+async function uploadPhoto(req,res){
+    try {
+        const vetId = req.params.id;
+        const vet = await Veterinary.findById(vetId);
+    
+        if (!vet) {
+          return res.status(404).send('Veterinarian not found');
+        }
+    
+        vet.profilePhoto = req.file.path; // Stockez le chemin du fichier dans le champ profilePhoto
+        await vet.save();
+    
+        res.status(200).json(vet);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+    }
 
 
 async function getVetProfile(req, res) {
@@ -251,6 +304,9 @@ async function getVetProfile(req, res) {
             profile_picture: 1,
             verified: 1,
             pets:1,
+            experience:1,
+            description:1,
+            profilePhoto:1,
             role: 1
         });
         if (veterinaire) {
@@ -320,6 +376,7 @@ module.exports = {
     registerVeterinary,
     loginVeterinary,
     getOneVet,
+    deleteExperience,
     getAllVet,
     verifyEmail,
     deleteVet,
@@ -328,4 +385,5 @@ module.exports = {
     getDateTime,
     getVetProfile,
     getByEmail,
+    uploadPhoto,
 };

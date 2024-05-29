@@ -22,138 +22,223 @@ function CardTitle({ children }) {
   function CardDescription({ children, className }) {
     return <p className={className}>{children}</p>;
   }
-  
-export default function ComponentPets() {
-  const { userId } = useParams();
-  const [UserProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
+  export default function ComponentPets() {
+    const { userId } = useParams();
+    const [UserProfile, setUserProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false); // État pour suivre l'ouverture du dialogue
+    const [newPetInfo, setNewPetInfo] = useState({
+      name: '',
+      species: '',
+      breed: '',
+      age: '',
+      // Ajoutez d'autres champs selon les besoins
+    });
+    const [petId, setPetId] = useState('');
+  
+    useEffect(() => {
+      const fetchUserProfile = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/users/profile/${userId}`);
+          const { user } = response.data;
+          setUserProfile(user);
+          setLoading(false);
+        } catch (error) {
+          console.error("Une erreur s'est produite lors de la récupération du profil de l'utilisateur :", error);
+          setLoading(false);
+        }
+      };
+  
+      fetchUserProfile();
+    }, [userId]);
+  
+    const handleEditButtonClick = (petId) => {
+      setPetId(petId);
+      handleEditClick(petId); // Ouvrir le dialogue de modification
+    };
+  
+    const handleEditClick = async (petId) => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/profile/${userId}`);
-        const { user } = response.data; // Supposez que les animaux de compagnie sont renvoyés dans la propriété "pets" de la réponse
-        
-        setUserProfile(user);
-        console.log("useeeer",user);
-        setLoading(false);
+        // Récupérer les informations de l'animal à modifier depuis le backend
+        const response = await axios.put(`http://localhost:5000/api/pet/${petId}`);
+        const petData = response.data.pet;
+        console.log("gdshfdsh", petId);
+  
+        // Mettre à jour les champs du formulaire avec les informations récupérées
+        setNewPetInfo({
+          name: petData.name,
+          species: petData.species,
+          breed: petData.breed,
+          sex:petData.sex,
+      
+          // Ajoutez d'autres champs selon les besoins
+        });
+  
+        // Ouvrir le dialogue de modification
+        setOpen(true);
       } catch (error) {
-        console.error("Une erreur s'est produite lors de la récupération du profil de l'utilisateur :", error);
-        setLoading(false);
+        console.error("Erreur lors de la récupération des informations de l'animal à modifier :", error);
       }
     };
   
-    fetchUserProfile();
-  }, [userId]);
-
-console.log("hgchgcgh")
-
-
-  return (
-    <div className="flex w-full h-[600px]">
-      <div className="bg-[#0B2447] md:[15%] w-[20%] px-6 py-4 text-white sticky top-0 h-[600px] overflow-y-auto">
-        <div className="flex flex-col items-start gap-6">
-          <Link className="flex items-center gap-2" to={`/espaceclient/${UserProfile?._id}`}>
-            <PawPrintIcon className="h-6 w-6" />
-            <span className=''>{UserProfile?.fullname} Dashboard</span>
-          </Link>
-          {UserProfile && (
-          <nav className="flex flex-col items-start gap-4">
-          
-            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
-            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Appointments</Link>
-            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
-            <Link className="hover:text-[#A5D7E8]" to="#">Messages</Link>
-          </nav>)}
-          <div className="flex items-center gap-4">
-            
-            <Menu
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-              getContentAnchorEl={null}
-              anchorEl={null}
-              open={false}
-            >
-              <Avatar alt="Avatar" src="/placeholder.svg" />
-              <MenuItem>{UserProfile?.fullname}</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Support</MenuItem>
-              <MenuItem>Logout</MenuItem>
-            </Menu>
+    const handleClose = () => {
+      setOpen(false);
+    };
+  
+    const handleChange = (e) => {
+      setNewPetInfo({ ...newPetInfo, [e.target.name]: e.target.value });
+    };
+  
+    const handleSubmit = async () => {
+      try {
+        // Effectuez une requête PUT vers votre backend pour soumettre les modifications de l'animal
+        const response = await axios.put(`http://localhost:5000/api/pet/${petId}`, newPetInfo);
+        console.log(response.data); // Loggez la réponse du backend si nécessaire
+  
+        // Fermez le dialogue de modification après la soumission réussie
+        handleClose();
+      } catch (error) {
+        console.error("Erreur lors de la soumission des modifications de l'animal :", error);
+        // Gérez l'erreur selon vos besoins
+      }
+    };
+    const deletePet = async (petId) => {
+      try {
+        // Envoyez une requête DELETE à votre endpoint backend avec l'ID de l'animal à supprimer
+        const response = await axios.delete(`http://localhost:5000/api/pet/${petId}`);
+        console.log(response.data); // Affichez la réponse du backend si nécessaire
+        // Traitez la réponse en fonction de vos besoins (par exemple, afficher un message de succès)
+      } catch (error) {
+        console.error("Erreur lors de la suppression de l'animal :", error);
+        // Traitez l'erreur en fonction de vos besoins (par exemple, afficher un message d'erreur)
+      }
+    };
+  
+    const handleDeleteClick = async (petId) => {
+      if (window.confirm("Êtes-vous sûr de vouloir supprimer cet animal ?")) {
+        // Appeler la fonction deletePet avec l'ID de l'animal à supprimer
+        await deletePet(petId);
+        // Rechargez ou mettez à jour les données après la suppression de l'animal si nécessaire
+        // Par exemple, vous pouvez appeler une fonction pour recharger la liste des animaux après la suppression réussie
+      }
+    };
+  
+    return (
+      <div className="flex w-full h-[600px]">
+        {/* Sidebar */}
+        <div className="bg-[#0B2447] md:w-[15%] w-[20%] px-6 py-4 text-white sticky top-0 h-[600px] overflow-y-auto">
+          <div className="flex flex-col items-start gap-6">
+            <Link className="flex items-center gap-2" to={`/espaceclient/${UserProfile?._id}`}>
+              <PawPrintIcon className="h-6 w-6" />
+              <span className=''>{UserProfile?.fullname} Dashboard</span>
+            </Link>
+            {UserProfile && (
+              <nav className="flex flex-col items-start gap-4">
+                <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
+                <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Medical Folder</Link>
+                <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
+                <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/messages/${UserProfile._id}`}>Messages</Link>
+              </nav>
+            )}
           </div>
         </div>
-      </div>
-      <div className="flex-1 bg-[#F0F0F0] overflow-y-auto ">
-      <header className="bg-white dark:bg-[#0B2447] px-6 py-4 shadow sticky top-0 z-10">
-          <div className="container mx-auto flex items-center justify-between">
-          <Button  className="hidden md:inline-flex bg-[#1F4690] hover:bg-[#1F4690]/90 text-white " variant="text" > My pets</Button>
-          </div>
-        </header>
+  
+        {/* Main content */}
+        <div className="flex-1 bg-[#F0F0F0] overflow-y-auto">
+          <header className="bg-white dark:bg-[#0B2447] px-6 py-4 shadow sticky top-0 z-10">
+            <div className="container mx-auto flex items-center justify-between">
+              <Button className="hidden md:inline-flex bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" variant="text"> My pets</Button>
+            </div>
+          </header>
+  
+          <section className="w-full max-w-4xl mx-auto py-8 md:py-12">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {UserProfile && UserProfile.pets && UserProfile.pets.map((pet) => (
+                <Card key={pet._id}>
+                  <img
+                    alt="Pet Image"
+                    className="rounded-t-lg object-cover w-full aspect-video"
+                    height={200}
+                    src=""
+                    width={300}
+                  />
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-medium">{pet.name}</h3>
+  <div className="flex gap-2">
+  <Button size="icon" variant="outline" onClick={() => handleEditButtonClick(pet._id)}>
+  <PencilIcon className="h-4 w-4" />
+  <span className="sr-only">Edit</span>
+  </Button>
+  <Button className="text-red-500" size="icon" variant="outline" onClick={() => handleDeleteClick(pet._id)}>
+  <TrashIcon className="h-4 w-4" />
+  <span className="sr-only">Delete</span>
+  </Button>
+  </div>
+  </div>
+  </CardContent>
+  </Card>
+  ))}
+  </div>
 
-    <section className="w-full max-w-4xl mx-auto py-8 md:py-12">
- 
-      <div  className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {UserProfile && UserProfile.pets && UserProfile.pets.map((pet) => (
-        <Card key={pet._id}>
-          <img
-            alt="Pet Image"
-            className="rounded-t-lg object-cover w-full aspect-video"
-            height={200}
-            src=""
-            width={300}
-          />
-          <CardContent className="p-4">
-          
-            <div  className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-medium">{pet.name}</h3>
-              <div className="flex gap-2">
-                <Button size="icon" variant="outline">
-                  <DeleteIcon className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="text-red-500" size="icon" variant="outline">
-                  <TrashIcon className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </div>
-           
-            <div className="text-sm text-gray-500 dark:text-gray-400">Dog</div>
-            </div>
-          
-          </CardContent>
-        </Card>
-      ))}
-      
-        {/*<Card>
-          <img
-            alt="Pet Image"
-            className="rounded-t-lg object-cover w-full aspect-video"
-            height={200}
-            src="/placeholder.svg"
-            width={300}
-          />
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-medium">Chirpy</h3>
-              <div className="flex gap-2">
-                <Button size="icon" variant="outline">
-                  <DeleteIcon className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="text-red-500" size="icon" variant="outline">
-                  <TrashIcon className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </div>
-            </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Bird</div>
-          </CardContent>
-        </Card>*/}
-      </div>
-    
-    </section>
+        {/* Dialogue pour effectuer les modifications */}
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Modifier les informations de l'animal</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Nom"
+              name="name"
+              value={newPetInfo.name}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Espèce"
+              name="species"
+              value={newPetInfo.species}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Race"
+              name="breed"
+              value={newPetInfo.breed}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Âge"
+              name="age"
+              value={newPetInfo.age}
+              onChange={handleChange}
+            />
+            {/* Ajoutez d'autres champs selon les besoins */}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Annuler</Button>
+            <Button onClick={handleSubmit}>Enregistrer</Button>
+          </DialogActions>
+        </Dialog>
+      </section>
     </div>
-    </div>
+  </div>
+  );
+}
+function PencilIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+      <path d="m15 5 4 4" />
+    </svg>
   )
 }
 

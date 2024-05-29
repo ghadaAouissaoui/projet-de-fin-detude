@@ -107,12 +107,18 @@ import { FaRegUser } from "react-icons/fa";
                 <AvatarImage alt="Profile picture" src={Doctor} className="h-12 w-12 rounded-full" />
               </Avatar>
               <div className="text-center">
-                {profile && (
-                  <>
-                    <h3 className="text-lg font-bold hover:underline">{profile.fullname}</h3>
-                    <p className="text-sm text-gray-500">{profile.role}</p>
-                  </>
-                )}
+              {profile && (
+            <>
+              {decoded.role === 'veterinaire' ? (
+                <Link to={`/doctorprofile/${vetId}`}>
+                  <h3 className="text-lg font-bold hover:underline">{profile.fullname}</h3>
+                </Link>
+              ) : (
+                <h3 className="text-lg font-bold">{profile.fullname}</h3>
+              )}
+              <p className="text-sm text-gray-500">{profile.role}</p>
+            </>
+          )}
               </div>
             </div>
       

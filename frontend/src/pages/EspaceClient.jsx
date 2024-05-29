@@ -120,26 +120,11 @@ function calculateAge(dateOfBirth) {
           <nav className="flex flex-col items-start gap-4">
           
             <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
-            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Appointments</Link>
+            <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Medical Folder</Link>
             <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
             <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/messages/${UserProfile._id}`}>Messages</Link>
           </nav>)}
-          <div className="flex items-center gap-4">
-            
-            <Menu
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-              getContentAnchorEl={null}
-              anchorEl={null}
-              open={false}
-            >
-              <Avatar alt="Avatar" src="/placeholder.svg" />
-              <MenuItem>{UserProfile?.fullname}</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Support</MenuItem>
-              <MenuItem>Logout</MenuItem>
-            </Menu>
-          </div>
+     
         </div>
       </div>
 
@@ -289,167 +274,8 @@ function calculateAge(dateOfBirth) {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} md={6} lg={8}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Medication Reminders</CardTitle>
-                  <CardDescription>Track your pet's medications and set reminders.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <img
-                        alt="Pet"
-                        className="rounded-md"
-                        height="100"
-                        src="/placeholder.svg"
-                        style={{
-                          aspectRatio: "100/100",
-                          objectFit: "cover",
-                        }}
-                        width="100"
-                      />
-                      <div>
-                        <h3 className="text-lg font-medium">Buddy</h3>
-                        <p className="text-[#6B7280] dark:text-[#A5D7E8]">Golden Retriever, 5 years old</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            View Medications
-                          </Button>
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            Set Reminder
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <img
-                        alt="Pet"
-                        className="rounded-md"
-                        height="100"
-                        src="/placeholder.svg"
-                        style={{
-                          aspectRatio: "100/100",
-                          objectFit: "cover",
-                        }}
-                        width="100"
-                      />
-                      <div>
-                        <h3 className="text-lg font-medium">Whiskers</h3>
-                        <p className="text-[#6B7280] dark:text-[#A5D7E8]">Tabby Cat, 3 years old</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            View Medications
-                          </Button>
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            Set Reminder
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <img
-                        alt="Pet"
-                        className="rounded-md"
-                        height="100"
-                        src="/placeholder.svg"
-                        style={{
-                          aspectRatio: "100/100",
-                          objectFit: "cover",
-                        }}
-                        width="100"
-                      />
-                      <div>
-                        <h3 className="text-lg font-medium">Daisy</h3>
-                        <p className="text-[#6B7280] dark:text-[#A5D7E8]">Poodle, 2 years old</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            View Medications
-                          </Button>
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            Set Reminder
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={6} lg={8}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Review</CardTitle>
-                  <CardDescription>Leave a review for your veterinarian.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <img
-                        alt="Veterinarian"
-                        className="rounded-md"
-                        height="100"
-                        src="/placeholder.svg"
-                        style={{
-                          aspectRatio: "100/100",
-                          objectFit: "cover",
-                        }}
-                        width="100"
-                      />
-                      <div>
-                        <h3 className="text-lg font-medium">Dr. Jane Smith</h3>
-                        <p className="text-[#6B7280] dark:text-[#A5D7E8]">Veterinarian, 10 years experience</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <Button className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" size="sm" variant="outline">
-                            Leave Review
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={6} lg={8}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Messages</CardTitle>
-                  <CardDescription>Send a message to your veterinarian.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form className="grid gap-4">
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <img
-                        alt="Veterinarian"
-                        className="rounded-md"
-                        height="100"
-                        src="/placeholder.svg"
-                        style={{
-                          aspectRatio: "100/100",
-                          objectFit: "cover",
-                        }}
-                        width="100"
-                      />
-                      <div>
-                        <h3 className="text-lg font-medium">Dr. Jane Smith</h3>
-                        <p className="text-[#6B7280] dark:text-[#A5D7E8]">Veterinarian, 10 years experience</p>
-                        <div className="mt-2 flex items-center gap-2">
-                          <textarea className="w-full" placeholder="Enter your message..." />
-                          <Button
-                            className="bg-[#1F4690] hover:bg-[#1F4690]/90 text-white"
-                            size="sm"
-                            type="submit"
-                            variant="outline"
-                          >
-                            Send
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
-            </Grid>
+           
+           
 
 
 

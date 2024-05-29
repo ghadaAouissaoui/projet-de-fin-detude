@@ -126,6 +126,7 @@ export default function Dashboard() {
         const response = await axios.get(`http://localhost:5000/api/veterinaries/profile/${vetId}`);
         setVetProfile(response.data.veterinaire); // Assuming the vet data structure
         // Calculate the number of patients
+        console.log("prooofile",response.data.veterinaire)
         const numberOfPatients = response.data.veterinaire.pets.length;
         
         setTotalPatients(numberOfPatients);
@@ -200,27 +201,20 @@ export default function Dashboard() {
 
 
       <main className="flex-1 p-6 w-2/3">
-        <div className="flex justify-between w-full">
-            <div className="flex rounded-lg w-1/2">
-        <div className=' bg-gray-200  pt-2.5 pl-2 rounded-l-xl'><SearchIcon  /></div>
-          <Input
-            className="block w-full p-2 bg-gray-200 rounded-r-xl outline-none"
-            placeholder="Search"
-          /></div>
-          <div className="flex items-center space-x-4">
-            <BellIcon className="h-6 w-6 text-gray-600" />
-            <Avatar>
-              <AvatarImage alt="User profile" src={Doctor} className="h-12 w-12 rounded-full"/>
-            </Avatar>
-          {/* <TextIcon className="h-6 w-6 text-gray-600 lg:opacity-0 md:visible" /> */}  
-          </div>
-        </div>
+      <div className="flex items-center justify-end space-x-4 text-right">
+  <BellIcon className="h-6 w-6 text-gray-600" />
+  {vetProfile && vetProfile.profilePhoto && (
+  <Avatar>
+    <AvatarImage alt="User profile" src={`http://localhost:5000/${vetProfile.profilePhoto}`} className="h-12 w-12 rounded-full"/>
+  </Avatar>)}
+</div>
+
 
 
         
         
         
-        <div className="grid grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-2 gap-6 mt-6">
           <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
             <CardTitle>Total Appointment</CardTitle>
             <h2 className="text-3xl font-bold">{totalAppointments}</h2>
@@ -233,18 +227,13 @@ export default function Dashboard() {
             <CurvedlineChart className="w-full h-36" />
             
           </Card>
-          <Card className="col-span-1 bg-white p-4 shadow rounded-lg flex flex-col items-center justify-center">
-            <CardTitle>Total Earning</CardTitle>
-            <h2 className="text-3xl font-bold">489</h2>
-            <CurvedlineChart className="w-full h-36" />
-            
-          </Card>
+        
         </div>
 
         <div className="mt-8 bg-white shadow rounded-lg">
           <div className="flex justify-between items-center">
             <h3 className="px-5 pt-4 text-xl font-bold">Appointment Activity</h3>
-            <div className="flex items-center space-x-4 px-5 pt-4 font-bold">
+           {/* <div className="flex items-center space-x-4 px-5 pt-4 font-bold">
                 <a href="#" onClick={() => handleDateChange(-1)} className="h-5 w-5 text-black font-bold">
                   <ChevronLeftIcon />
                 </a>
@@ -254,7 +243,7 @@ export default function Dashboard() {
                 <a href="#" onClick={() => handleDateChange(1)} className="h-5 w-5 text-black font-bold">
                   <ChevronRightIcon />
                 </a>
-            </div>
+  </div>*/}
           </div>
           <div className="w-full p-8">  
 <ReactCalender/>

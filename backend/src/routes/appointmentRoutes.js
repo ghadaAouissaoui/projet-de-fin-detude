@@ -27,7 +27,7 @@ const {
     router.post('/:vetId',authMiddleware,createAppointment)
     router.post('/first/:vetId' ,scheduleAppointment)
     
-    router.put('/:appointmentId',checkVet, updateAppointment)  
+    router.put('/:appointmentId',protect, updateAppointment)  
     router.put('/book/:appointmentId', bookAppointment)
 
     router.delete('/:appointmentId',checkVet('veterinaire'), deleteAppointment)

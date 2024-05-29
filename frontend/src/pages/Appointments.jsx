@@ -16,7 +16,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DialogContent, DialogTitle,DialogActions, Dialog,TextField, TextareaAutosize, Button, Grid, Typography } from '@mui/material';
+import { DialogContent, DialogTitle,DialogActions, Dialog,TextField, TextareaAutosize, Button, Grid, Typography,Popover,MenuItem } from '@mui/material';
 import useRequireAuth from "../../auth/userRequireAuth";
 import { FaBriefcaseMedical } from "react-icons/fa";    
 import { LuPencilLine } from "react-icons/lu";
@@ -542,13 +542,28 @@ const [totalAppointments,setTotalAppointment]=useState(0);
         
          {/* Contenu du menu déroulant */}
   {isDropdownOpen && (
-    <DropdownMenuContent align="start">
-      {/* Bouton pour afficher les détails de l'appointment */}
-      <DropdownMenuItem onClick={() => handleOpenModal(appointment)}>View appointment</DropdownMenuItem>
-      {/* Autres options du menu déroulant */}
-      <DropdownMenuItem>Reschedule</DropdownMenuItem>
-      <DropdownMenuItem>Cancel</DropdownMenuItem>
-    </DropdownMenuContent>
+    <div>
+    <Button
+      aria-describedby={id}
+      onClick={handleClicked}
+      startIcon={<MoreHorizontalIcon />}
+    >
+    </Button>
+    <Popover
+      id={id}
+      open={opened}
+      anchorEl={anchorEl}
+      onClose={handleClosed}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+    >
+      <MenuItem onClick={() => handleOpenModal(appointment)}>View appointment</MenuItem>
+      <MenuItem >Reschedule</MenuItem>
+      <MenuItem onClick={handleClosed}>Cancel</MenuItem>
+    </Popover>
+  </div>
   )}
 </DropdownMenu>
             </TableCell>
@@ -556,6 +571,9 @@ const [totalAppointments,setTotalAppointment]=useState(0);
   )
     ))}
     
+
+
+
 <Dialog open={isModalOpen} onClose={handleCloseModal} className="w-full h-full">
   <DialogTitle>Appointment Details</DialogTitle>
   <DialogContent>
@@ -1153,4 +1171,3 @@ function TextIcon(props) {
     </svg>
   )
 }
-

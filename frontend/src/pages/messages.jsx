@@ -11,6 +11,7 @@ import {
   Button,
   TextField,
 
+
 } from '@mui/material';
  // Avatar component
  export const Avatar = ({ children }) => {
@@ -72,7 +73,16 @@ export const Input = (props) => {
       />
     );
   };
-
+ const MessagesList = ({ messages }) => {
+    const [showAll, setShowAll] = useState(false);
+    const initialDisplayCount = 3; // Number of messages to display initially
+  
+    const toggleShowAll = () => {
+      setShowAll(!showAll);
+    };
+  
+    const displayedMessages = showAll ? messages : messages.slice(0, initialDisplayCount);
+  }  
 
   export default function Message() {
     const { userId } = useParams();
@@ -82,7 +92,13 @@ export const Input = (props) => {
     const [email, setEmail] = useState('');
     const [messageContent, setMessageContent] = useState('');
     const [message, setMessage] = useState('');
-  
+    const [showAll, setShowAll] = useState(false);
+    const initialDisplayCount = 3;
+    const toggleShowAll = () => {
+      setShowAll(!showAll);
+    };
+
+    const displayedMessages = showAll ? messages : messages.slice(0, initialDisplayCount);
     useEffect(() => {
       const fetchUserProfile = async () => {
         try {
@@ -145,7 +161,7 @@ export const Input = (props) => {
             {UserProfile && (
               <nav className="flex flex-col items-start gap-4">
                 <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/pets/${UserProfile._id}`}>Pets</Link>
-                <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Appointments</Link>
+                <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Medical Folder</Link>
                 <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
                 <Link className="hover:text-[#A5D7E8]" to="#">Messages</Link>
               </nav>
@@ -160,39 +176,49 @@ export const Input = (props) => {
           </header>
   
           <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-            <div className="border shadow-sm rounded-lg p-2">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-lg"> My received messages</h2>
-                </div>
-                <div className="flex flex-col gap-4">
-  {messages.map((message) => {
-    if (message.receiverModel === "User") {
-      return (
-        <div className="flex items-start gap-4" key={message._id}>
-          <Avatar alt={message.sender.fullname} src="/placeholder-user.jpg" />
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="font-medium">{message.receiver.email}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {new Date(message.createdAt).toLocaleDateString()}
+           {/* Received Messages Section */}
+          <div className="border shadow-sm rounded-lg p-2">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold text-lg"> My received messages</h2>
               </div>
-            </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              {message.content}
+              {/* Display Messages List */}
+              <div className="flex flex-col gap-4">
+                {displayedMessages.map((message) => {
+                  if (message.receiverModel === "User") {
+                    return (
+                      <div className="flex items-start gap-4" key={message._id}>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="font-medium">
+                              {message.sender.fullname} - {message.sender.email}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              {new Date(message.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {message.content}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+                {messages.length > initialDisplayCount && (
+                  <button
+                    onClick={toggleShowAll}
+                    className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer"
+                  >
+                    {showAll ? "Show Less" : "Show All"} <ChevronIcon className={`ml-2 transform transition-transform ${showAll ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      );
-    } else {
-      return null; // Si le destinataire n'est pas un utilisateur, ne rien afficher
-    }
-  })}
-</div>
 
-              </div>
-            </div>
-  
             <Card>
               <CardHeader>
                 <CardTitle>Communication with veterinaries</CardTitle>
@@ -234,29 +260,35 @@ export const Input = (props) => {
           </Card>
 
           <div className="flex flex-col gap-4">
-            {messages.map((message) => {
-              if (message.senderModel === "User") {
-                return (
-                  <div className="flex items-start gap-4" key={message._id}>
-                    <Avatar alt={message.sender.fullname} src="/placeholder-user.jpg" />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="font-medium">{message.receiver.email}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(message.createdAt).toLocaleDateString()}
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {message.content}
-                      </div>
-                    </div>
+      {messages.map((message) => {
+        if (message.senderModel === "User") {
+          return (
+            <div className="flex items-start gap-4" key={message._id}>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">{message.receiver.fullname}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(message.createdAt).toLocaleDateString()}
                   </div>
-                );
-              } else {
-                return null; // Si l'expéditeur n'est pas un utilisateur, ne rien afficher
-              }
-            })}
-          </div>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {message.content}
+                </div>
+              </div>
+            </div>
+          );
+        } else {
+          return null; // Si l'expéditeur n'est pas un utilisateur, ne rien afficher
+        }
+      })}{messages.length > initialDisplayCount && (
+        <button
+          onClick={toggleShowAll}
+          className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer"
+        >
+          {showAll ? "Show Less" : "Show All"} <ChevronIcon className={`ml-2 transform transition-transform ${showAll ? 'rotate-180' : ''}`} />
+        </button>
+      )}
+    </div>
         </main>
       </div>
     </div>
@@ -270,6 +302,24 @@ export const Input = (props) => {
 
 
 
+const ChevronIcon = ({ isOpen }) => {
+  return (
+    <svg
+      className={`text-blue transition-transform ${isOpen ? 'rotate-180' : ''}`}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+};
 
 
 
