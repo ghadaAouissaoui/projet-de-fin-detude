@@ -43,7 +43,7 @@ const Home = () => {
         <div className="flex flex-col pt-10 w-full h-[100vh] md:h-[60vh] bg-blue-900 rounded-tl-lg rounded-tr-lg ">
           <div className='flex flex-row'>
             <div>
-              <h1 className="md:text-5xl text-2xl text-white font-bold pt-10  pr-2">
+              <h1 className="md:text-5xl text-2xl text-white font-bold pt-2  pr-2">
                 <span className='text-white pl-10'>Book </span><a className='text-sm text-white'>your</a><br />
                 <span className='text-white pl-10'>appointment</span><br />
                 <span className='text-white pl-10' >online</span><a className="text-sm text-white"> with</a><span className=""> Vetoline</span>
@@ -57,7 +57,7 @@ const Home = () => {
             </div>
             <img
               alt="Doctor"
-              className="md:h-80 h-[300px] mt-[-150px] max-md:w-full rounded-lg mr-5 md:mt-[-150px]"
+              className="md:h-80 h-[300px] mt-[-150px] max-md:w-full rounded-lg mr-5 md:mt-[-250px]"
               src={doctor}
               style={{
                 aspectRatio: "300/300",
