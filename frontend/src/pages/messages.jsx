@@ -164,6 +164,7 @@ export const Input = (props) => {
                 <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/appointment/${UserProfile._id}`}>Medical Folder</Link>
                 <Link className="hover:text-[#A5D7E8]" to={`/espaceclient/review/${UserProfile._id}`}>Review</Link>
                 <Link className="hover:text-[#A5D7E8]" to="#">Messages</Link>
+                <Link  className='hover:text-[#A5D7E8]' to={`/espaceclient/diagnostic/${UserProfile._id}`}>Fast Diagnostic</Link>
               </nav>
             )}
           </div>

@@ -32,6 +32,7 @@ import PetInfoDialog from './pages/PetInfoDialog';
 import EmailVerifySecretaire from './Verification/verification';
 import Review from './pages/Review';
 import Message from './pages/messages';
+import FastDiagno from './pages/FastDiagno';
 
 const App = () => {
   return (
@@ -65,6 +66,7 @@ const App = () => {
             <Route path="/calender/:petId" element={<PetInfoDialog />} />
             <Route path="/espaceclient/review/:userId" element={<Review />} />
             <Route path="/espaceclient/messages/:userId" element={<Message/>} />
+            <Route path="/espaceclient/diagnostic/:userId" element={<FastDiagno />} />
           </Routes>
           <Footer />
         </>
