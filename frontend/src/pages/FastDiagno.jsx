@@ -16,7 +16,7 @@ import { useParams} from "react-router-dom";
 import { Menu, MenuItem, Avatar, Typography, Grid, Card, CardHeader, CardContent } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { TextareaAutosize } from '@mui/material';
-
+import SymptomSelector from './SymptomSelector';
 function PawPrintIcon(props) {
     return (
       <svg
@@ -83,6 +83,15 @@ export default function FastDiagno(){
 
         {/* Main content */}
         <div className="flex-1 bg-[#F0F0F0] overflow-y-auto">
+        <header className="bg-white dark:bg-[#0B2447] px-6 py-4 shadow sticky top-0 z-10">
+            <div className="container mx-auto flex items-center justify-between">
+              <Button className="hidden md:inline-flex bg-[#1F4690] hover:bg-[#1F4690]/90 text-white" variant="text"> My pets</Button>
+            </div>
+          </header>
+          
+          <section className="w-full max-w-4xl mx-auto py-8 md:py-12">
+            <SymptomSelector/>
+            </section>
             </div>
 
 
