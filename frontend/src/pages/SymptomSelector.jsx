@@ -83,7 +83,7 @@ export default function SymptomSelector() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-background ">
+    <div className="flex flex-col items-center justify-center bg-background ">
       <div className="max-w-2xl w-full px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <div className="text-center">
