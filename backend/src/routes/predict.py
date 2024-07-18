@@ -4,15 +4,15 @@ import pandas as pd
 import pickle
 
 # Charger le modèle
-with open('model.pkl', 'rb') as f:
+with open('src/cattle/model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # Charger le LabelEncoder
-with open('label_encoder.pkl', 'rb') as f:
+with open('src/cattle/label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
 # Recevoir les données des symptômes
-symptoms_data = json.loads(sys.argv[1])
+symptoms_data = json.loads(sys.stdin.read())
 
 # Créer un DataFrame à partir des données
 new_example_df = pd.DataFrame([symptoms_data])
