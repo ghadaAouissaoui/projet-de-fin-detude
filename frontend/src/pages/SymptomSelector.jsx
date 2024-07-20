@@ -20,7 +20,7 @@ const symptomsList = [
   'drooling', 'dull', 'decreased_fertility', 'diffculty_breath', 'emaciation', 'encephalitis', 'fever', 
   'facial_paralysis', 'frothing_of_mouth', 'frothing', 'gaseous_stomach', 'highly_diarrhoea', 'high_pulse_rate', 
   'high_temp', 'high_proportion', 'hyperaemia', 'hydrocephalus', 'isolation_from_herd', 'infertility', 
-  'intermittent_fever', 'jaundice', 'ketosis', 'loss_of_appetite', 'lameness', 'lack_of-coordination', 'lethargy', 
+  'intermittent_fever', 'jaundice', 'ketosis', 'loss_of_appetite', 'lameness', 'lack_of_coordination', 'lethargy', 
   'lacrimation', 'milk_flakes', 'milk_watery', 'milk_clots', 'mild_diarrhoea', 'moaning', 'mucosal_lesions', 
   'milk_fever', 'nausea', 'nasel_discharges', 'oedema', 'pain', 'painful_tongue', 'pneumonia', 
   'photo_sensitization', 'quivering_lips', 'reduction_milk_vields', 'rapid_breathing', 'rumenstasis', 
@@ -35,7 +35,7 @@ export default function SymptomSelector() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     symptoms: symptomsList.reduce((acc, symptom) => {
-      acc[symptom] = false;
+      acc[symptom] = 0; // Initialize with 0
       return acc;
     }, {}),
     predictedDisease: "",
@@ -44,33 +44,42 @@ export default function SymptomSelector() {
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
+    const value = checked ? 1 : 0; // Convert checked to 1, false to 0
     setFormData((prevData) => ({
       ...prevData,
       symptoms: {
         ...prevData.symptoms,
-        [name]: checked,
+        [name]: value,
       },
     }));
   };
 
   const handlePredict = async () => {
-    // Faire une requête au serveur pour la prédiction
-    const response = await fetch('/api/predict', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData.symptoms),
-    });
-    
-    const result = await response.json();
+    try {
+      // Faire une requête au serveur pour la prédiction
+      const response = await fetch('http://localhost:8080/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData.symptoms),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Erreur de prédiction: " + response.statusText);
+      }
 
-    setFormData((prevData) => ({
-      ...prevData,
-      predictedDisease: result.predictedDisease,
-      nextSteps: result.nextSteps,
-    }));
-    setConfirmDialogOpen(true);
+      const result = await response.json();
+
+      setFormData((prevData) => ({
+        ...prevData,
+        predictedDisease: result.predicted_disease || "Unknown", // Assure-toi que la clé est correcte
+        nextSteps: result.next_steps || [], // Assure-toi que la clé est correcte
+      }));
+      setConfirmDialogOpen(true);
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -106,7 +115,7 @@ export default function SymptomSelector() {
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={formData.symptoms[symptom]}
+                            checked={formData.symptoms[symptom] === 1} // Check against 1
                             onChange={handleCheckboxChange}
                             name={symptom}
                           />

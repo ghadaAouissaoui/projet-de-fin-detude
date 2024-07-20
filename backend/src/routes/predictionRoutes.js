@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const bodyParser = require('body-parser');
 const { PythonShell } = require('python-shell');
 
-router.use(bodyParser.json());
+// Utilisation de express.json() pour parser les requêtes JSON
+router.use(express.json());
 
 router.post('/', (req, res) => {
   const symptomsData = req.body;
@@ -17,12 +17,21 @@ router.post('/', (req, res) => {
   };
 
   PythonShell.run('predict.py', options, function (err, results) {
-    if (err) throw err;
-    const result = JSON.parse(results[0]);
-    res.json({
-      predictedDisease: result.predictedDisease,
-      nextSteps: result.nextSteps
-    });
+    if (err) {
+      console.error('Erreur lors de l\'exécution du script Python :', err);
+      return res.status(500).json({ error: 'Erreur lors de la prédiction' });
+    }
+
+    try {
+      const result = JSON.parse(results[0]);
+      res.json({
+        predictedDisease: result.predictedDisease,
+        // nextSteps: result.nextSteps
+      });
+    } catch (parseErr) {
+      console.error('Erreur lors du parsing du résultat JSON :', parseErr);
+      res.status(500).json({ error: 'Erreur lors de la lecture du résultat de la prédiction' });
+    }
   });
 });
 
